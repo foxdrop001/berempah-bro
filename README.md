@@ -1,38 +1,109 @@
-# Berempah Bros — Brand Site
+# Berempah Bros — Website
 
-Multi-page brand website for [Berempah Bros](https://www.instagram.com/berempahbros/) — 16-spice ayam goreng berempah by MasterChef Singapore Season 2 winner Derek Cheong. Six stalls across two brands (Berempah Bros + Gepuk Guys).
+Brand website for [Berempah Bros](https://www.instagram.com/berempahbros/): signature ayam berempah by MasterChef Singapore Season 2 winner Derek Cheong, across Berempah Bros and sister brand Gepuk Guys.
 
-## Files
+**Live:** https://effortxd.github.io/berempah-bro/
 
-- `index.html` — home (brand structure & copy per the official site doc)
-- `story/`, `menu/`, `locations/`, `careers/`, `contact/`, `news/` — inner pages (each `index.html`); matching root `*.html` files are legacy redirect stubs kept for old links
-- `assets/site.css` — shared stylesheet
-- `deploy.html` — self-contained snapshot of the home page (photos + fonts inlined)
-- `assets/` — brand photography, favicon, touch icon
-- `audit.mjs`, `qa*.mjs` — Playwright test scripts (`npm i -D playwright`, then `node audit.mjs`)
+Static site, no framework, no runtime dependencies. Content lives in one JSON file; a small Node build renders it into the pages.
 
-## Before launch
+---
 
-Search the HTML for `PLACEHOLDER` comments:
+## Quick start
 
-1. Outlet No. 06 card — add the newest stall's address and hours
-2. Instagram wall tiles — swap profile links for real post URLs
-3. Catering tray cards — confirm contents with the kitchen
-4. Crunch Club form — signups deliver to the brand inbox via the form pipeline; migrate to a proper mailing service (Mailchimp/MailerLite) when campaigns start
-5. Promo module — `PROMO` config lives in the last `<script>` block (currently the real BEREMPAH6 first-order code)
+```bash
+npm install          # dev dependencies (Playwright, for tests only)
+npm run build        # render pages from data/site.json
+npm test             # data checks + full page audit (needs Chromium)
+npm run dev          # serve locally at http://localhost:5000
+```
 
-## Deploy
+Nothing is required to *view* the site — the HTML is committed and works from any static host.
 
-**DigitalOcean App Platform (production):** [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/effortxd/berempah-bro/tree/main)
+---
 
-1. Log in at cloud.digitalocean.com → **Create → App Platform**
-2. Connect GitHub, pick `effortxd/berempah-bro`, branch `main` — it auto-detects a static site (the `.do/app.yaml` spec preconfigures everything, region Singapore)
-3. Choose the **Starter (free static site)** plan → Create App — live in ~2 minutes at an `*.ondigitalocean.app` URL
-4. Custom domain: App → Settings → Domains → add `berempahbros.sg` (or `.com`), then create the CNAME record it shows at the domain registrar. TLS is automatic.
-5. Every push to `main` auto-deploys.
+## How the project is organised
 
-After the custom domain is live, update the absolute URLs (canonical/og/sitemap/robots) from the github.io host to the new domain.
+```
+data/site.json          ← SINGLE SOURCE OF TRUTH: outlets, menu, prices, promo
+build.mjs               ← renders JSON into the pages; generates outlet pages
+templates/outlet.html   ← shell for every per-outlet page
+test.mjs                ← data integrity + page audits (npm test)
+audit.mjs               ← one-page audit used by tests and ad-hoc
 
-## GitHub Pages
+index.html              ← home
+story/  menu/  locations/  careers/  contact/  news/   ← inner pages
+locations/<slug>/       ← GENERATED per-outlet pages (never hand-edit)
+assets/                 ← css, brand photography, fonts, analytics
+*.html (root)           ← legacy redirect stubs from the pre-clean-URL era
+```
 
-Settings → Pages → Deploy from branch → `main` / root. The site is `index.html`.
+### The build contract
+
+Regions inside the HTML that come from data are wrapped in markers:
+
+```html
+<!-- BUILD:menu-cards -->
+   …generated, will be overwritten…
+<!-- /BUILD:menu-cards -->
+```
+
+`build.mjs` only ever replaces what is *between* markers. Everything else — the
+brand copy, layout, design — is hand-authored and safe to edit directly.
+
+**Rule of thumb:** prices, outlet details and promos → edit `data/site.json`.
+Words, layout, styling → edit the HTML/CSS.
+
+---
+
+## Common tasks
+
+Detailed step-by-step guides live in [`docs/`](docs/) and as agent-runnable
+workflows in [`.claude/skills/`](.claude/skills/):
+
+| Task | Guide |
+|------|-------|
+| Add or update an outlet | [docs/add-outlet.md](docs/add-outlet.md) |
+| Change menu items or prices | [docs/update-menu.md](docs/update-menu.md) |
+| Start / stop / change a promotion | [docs/update-promo.md](docs/update-promo.md) |
+| Run the checks | [docs/testing.md](docs/testing.md) |
+| Deploy, and move to a custom domain | [docs/deploy.md](docs/deploy.md) |
+
+---
+
+## Data accuracy policy
+
+Menu prices, outlet addresses and promotions on this site are **verified against
+primary sources**, not copied from press articles:
+
+- Prices and item names: the brand's own ordering store (berempahbros.oddle.me)
+- Coordinates: OneMap (Singapore's official geocoder), by postal code
+- Catering terms: the brand's official bulk-order poster artwork
+- Press quotes: quoted verbatim from the linked article
+
+`data/site.json` carries `_source` notes and a last-verified date. When editing,
+re-verify rather than trusting the file — third-party menus change silently.
+`npm test` enforces *format* (valid postcodes, prices, coordinates inside
+Singapore); it cannot tell you a price is out of date.
+
+---
+
+## Deployment
+
+Every push to `main` publishes to GitHub Pages (`gh-pages` branch is kept in
+sync). CI runs the build and the full audit on every push and pull request.
+
+See [docs/deploy.md](docs/deploy.md) for the DigitalOcean App Platform path and
+the custom-domain migration checklist.
+
+---
+
+## Still to confirm with the brand
+
+Search the HTML for `PLACEHOLDER`:
+
+1. **Outlet No. 06** — the newest stall's address (add it to `data/site.json`)
+2. **Catering tray concepts** on the menu page — confirm contents with the kitchen
+3. **TikTok / Facebook** — no official accounts exist yet; footer links are commented out
+4. **Instagram gallery** — three tiles link to real posts; three link to the profile
+5. **Font licence** — Meaty Bliss (TimelessType.co) is self-hosted from the brand's
+   artwork package; confirm the licence covers web embedding

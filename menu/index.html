@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; form-action https://formsubmit.co 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; form-action https://formsubmit.co 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(top!==self){try{top.location.replace(self.location.href)}catch(e){document.documentElement.style.display='none'}}</script>
 <title>Menu & Prices — Berempah Bros | Ayam Berempah Sets, Singapore</title>
@@ -25,9 +25,152 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<!-- BUILD:jsonld -->
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@graph": [{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://effortxd.github.io/berempah-bro/"}, {"@type": "ListItem", "position": 2, "name": "Menu", "item": "https://effortxd.github.io/berempah-bro/menu/"}]}, {"@type": "Menu", "name": "Berempah Bros Delivery Menu", "inLanguage": "en-SG", "hasMenuSection": [{"@type": "MenuSection", "name": "Signature Mains", "hasMenuItem": [{"@type": "MenuItem", "name": "Ayam Berempah", "description": "Signature tender chicken (thigh or breast) topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar and sambal belachan", "offers": {"@type": "Offer", "price": "9.00", "priceCurrency": "SGD"}}, {"@type": "MenuItem", "name": "Fish Berempah", "offers": {"@type": "Offer", "price": "10.20", "priceCurrency": "SGD"}}, {"@type": "MenuItem", "name": "Pork Berempah", "offers": {"@type": "Offer", "price": "10.20", "priceCurrency": "SGD"}}, {"@type": "MenuItem", "name": "Unagi Berempah", "offers": {"@type": "Offer", "price": "14.40", "priceCurrency": "SGD"}}]}, {"@type": "MenuSection", "name": "Party Platter", "hasMenuItem": [{"@type": "MenuItem", "name": "Berempah Bros Feast For 2", "offers": {"@type": "Offer", "price": "25.80", "priceCurrency": "SGD"}}]}, {"@type": "MenuSection", "name": "Sides", "hasMenuItem": [{"@type": "MenuItem", "name": "Crispy Fried Egg", "offers": {"@type": "Offer", "price": "1.80", "priceCurrency": "SGD"}}, {"@type": "MenuItem", "name": "Begedil", "offers": {"@type": "Offer", "price": "1.80", "priceCurrency": "SGD"}}, {"@type": "MenuItem", "name": "Otah Berempah", "offers": {"@type": "Offer", "price": "2.40", "priceCurrency": "SGD"}}, {"@type": "MenuItem", "name": "Mushroom Berempah", "offers": {"@type": "Offer", "price": "4.20", "priceCurrency": "SGD"}}, {"@type": "MenuItem", "name": "Luncheon Meat", "offers": {"@type": "Offer", "price": "1.45", "priceCurrency": "SGD"}}]}]}]}
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://effortxd.github.io/berempah-bro/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Menu",
+          "item": "https://effortxd.github.io/berempah-bro/menu/"
+        }
+      ]
+    },
+    {
+      "@type": "Menu",
+      "name": "Berempah Bros Delivery Menu",
+      "inLanguage": "en-SG",
+      "hasMenuSection": [
+        {
+          "@type": "MenuSection",
+          "name": "Signature Mains",
+          "hasMenuItem": [
+            {
+              "@type": "MenuItem",
+              "name": "Ayam Berempah",
+              "description": "Signature tender chicken topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar & very power sambal belachan",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.00",
+                "priceCurrency": "SGD"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Pork Berempah",
+              "description": "Super tender fried pork loin chop topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar & very power sambal belachan",
+              "offers": {
+                "@type": "Offer",
+                "price": "10.20",
+                "priceCurrency": "SGD"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Fish Berempah",
+              "description": "Signature fried fish topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar & very power sambal belachan",
+              "offers": {
+                "@type": "Offer",
+                "price": "10.20",
+                "priceCurrency": "SGD"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Unagi Berempah",
+              "description": "Melt-in-the-mouth tender Japanese unagi fried to a crisp perfection with our rempah batter, topped with typhoon shelter crumbs",
+              "offers": {
+                "@type": "Offer",
+                "price": "14.40",
+                "priceCurrency": "SGD"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Party Platter",
+          "hasMenuItem": [
+            {
+              "@type": "MenuItem",
+              "name": "Berempah Bros Feast For 2",
+              "description": "A delightful feast for two featuring your choice of two proteins paired with crispy begedil, aromatic otah berempah, savory mushroom berempah, fragrant coconut rice with sambal, tangy achar and crunchy crumbs",
+              "offers": {
+                "@type": "Offer",
+                "price": "25.80",
+                "priceCurrency": "SGD"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Sides",
+          "hasMenuItem": [
+            {
+              "@type": "MenuItem",
+              "name": "Crispy Fried Egg",
+              "offers": {
+                "@type": "Offer",
+                "price": "1.80",
+                "priceCurrency": "SGD"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Begedil",
+              "offers": {
+                "@type": "Offer",
+                "price": "1.80",
+                "priceCurrency": "SGD"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Otah Berempah",
+              "offers": {
+                "@type": "Offer",
+                "price": "2.40",
+                "priceCurrency": "SGD"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Mushroom Berempah",
+              "offers": {
+                "@type": "Offer",
+                "price": "4.20",
+                "priceCurrency": "SGD"
+              }
+            },
+            {
+              "@type": "MenuItem",
+              "name": "Luncheon Meat",
+              "offers": {
+                "@type": "Offer",
+                "price": "1.45",
+                "priceCurrency": "SGD"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
 </script>
+<!-- /BUILD:jsonld -->
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
@@ -56,7 +199,7 @@
         <li><a href="../locations/">Locations</a></li>
         <li><a href="../careers/">Careers</a></li>
         <li><a href="../contact/">Contact</a></li>
-        <li><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Now</a></li>
+        <li><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order">Order Now</a></li>
       </ul>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle menu">
@@ -134,28 +277,30 @@
 <section class="lto" id="promo" aria-labelledby="lto-title" hidden>
   <div class="container">
     <!-- Live promo: BEREMPAH6 (real first-order code from berempahbros.oddle.me). Edit the PROMO config in the lto script to change or retire it. -->
-    <div class="lto-chit reveal">
-      <span class="lto-stamp" aria-hidden="true">Promo Code</span>
-      <div class="lto-main">
-        <span class="kicker">First-Timer Deal</span>
-        <h2 id="lto-title" class="lto-title">$6 Off Your First Order</h2>
-        <p class="lto-desc">New to the Bros? Code BEREMPAH6 takes $6 off (min. $60 spend) your first delivery order — islandwide at a flat $6.80.</p>
-        <p class="lto-ends"><span data-lto="ends">First order only</span> <span class="hand">— use it lah</span></p>
-      </div>
-      <div class="lto-stub">
-        <div class="lto-count" aria-hidden="true">
-          <div class="lto-slot"><span class="lto-num" data-lto="d">--</span><span class="lto-lbl">days</span></div>
-          <span class="lto-colon">:</span>
-          <div class="lto-slot"><span class="lto-num" data-lto="h">--</span><span class="lto-lbl">hrs</span></div>
-          <span class="lto-colon">:</span>
-          <div class="lto-slot"><span class="lto-num" data-lto="m">--</span><span class="lto-lbl">mins</span></div>
+<!-- BUILD:promo -->
+      <div class="lto-chit reveal">
+        <span class="lto-stamp" aria-hidden="true">Promo Code</span>
+        <div class="lto-main">
+          <span class="kicker">First-Timer Deal</span>
+          <h2 id="lto-title" class="lto-title">$6 Off Your First Order</h2>
+          <p class="lto-desc">New to the Bros? Code BEREMPAH6 takes $6 off (min. $60 spend) your first delivery order — islandwide at a flat $6.80.</p>
+          <p class="lto-ends"><span data-lto="ends">First order only</span> <span class="hand">— use it lah</span></p>
         </div>
-        <a class="btn btn-gold lto-cta" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">
-          <span class="lto-cta-txt">Order with BEREMPAH6</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
+        <div class="lto-stub">
+          <div class="lto-count" aria-hidden="true">
+            <div class="lto-slot"><span class="lto-num" data-lto="d">--</span><span class="lto-lbl">days</span></div>
+            <span class="lto-colon">:</span>
+            <div class="lto-slot"><span class="lto-num" data-lto="h">--</span><span class="lto-lbl">hrs</span></div>
+            <span class="lto-colon">:</span>
+            <div class="lto-slot"><span class="lto-num" data-lto="m">--</span><span class="lto-lbl">mins</span></div>
+          </div>
+          <a class="btn btn-gold lto-cta" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="promo" data-promo="BEREMPAH6">
+            <span class="lto-cta-txt">Order with BEREMPAH6</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
       </div>
-    </div>
+<!-- /BUILD:promo -->
   </div>
 </section>
 
@@ -170,17 +315,52 @@
         <p>Every set comes with coconut rice, sambal belachan, housemade achar and the signature spice crunch. <span class="hand" style="font-size:1.3rem;color:var(--chili-deep)">simple, bro.</span></p>
       </div>
       <div class="menu-grid">
+<!-- BUILD:menu-cards -->
         <article class="chit reveal">
           <div class="chit-photo">
-            <img src="../assets/ayam.webp" srcset="../assets/sm/ayam.webp 800w, ../assets/ayam.webp 1149w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Ayam Berempah — crispy spiced fried chicken on coconut rice" loading="lazy">
+            <img src="../assets/ayam.webp" srcset="../assets/sm/ayam.webp 800w, ../assets/ayam.webp 1149w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Ayam Berempah — The signature. Overnight 16-spice marinade, fried golden, buried in crunch." loading="lazy">
             <span class="chit-price">$9.00</span>
           </div>
           <div class="chit-body">
             <h3>Ayam Berempah</h3>
-            <p>The signature. Overnight 16-spice marinade, fried golden, buried in crunch. Thigh or breast.</p>
-            <div class="tag-row"><span class="tag best">Bestseller</span><span class="tag hot">Spicy</span></div>
+            <p>The signature. Overnight 16-spice marinade, fried golden, buried in crunch.</p>
+            <div class="tag-row"><span class="tag best">Bestseller</span><span class="tag">Thigh or Breast</span></div>
           </div>
         </article>
+        <article class="chit reveal">
+          <div class="chit-photo">
+            <img src="../assets/pork.webp" srcset="../assets/sm/pork.webp 800w, ../assets/pork.webp 1149w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Pork Berempah — Super tender fried pork loin chop with deep rempah flavour and serious crackle." loading="lazy">
+            <span class="chit-price"><!-- BUILD:menu-cards -->0.20</span>
+          </div>
+          <div class="chit-body">
+            <h3>Pork Berempah</h3>
+            <p>Super tender fried pork loin chop with deep rempah flavour and serious crackle.</p>
+            <div class="tag-row"><span class="tag hot">Spicy</span></div>
+          </div>
+        </article>
+        <article class="chit reveal">
+          <div class="chit-photo">
+            <img src="../assets/fish.webp" srcset="../assets/sm/fish.webp 800w, ../assets/fish.webp 1149w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Fish Berempah — Flaky fish in a light rempah crust — all the fire and crunch, lighter on its feet." loading="lazy">
+            <span class="chit-price"><!-- BUILD:menu-cards -->0.20</span>
+          </div>
+          <div class="chit-body">
+            <h3>Fish Berempah</h3>
+            <p>Flaky fish in a light rempah crust — all the fire and crunch, lighter on its feet.</p>
+            <div class="tag-row"><span class="tag hot">Spicy</span></div>
+          </div>
+        </article>
+        <article class="chit reveal">
+          <div class="chit-photo">
+            <img src="../assets/unagi.webp" srcset="../assets/sm/unagi.webp 800w, ../assets/unagi.webp 1149w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Unagi Berempah — The premium plate — briny, buttery unagi meets bold berempah spices." loading="lazy">
+            <span class="chit-price"><!-- BUILD:menu-cards -->4.40</span>
+          </div>
+          <div class="chit-body">
+            <h3>Unagi Berempah</h3>
+            <p>The premium plate — briny, buttery unagi meets bold berempah spices.</p>
+            <div class="tag-row"><span class="tag">Premium</span></div>
+          </div>
+        </article>
+<!-- /BUILD:menu-cards -->
         <article class="chit reveal">
           <div class="chit-photo">
             <img src="../assets/pork.webp" srcset="../assets/sm/pork.webp 800w, ../assets/pork.webp 1089w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Pork Berempah — crispy spiced pork on coconut rice" loading="lazy">
@@ -216,12 +396,26 @@
         </article>
       </div>
       <div class="addons reveal">
+<!-- BUILD:sides -->
         <h3>Sides</h3>
-        <span class="addon">Crispy Fried Egg <b>$1.80</b></span>
-        <span class="addon">Begedil <b>$1.80</b></span>
-        <span class="addon">Otah Berempah <b>$2.40</b></span>
+        <span class="addon">Crispy Fried Egg <b><!-- BUILD:sides -->.80</b></span>
+        <span class="addon">Begedil <b><!-- BUILD:sides -->.80</b></span>
+        <span class="addon">Otah Berempah <b><!-- /BUILD:sides -->.40</b></span>
         <span class="addon">Mushroom Berempah <b>$4.20</b></span>
-        <span class="addon">Luncheon Meat <b>$1.45</b></span>
+        <span class="addon">Luncheon Meat <b><!-- BUILD:sides -->.45</b></span>
+<!-- /BUILD:sides -->.40</b></span>
+        <span class="addon">Mushroom Berempah <b>$4.20</b></span>
+        <span class="addon">Luncheon Meat <b><!-- BUILD:sides -->.45</b></span>
+<!-- /BUILD:sides -->.40</b></span>
+        <span class="addon">Mushroom Berempah <b>$4.20</b></span>
+        <span class="addon">Luncheon Meat <b><!-- BUILD:sides -->.45</b></span>
+<!-- /BUILD:sides -->.40</b></span>
+        <span class="addon">Mushroom Berempah <b>$4.20</b></span>
+        <span class="addon">Luncheon Meat <b><!-- BUILD:sides -->.45</b></span>
+<!-- /BUILD:sides -->.40</b></span>
+        <span class="addon">Mushroom Berempah <b>$4.20</b></span>
+        <span class="addon">Luncheon Meat <b><!-- BUILD:sides -->.45</b></span>
+<!-- /BUILD:sides -->
       </div>
       <div class="builder reveal" aria-labelledby="builder-title">
         <h3 id="builder-title">Build Your Order <span class="hand" style="font-size:1.3rem;color:var(--chili-deep)">— confirm plus chop</span></h3>
@@ -229,37 +423,45 @@
           <fieldset class="b-group">
             <legend>Protein</legend>
             <div class="chip-row" id="proteinRow">
-              <label class="chip"><input type="radio" name="protein" value="9" data-name="Ayam Berempah" checked><span>Ayam $9</span></label>
-              <label class="chip"><input type="radio" name="protein" value="10.2" data-name="Pork Berempah"><span>Pork $10.20</span></label>
-              <label class="chip"><input type="radio" name="protein" value="10.2" data-name="Fish Berempah"><span>Fish $10.20</span></label>
-              <label class="chip"><input type="radio" name="protein" value="14.4" data-name="Unagi Berempah"><span>Unagi $14.40</span></label>
+<!-- BUILD:builder-proteins -->
+              <label class="chip"><input type="radio" name="protein" value="9.00" data-name="Ayam Berempah" checked><span>Ayam $9.00</span></label>
+              <label class="chip"><input type="radio" name="protein" value="10.20" data-name="Pork Berempah"><span>Pork <!-- BUILD:builder-proteins -->0.20</span></label>
+              <label class="chip"><input type="radio" name="protein" value="10.20" data-name="Fish Berempah"><span>Fish <!-- BUILD:builder-proteins -->0.20</span></label>
+              <label class="chip"><input type="radio" name="protein" value="14.40" data-name="Unagi Berempah"><span>Unagi <!-- BUILD:builder-proteins -->4.40</span></label>
+<!-- /BUILD:builder-proteins -->
             </div>
           </fieldset>
           <fieldset class="b-group" id="cutGroup">
             <legend>Chicken Part (Ayam Only)</legend>
             <div class="chip-row">
+<!-- BUILD:builder-cuts -->
               <label class="chip"><input type="radio" name="cut" value="Thigh" checked><span>Thigh</span></label>
               <label class="chip"><input type="radio" name="cut" value="Breast"><span>Breast</span></label>
+<!-- /BUILD:builder-cuts -->
             </div>
           </fieldset>
           <!-- add-on chips use in-set modifier prices (verified on Oddle) — intentionally cheaper than a-la-carte Sides -->
           <fieldset class="b-group">
             <legend>Add-Ons</legend>
             <div class="chip-row">
-              <label class="chip"><input type="checkbox" name="addon" value="1.4" data-name="Crispy Fried Egg"><span>Fried Egg +$1.40</span></label>
-              <label class="chip"><input type="checkbox" name="addon" value="1.4" data-name="Begedil"><span>Begedil +$1.40</span></label>
-              <label class="chip"><input type="checkbox" name="addon" value="1.82" data-name="Otah Berempah"><span>Otah +$1.82</span></label>
+<!-- BUILD:builder-addons -->
+              <label class="chip"><input type="checkbox" name="addon" value="1.40" data-name="Crispy Fried Egg"><span>Crispy Fried Egg +<!-- BUILD:builder-addons -->.40</span></label>
+              <label class="chip"><input type="checkbox" name="addon" value="1.40" data-name="Begedil"><span>Begedil +<!-- BUILD:builder-addons -->.40</span></label>
+              <label class="chip"><input type="checkbox" name="addon" value="1.82" data-name="Otah Berempah"><span>Otah +<!-- BUILD:builder-addons -->.82</span></label>
               <label class="chip"><input type="checkbox" name="addon" value="3.16" data-name="Mushroom Berempah"><span>Mushroom +$3.16</span></label>
+<!-- /BUILD:builder-addons -->
             </div>
           </fieldset>
         </form>
         <div class="builder-total">
           <p class="sum" aria-live="polite">$<span id="builderSum">9.00</span> <small id="builderDesc">Ayam Berempah (Thigh)</small></p>
-          <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order This on Oddle</a>
+          <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order">Order This on Oddle</a>
         </div>
         <p style="font-size:.82rem;color:var(--ink-70);margin-top:10px">Delivery-menu pricing · + $6.80 islandwide delivery at checkout</p>
       </div>
+<!-- BUILD:menu-note -->
       <p class="menu-note">Prices from our <a href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">delivery menu</a> · stall counter prices may differ · Islandwide delivery $6.80 · Menu includes pork — not halal-certified</p>
+<!-- /BUILD:menu-note -->
     </div>
   </section>
 
@@ -412,7 +614,7 @@
 </main>
 
 <div class="order-bar">
-  <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Now — Islandwide Delivery</a>
+  <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order" data-item="sticky_bar" data-track="order">Order Now — Islandwide Delivery</a>
 </div>
 
 <footer>
@@ -603,5 +805,7 @@
 })();
 </script>
 
+<script src="../assets/analytics-config.js"></script>
+<script src="../assets/analytics.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; form-action https://formsubmit.co 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; form-action https://formsubmit.co 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(top!==self){try{top.location.replace(self.location.href)}catch(e){document.documentElement.style.display='none'}}</script>
 <title>Berempah Bros — Spice. Crunch. Shiok. | Ayam Berempah & Nasi Lemak, Singapore</title>
@@ -24,26 +24,156 @@
 <meta name="theme-color" content="#F68C1C">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<!-- BUILD:jsonld -->
 <script type="application/ld+json">
 {
-  "@context":"https://schema.org",
-  "@type":"Restaurant",
-  "name":"Berempah Bros",
-  "servesCuisine":["Malaysian","Singaporean"],
-  "founder":{"@type":"Person","name":"Derek Cheong"},
-  "slogan":"Spice. Crunch. Shiok.",
-  "sameAs":["https://www.instagram.com/berempahbros/"],
-  "email":"berempahbros.general@gmail.com",
-  "menu":"https://berempahbros.oddle.me/",
-  "location":[
-    {"@type":"FoodEstablishment","name":"Berempah Bros — Beauty World Food Centre","address":{"@type":"PostalAddress","streetAddress":"144 Upper Bukit Timah Road, #04-51","postalCode":"588177","addressCountry":"SG"},"geo":{"@type":"GeoCoordinates","latitude":1.3424126,"longitude":103.776539},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"10:30","closes":"20:30"}},
-    {"@type":"FoodEstablishment","name":"Berempah Bros — Bukit Canberra Hawker Centre","address":{"@type":"PostalAddress","streetAddress":"21 Canberra Link, #01-25","postalCode":"756973","addressCountry":"SG"},"telephone":"+65 9058 9674","geo":{"@type":"GeoCoordinates","latitude":1.4482633,"longitude":103.822763},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"10:00","closes":"20:45"}},
-    {"@type":"FoodEstablishment","name":"Berempah Bros — Sengkang (Happy Hawkers)","address":{"@type":"PostalAddress","streetAddress":"267 Compassvale Link, #01-02 Stall 5","postalCode":"540267","addressCountry":"SG"},"telephone":"+65 9630 3690","geo":{"@type":"GeoCoordinates","latitude":1.3837444,"longitude":103.897046}},
-    {"@type":"FoodEstablishment","name":"Berempah Bros — Woodleigh Village Hawker Centre","address":{"@type":"PostalAddress","streetAddress":"202C Bidadari Park Drive, Woodleigh Village Hawker Centre","postalCode":"363202","addressCountry":"SG"},"geo":{"@type":"GeoCoordinates","latitude":1.339791,"longitude":103.872013}},
-    {"@type":"FoodEstablishment","name":"Gepuk Guys — Bedok (sister brand)","address":{"@type":"PostalAddress","streetAddress":"531 Bedok North Street 3, #01-680 Stall 3","postalCode":"460531","addressCountry":"SG"},"geo":{"@type":"GeoCoordinates","latitude":1.3331299,"longitude":103.926153},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"10:30","closes":"22:30"}}
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Berempah Bros",
+  "servesCuisine": [
+    "Malaysian",
+    "Singaporean"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Derek Cheong"
+  },
+  "slogan": "Spice. Crunch. Shiok.",
+  "sameAs": [
+    "https://www.instagram.com/berempahbros/",
+    "https://www.instagram.com/gepukguys.sg/"
+  ],
+  "email": "berempahbros.general@gmail.com",
+  "menu": "https://berempahbros.oddle.me/",
+  "location": [
+    {
+      "@type": "FoodEstablishment",
+      "name": "Berempah Bros — Beauty World Food Centre",
+      "url": "https://effortxd.github.io/berempah-bro/locations/beauty-world/",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "144 Upper Bukit Timah Road, #04-51",
+        "postalCode": "588177",
+        "addressCountry": "SG"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 1.3424126,
+        "longitude": 103.776539
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "10:30",
+        "closes": "20:30"
+      }
+    },
+    {
+      "@type": "FoodEstablishment",
+      "name": "Berempah Bros — Bukit Canberra Hawker Centre",
+      "url": "https://effortxd.github.io/berempah-bro/locations/bukit-canberra/",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "21 Canberra Link, #01-25",
+        "postalCode": "756973",
+        "addressCountry": "SG"
+      },
+      "telephone": "+65 9058 9674",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 1.4482633,
+        "longitude": 103.822763
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "10:00",
+        "closes": "20:45"
+      }
+    },
+    {
+      "@type": "FoodEstablishment",
+      "name": "Berempah Bros — Sengkang — Happy Hawkers",
+      "url": "https://effortxd.github.io/berempah-bro/locations/sengkang/",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "267 Compassvale Link, #01-02, Stall 5",
+        "postalCode": "540267",
+        "addressCountry": "SG"
+      },
+      "telephone": "+65 9630 3690",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 1.3837444,
+        "longitude": 103.897046
+      }
+    },
+    {
+      "@type": "FoodEstablishment",
+      "name": "Berempah Bros — Woodleigh Village Hawker Centre",
+      "url": "https://effortxd.github.io/berempah-bro/locations/woodleigh/",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "202C Bidadari Park Drive",
+        "postalCode": "363202",
+        "addressCountry": "SG"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 1.339791,
+        "longitude": 103.872013
+      }
+    },
+    {
+      "@type": "FoodEstablishment",
+      "name": "Gepuk Guys — Gepuk Guys — Jofa Coffeeshop, Bedok",
+      "url": "https://effortxd.github.io/berempah-bro/locations/gepuk-guys-bedok/",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "531 Bedok North Street 3, #01-680, Stall 3",
+        "postalCode": "460531",
+        "addressCountry": "SG"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 1.3331299,
+        "longitude": 103.926153
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "10:30",
+        "closes": "22:30"
+      }
+    }
   ]
 }
 </script>
+<!-- /BUILD:jsonld -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
@@ -75,7 +205,7 @@
         <li><a href="locations/">Locations</a></li>
         <li><a href="careers/">Careers</a></li>
         <li><a href="contact/">Contact</a></li>
-        <li><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Now</a></li>
+        <li><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order">Order Now</a></li>
       </ul>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle menu">
@@ -107,16 +237,18 @@
       <p style="max-width:38rem;font-size:1.15rem;color:#F0E2C4;margin:18px 0 28px">Born in Singapore. Inspired by the flavours we grew up with. Made for people who just want damn good food.</p>
       <div class="hero-ctas">
         <a class="btn btn-paper" href="story/">Our Story</a>
-        <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">
+        <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order">
           Order Now
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
       </div>
       <div class="hero-strip">
+<!-- BUILD:hero-stats -->
         <div><b>16</b>spices in the rempah</div>
-        <div><b>6</b>stalls · 2 brands</div>
+        <div><b>5</b>stalls · 2 brands</div>
         <div><b>$9</b>signature ayam set</div>
         <div><b>#1</b>MasterChef SG S2</div>
+<!-- /BUILD:hero-stats -->
       </div>
       <div class="seen-strip" aria-label="As featured in">
         <span class="lbl">As seen on:</span>
@@ -300,7 +432,7 @@
       <p style="max-width:34rem;margin:var(--s3) auto 0;color:#3A2418">Get Berempah Bros delivered, order ahead for takeaway or sort out the whole office lunch.</p>
       <span class="hand" style="display:inline-block;margin:var(--s2) 0 var(--s4)">delivery. pick-up. bulk orders. all available through Oddle.</span>
       <div class="cta-btns">
-        <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">
+        <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order">
           Order Now
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
@@ -333,7 +465,7 @@
 </main>
 
 <div class="order-bar">
-  <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Now — Islandwide Delivery</a>
+  <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order" data-item="sticky_bar" data-track="order">Order Now — Islandwide Delivery</a>
 </div>
 
 <footer>
@@ -422,5 +554,7 @@
 
 </script>
 
+<script src="assets/analytics-config.js"></script>
+<script src="assets/analytics.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; form-action https://formsubmit.co 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; form-action https://formsubmit.co 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(top!==self){try{top.location.replace(self.location.href)}catch(e){document.documentElement.style.display='none'}}</script>
 <title>Contact — Berempah Bros</title>
@@ -70,7 +70,7 @@
         <li><a href="../locations/">Locations</a></li>
         <li><a href="../careers/">Careers</a></li>
         <li><a href="../contact/" aria-current="page" style="color:var(--chili)">Contact</a></li>
-        <li><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Now</a></li>
+        <li><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order">Order Now</a></li>
       </ul>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle menu">
@@ -122,7 +122,7 @@
         <h3 id="form-title" style="font-size:1.5rem;margin-bottom:6px">Drop Us A Message</h3>
         <p style="color:var(--ink-70);margin-bottom:var(--s3)">Straight to the Bros' inbox — we'll get back to you as soon as the fryer allows.</p>
         <p id="formSent" hidden aria-live="polite" class="hand" style="font-size:1.4rem;color:var(--chili-deep);margin-bottom:var(--s3)">message sent — we got you, bro. talk soon!</p>
-        <form class="cform" action="https://formsubmit.co/berempahbros.general@gmail.com" method="POST">
+        <form class="cform" id="contactFormEl" action="https://formsubmit.co/berempahbros.general@gmail.com" method="POST">
           <input type="hidden" name="_subject" value="Website contact — Berempah Bros">
           <input type="hidden" name="_captcha" value="true">
           <input type="hidden" name="_next" value="https://effortxd.github.io/berempah-bro/contact/?sent=1">
@@ -151,6 +151,80 @@
             <textarea id="cfMsg" name="message" rows="6" required></textarea>
           </div>
           <button class="btn btn-chili" type="submit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ CATERING ENQUIRY ============ -->
+  <section id="catering" aria-labelledby="catering-title" style="padding-top:0">
+    <div class="container" style="max-width:820px">
+      <div class="reveal" style="background:var(--paper-2);border:2px solid var(--ink);box-shadow:8px 8px 0 var(--chili);padding:var(--s4)">
+        <span class="kicker">Bulk Orders &amp; Catering</span>
+        <h2 id="catering-title" style="font-size:clamp(1.8rem,4vw,2.6rem);margin:var(--s2) 0 10px">Feed The Whole Kampung</h2>
+        <p style="color:var(--ink-70);margin-bottom:var(--s3)"><b style="color:var(--ink)">15% off bulk orders &amp; group buys (capped at $25 off).</b> Tell us the details and we'll come back with availability, lead time and a quote. Prefer to talk? Call <a href="tel:+6590589674" data-track="call" data-item="catering" style="color:var(--chili-deep);font-weight:700">9058 9674</a>.</p>
+        <p id="cateringSent" hidden aria-live="polite" class="hand" style="font-size:1.4rem;color:var(--chili-deep);margin-bottom:var(--s3)">enquiry sent — we'll be in touch shortly, bro.</p>
+        <form class="cform" id="cateringForm" action="https://formsubmit.co/berempahbros.general@gmail.com" method="POST">
+          <input type="hidden" name="_subject" value="CATERING ENQUIRY — Berempah Bros website">
+          <input type="hidden" name="_captcha" value="true">
+          <input type="hidden" name="_next" value="https://effortxd.github.io/berempah-bro/contact/?catering=1#catering">
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="cform-row">
+            <div class="cform-field">
+              <label for="ctName">Your name</label>
+              <input id="ctName" name="name" type="text" required autocomplete="name">
+            </div>
+            <div class="cform-field">
+              <label for="ctContact">Email or mobile</label>
+              <input id="ctContact" name="contact" type="text" required autocomplete="email">
+            </div>
+          </div>
+          <div class="cform-row">
+            <div class="cform-field">
+              <label for="ctDate">Date needed</label>
+              <input id="ctDate" name="date" type="date" required>
+            </div>
+            <div class="cform-field">
+              <label for="ctHeads">How many people?</label>
+              <select id="ctHeads" name="headcount" required>
+                <option value="10-20">10 – 20 pax</option>
+                <option value="21-50">21 – 50 pax</option>
+                <option value="51-100">51 – 100 pax</option>
+                <option value="100+">More than 100 pax</option>
+              </select>
+            </div>
+          </div>
+          <div class="cform-row">
+            <div class="cform-field">
+              <label for="ctOutlet">Nearest outlet</label>
+              <select id="ctOutlet" name="outlet">
+                <!-- BUILD:catering-outlets -->
+                <option>No preference</option>
+                <option value="Beauty World Food Centre">Beauty World Food Centre</option>
+                <option value="Bukit Canberra Hawker Centre">Bukit Canberra Hawker Centre</option>
+                <option value="Sengkang — Happy Hawkers">Sengkang — Happy Hawkers</option>
+                <option value="Woodleigh Village Hawker Centre">Woodleigh Village Hawker Centre</option>
+                <option value="Gepuk Guys — Jofa Coffeeshop, Bedok">Gepuk Guys — Jofa Coffeeshop, Bedok</option>
+<!-- /BUILD:catering-outlets -->
+              </select>
+            </div>
+            <div class="cform-field">
+              <label for="ctType">Occasion</label>
+              <select id="ctType" name="occasion">
+                <option value="Office / corporate">Office / corporate</option>
+                <option value="Birthday / celebration">Birthday / celebration</option>
+                <option value="Family gathering">Family gathering</option>
+                <option value="Group buy">Group buy</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="cform-field">
+            <label for="ctNotes">Anything else? (delivery address, dietary notes, budget)</label>
+            <textarea id="ctNotes" name="notes" rows="4"></textarea>
+          </div>
+          <button class="btn btn-chili" type="submit" data-track="catering_submit_click">Send Enquiry</button>
         </form>
       </div>
     </div>
@@ -213,7 +287,7 @@
 </main>
 
 <div class="order-bar">
-  <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Now — Islandwide Delivery</a>
+  <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order" data-item="sticky_bar" data-track="order">Order Now — Islandwide Delivery</a>
 </div>
 
 <footer>
@@ -269,6 +343,10 @@
 
 <script>
   // show success note after form redirect
+  if (new URLSearchParams(location.search).has('catering')) {
+    const c = document.getElementById('cateringSent');
+    if (c) { c.hidden = false; document.getElementById('cateringForm').hidden = true; c.scrollIntoView({block:'center'}); }
+  }
   if (new URLSearchParams(location.search).has('sent')) {
     const el = document.getElementById('formSent');
     if (el) { el.hidden = false; el.scrollIntoView({block:'center'}); }
@@ -324,5 +402,7 @@
   })();
 </script>
 
+<script src="../assets/analytics-config.js"></script>
+<script src="../assets/analytics.js"></script>
 </body>
 </html>

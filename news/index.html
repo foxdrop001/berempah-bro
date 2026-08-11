@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; form-action https://formsubmit.co 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; form-action https://formsubmit.co 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(top!==self){try{top.location.replace(self.location.href)}catch(e){document.documentElement.style.display='none'}}</script>
 <title>News — Berempah Bros | The Berempah Bulletin</title>
@@ -98,7 +98,7 @@
         <li><a href="../locations/">Locations</a></li>
         <li><a href="../careers/">Careers</a></li>
         <li><a href="../contact/">Contact</a></li>
-        <li><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Now</a></li>
+        <li><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order">Order Now</a></li>
       </ul>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle menu">
@@ -139,7 +139,7 @@
       <div class="post-photo"><img src="../assets/sm/unagi.webp" alt="A glazed, crumb-topped berempah plate on a rattan tray" loading="lazy"></div>
       <div class="post-body">
         <p>The Bros went French, then dragged it straight back to the kopitiam: <b>Duck Confit Berempah</b> — slow-cooked duck leg, crisped up and hit with the signature rempah treatment. On the menu at <b>Gepuk Guys, Bedok</b> at $16.50, as covered by <a href="https://eatbook.sg/gepuk-guys/" target="_blank" rel="noopener">Eatbook</a>.</p>
-        <p class="post-cta"><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Delivery</a></p>
+        <p class="post-cta"><a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order">Order Delivery</a></p>
       </div>
     </article>
 
@@ -201,7 +201,7 @@
 </main>
 
 <div class="order-bar">
-  <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener">Order Now — Islandwide Delivery</a>
+  <a class="btn btn-chili" href="https://berempahbros.oddle.me/" target="_blank" rel="noopener" data-track="order" data-item="sticky_bar" data-track="order">Order Now — Islandwide Delivery</a>
 </div>
 
 <footer>
@@ -270,5 +270,7 @@
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>
 
+<script src="../assets/analytics-config.js"></script>
+<script src="../assets/analytics.js"></script>
 </body>
 </html>

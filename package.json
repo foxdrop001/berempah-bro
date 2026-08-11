@@ -1,16 +1,21 @@
 {
-  "name": "berempah-bros",
+  "name": "berempah-bros-site",
   "version": "1.0.0",
-  "description": "",
+  "description": "Berempah Bros brand website \u2014 data-driven static site",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build.mjs",
+    "test": "node test.mjs",
+    "audit": "node audit.mjs",
+    "dev": "node tools/serve.mjs",
+    "admin": "node tools/serve.mjs & echo Open http://localhost:5000/admin/"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "playwright": "^1.62.1"
-  }
+  },
+  "private": true
 }

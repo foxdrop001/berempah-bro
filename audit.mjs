@@ -50,15 +50,17 @@ for (const a of anchors) {
   if (a.href.startsWith('#')) {
     const exists = await page.evaluate(sel => !!document.getElementById(sel), a.href.slice(1));
     if (!exists) issues.push(`DEAD ANCHOR: ${a.href} ("${a.text}")`);
-  } else if (/^(\.\.\/)?([\w-]+\/)?(#[\w-]+)?$/.test(a.href) || /^[\w-]+\.html(#[\w-]+)?$/.test(a.href) || a.href === './' || a.href === '../') {
+  } else if (/^(\.\/|(\.\.\/)*)([\w-]+\/)*(index\.html)?(#[\w-]+)?$/.test(a.href) || /^(\.\.\/)*[\w-]+\.html(#[\w-]+)?$/.test(a.href)) {
     const clean = a.href.split('#')[0];
     const { existsSync } = await import('fs');
-    let target;
-    if (clean === '' ) target = null;
-    else if (clean === './' || clean === '../') target = path.join(here, path.dirname(target0), clean, 'index.html');
-    else if (clean.endsWith('.html')) target = path.join(here, path.dirname(target0), clean);
-    else target = path.join(here, path.dirname(target0), clean, 'index.html');
-    if (target && !existsSync(target)) issues.push(`DEAD PAGE LINK: ${a.href}`);
+    const dir = path.dirname(path.join(here, target0));
+    let target = null;
+    if (clean !== '') {
+      target = clean.endsWith('.html')
+        ? path.resolve(dir, clean)
+        : path.resolve(dir, clean, 'index.html');
+    }
+    if (target && !existsSync(target)) issues.push(`DEAD PAGE LINK: ${a.href} (looked for ${path.relative(here, target)})`);
   } else if (a.href.startsWith('mailto:') || a.href.startsWith('tel:')) {
     if (!/^mailto:[^@\s]+@[^@\s]+\.[^@\s?]+(\?.*)?$/.test(a.href) && a.href.startsWith('mailto:')) issues.push(`MALFORMED MAILTO: ${a.href}`);
   } else if (a.href.startsWith('http')) {

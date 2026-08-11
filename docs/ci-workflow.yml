@@ -1,0 +1,68 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Build from data/site.json
+        run: npm run build
+
+      - name: Fail if the build changed committed files
+        run: |
+          if [ -n "$(git status --porcelain -- ':!sitemap.xml')" ]; then
+            echo "::error::Generated output differs from what was committed. Run 'npm run build' locally and commit the result."
+            git --no-pager diff --stat
+            exit 1
+          fi
+
+      - name: Data integrity + page audits
+        run: npm test
+
+      - name: Upload audit screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-screenshots
+          path: qa/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  links:
+    runs-on: ubuntu-latest
+    needs: verify
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check external links still resolve
+        run: |
+          fails=0
+          for url in \
+            "https://berempahbros.oddle.me/" \
+            "https://www.instagram.com/berempahbros/" \
+            "https://www.instagram.com/gepukguys.sg/"; do
+            code=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 25 -A 'Mozilla/5.0' "$url" || echo 000)
+            echo "$code  $url"
+            [ "$code" = "200" ] || fails=$((fails+1))
+          done
+          # informational only: third parties rate-limit CI runners
+          echo "non-200 responses: $fails"

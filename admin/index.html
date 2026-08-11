@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Content Dashboard — Berempah Bros</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5EBD8; --paper-2:#EEDFC4; --ink:#281414; --ink-70:#543C34;
+    --orange:#F2701D; --orange-light:#FCA91B; --deep:#A64809;
+    --line:#D9C6A2; --ok:#2E6B3F; --bad:#B3261E; --white:#fff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Karla',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;font-size:15px}
+  a{color:var(--deep)}
+  header{background:var(--ink);color:var(--paper);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+  header h1{font-size:1.05rem;letter-spacing:.02em}
+  header .sub{font-size:.78rem;color:#CDB995}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+  .tab{padding:9px 16px;border:2px solid var(--ink);background:var(--paper-2);cursor:pointer;font-weight:700;font-size:.85rem;border-radius:4px}
+  .tab[aria-selected="true"]{background:var(--orange);color:var(--ink)}
+  .panel[hidden]{display:none}
+  .card{background:var(--white);border:2px solid var(--ink);border-radius:6px;padding:18px;margin-bottom:16px}
+  .card h3{font-size:1rem;margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .muted{color:var(--ink-70);font-size:.85rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+  label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-70);margin-bottom:4px}
+  input,select,textarea{width:100%;font:inherit;padding:9px 11px;border:2px solid var(--line);border-radius:4px;background:var(--white);color:var(--ink);min-height:42px}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--orange);outline-offset:1px;border-color:var(--ink)}
+  input[aria-invalid="true"]{border-color:var(--bad);background:#FDECEA}
+  textarea{min-height:76px;resize:vertical}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  button{font:inherit;font-weight:700;cursor:pointer;border:2px solid var(--ink);border-radius:4px;padding:10px 18px;background:var(--paper-2);min-height:42px}
+  button.primary{background:var(--orange)}
+  button.ghost{background:var(--white)}
+  button.danger{background:#FDECEA;border-color:var(--bad);color:var(--bad)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .pill{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1.5px solid var(--ink);background:var(--paper-2)}
+  .pill.live{background:#DFF0E3;border-color:var(--ok);color:var(--ok)}
+  .pill.draft{background:var(--paper-2)}
+  .bar{position:sticky;bottom:0;background:var(--ink);color:var(--paper);padding:12px 24px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;z-index:20}
+  .bar .status{font-size:.85rem;color:#CDB995}
+  .err{color:var(--bad);font-size:.8rem;margin-top:4px;font-weight:600}
+  .issues{background:#FDECEA;border:2px solid var(--bad);border-radius:4px;padding:12px;margin-bottom:16px}
+  .issues li{margin-left:18px}
+  details.help{background:var(--paper-2);border:2px solid var(--line);border-radius:4px;padding:12px 14px;margin-bottom:16px}
+  details.help summary{cursor:pointer;font-weight:700}
+  details.help p, details.help li{font-size:.88rem;margin-top:8px}
+  details.help li{margin-left:18px}
+  code{background:var(--paper-2);padding:1px 5px;border-radius:3px;font-size:.85em}
+  .dim{opacity:.55}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Berempah Bros — Content Dashboard</h1>
+    <p class="sub">Edit menu, outlets, promos and settings. Changes publish to the live site.</p>
+  </div>
+  <div class="row">
+    <span id="connState" class="pill">Not connected</span>
+    <button class="ghost" id="btnConnect" type="button">Connect GitHub</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <details class="help">
+    <summary>How this works (read once)</summary>
+    <p>This dashboard edits one file — <code>data/site.json</code> — which is the single source of truth for the website's menu, outlets and promotions.</p>
+    <ul>
+      <li><b>Save &amp; Publish</b> commits the file to GitHub. The site rebuilds and goes live automatically in about a minute.</li>
+      <li><b>Download</b> saves the file to your computer instead, if a developer prefers to review it first.</li>
+      <li>Everything is checked before saving — bad postcodes, malformed prices or coordinates outside Singapore are blocked.</li>
+    </ul>
+    <p><b>Connecting GitHub:</b> create a fine-grained personal access token at
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings</a>
+      with access limited to the <code>berempah-bro</code> repository and <b>Contents: Read and write</b> permission.
+      The token is stored only in this browser and never leaves it except to talk to GitHub.
+      Use a private device, and revoke the token if the device is shared.</p>
+  </details>
+
+  <div id="issues" class="issues" hidden>
+    <b>Fix these before saving:</b>
+    <ul id="issueList"></ul>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-panel="pOutlets">Outlets</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="pMenu">Menu &amp; Prices</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="pPromo">Promotion</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="pSettings">Settings</button>
+  </div>
+
+  <section class="panel" id="pOutlets" role="tabpanel">
+    <div id="outletList"></div>
+    <button class="ghost" id="btnAddOutlet" type="button">+ Add outlet</button>
+  </section>
+
+  <section class="panel" id="pMenu" role="tabpanel" hidden>
+    <div id="menuList"></div>
+    <div class="card">
+      <h3>Sides <span class="muted">(à-la-carte prices)</span></h3>
+      <div id="sidesList" class="grid"></div>
+    </div>
+    <div class="card">
+      <h3>Set add-ons <span class="muted">(cheaper modifier prices inside a set)</span></h3>
+      <div id="addonsList" class="grid"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="pPromo" role="tabpanel" hidden>
+    <div class="card">
+      <h3>Promotion banner <span id="promoState" class="pill">—</span></h3>
+      <p class="muted">Shown above the menu. With an end date it counts down and hides itself automatically when it expires.</p>
+      <div class="grid">
+        <div><label for="pmActive">Status</label>
+          <select id="pmActive"><option value="true">Running</option><option value="false">Off</option></select></div>
+        <div><label for="pmKicker">Small label</label><input id="pmKicker"></div>
+        <div><label for="pmTitle">Headline</label><input id="pmTitle"></div>
+        <div><label for="pmCode">Promo code</label><input id="pmCode"></div>
+        <div><label for="pmCta">Button text</label><input id="pmCta"></div>
+        <div><label for="pmEnds">Ends (blank = no end date)</label><input id="pmEnds" type="datetime-local"></div>
+      </div>
+      <div style="margin-top:12px"><label for="pmDesc">Description — include the conditions</label><textarea id="pmDesc"></textarea></div>
+      <div style="margin-top:12px"><label for="pmUrl">Link</label><input id="pmUrl" type="url"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="pSettings" role="tabpanel" hidden>
+    <div class="card">
+      <h3>Analytics</h3>
+      <p class="muted">Paste the GA4 Measurement ID (looks like <code>G-XXXXXXXXXX</code>). Leave blank to keep tracking off — events are recorded locally either way.</p>
+      <div class="grid">
+        <div><label for="stGa4">GA4 Measurement ID</label><input id="stGa4" placeholder="G-XXXXXXXXXX"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Contact &amp; ordering</h3>
+      <div class="grid">
+        <div><label for="stEmail">Enquiries email</label><input id="stEmail" type="email"></div>
+        <div><label for="stOrder">Ordering store URL</label><input id="stOrder" type="url"></div>
+        <div><label for="stPhone">Catering phone</label><input id="stPhone"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Social</h3>
+      <p class="muted">Leave TikTok/Facebook blank until official accounts exist — blank links are hidden, not broken.</p>
+      <div class="grid">
+        <div><label for="stIg">Instagram</label><input id="stIg" type="url"></div>
+        <div><label for="stIgSis">Gepuk Guys Instagram</label><input id="stIgSis" type="url"></div>
+        <div><label for="stTiktok">TikTok</label><input id="stTiktok" type="url" placeholder="none yet"></div>
+        <div><label for="stFb">Facebook</label><input id="stFb" type="url" placeholder="none yet"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="bar">
+  <span class="status" id="status">Loading…</span>
+  <div class="row">
+    <button class="ghost" id="btnDownload" type="button">Download file</button>
+    <button class="primary" id="btnSave" type="button" disabled>Save &amp; Publish</button>
+  </div>
+</div>
+
+<script>
+const REPO = { owner: 'effortxd', name: 'berempah-bro', branch: 'main', path: 'data/site.json' };
+const LS_TOKEN = 'bb_admin_token';
+let data = null, sha = null, dirty = false;
+
+const $ = (id) => document.getElementById(id);
+const setStatus = (msg) => { $('status').textContent = msg; };
+const markDirty = () => { dirty = true; $('btnSave').disabled = !localStorage.getItem(LS_TOKEN); setStatus('Unsaved changes'); };
+
+/* ---------------- load ---------------- */
+async function load() {
+  try {
+    const res = await fetch('../data/site.json?cb=' + Date.now());
+    data = await res.json();
+    render();
+    setStatus('Loaded. Edit anything above.');
+  } catch (e) {
+    setStatus('Could not load data/site.json — open this page through a web server, not a file:// path.');
+  }
+  const tok = localStorage.getItem(LS_TOKEN);
+  if (tok) { $('connState').textContent = 'GitHub connected'; $('connState').classList.add('live'); $('btnConnect').textContent = 'Disconnect'; }
+}
+
+/* ---------------- validation (mirrors test.mjs) ---------------- */
+function validate() {
+  const errs = [];
+  const seen = new Set();
+  data.outlets.forEach((o) => {
+    const w = o.name || o.slug || 'new outlet';
+    if (!/^[a-z0-9-]+$/.test(o.slug || '')) errs.push(`${w}: web address must be lowercase letters, numbers and hyphens only`);
+    if (seen.has(o.slug)) errs.push(`${w}: duplicate web address "${o.slug}"`);
+    seen.add(o.slug);
+    if (!o.published) return;
+    ['name', 'address', 'mapsQuery'].forEach((f) => { if (!o[f]) errs.push(`${w}: ${f} is required`); });
+    if (!/^\d{6}$/.test(String(o.postal || ''))) errs.push(`${w}: postal code must be 6 digits`);
+    const { lat, lng } = o.geo || {};
+    if (typeof lat !== 'number' || typeof lng !== 'number') errs.push(`${w}: coordinates required (get them from onemap.gov.sg)`);
+    else if (lat < 1.15 || lat > 1.48 || lng < 103.6 || lng > 104.1) errs.push(`${w}: coordinates are outside Singapore`);
+    if (o.hours.open && !/^\d{2}:\d{2}$/.test(o.hours.open)) errs.push(`${w}: opening time must look like 10:30`);
+    if (o.hours.close && !/^\d{2}:\d{2}$/.test(o.hours.close)) errs.push(`${w}: closing time must look like 20:30`);
+    if (o.phone && !/^\+65 ?\d{4} ?\d{4}$/.test(o.phone)) errs.push(`${w}: phone must look like +65 9058 9674`);
+  });
+  const price = (v) => /^\d+\.\d{2}$/.test(String(v));
+  data.menu.sections.forEach((s) => s.items.forEach((i) => {
+    if (!price(i.price)) errs.push(`${i.name}: price must look like 9.00`);
+    if (!i.name) errs.push('a menu item has no name');
+  }));
+  [...data.menu.sides, ...data.menu.setAddOns].forEach((s) => {
+    if (!price(s.price)) errs.push(`${s.name}: price must look like 1.80`);
+  });
+  if (data.promo.active && !data.promo.code) errs.push('Promotion is running but has no code');
+  if (data.promo.active && !data.promo.title) errs.push('Promotion is running but has no headline');
+  const ga = data.site.analytics.ga4MeasurementId;
+  if (ga && !/^G-[A-Z0-9]{6,}$/i.test(ga)) errs.push('GA4 Measurement ID should look like G-XXXXXXXXXX');
+
+  const box = $('issues'), list = $('issueList');
+  list.innerHTML = errs.map((e) => `<li>${e}</li>`).join('');
+  box.hidden = errs.length === 0;
+  return errs;
+}
+
+/* ---------------- render ---------------- */
+function field(label, value, oninput, opts = {}) {
+  const id = 'f' + Math.random().toString(36).slice(2, 8);
+  const el = document.createElement('div');
+  el.innerHTML = `<label for="${id}">${label}</label>` +
+    (opts.type === 'textarea'
+      ? `<textarea id="${id}"></textarea>`
+      : `<input id="${id}" ${opts.type ? `type="${opts.type}"` : ''} ${opts.placeholder ? `placeholder="${opts.placeholder}"` : ''}>`);
+  const input = el.querySelector('input,textarea');
+  input.value = value ?? '';
+  input.addEventListener('input', () => { oninput(input.value); markDirty(); validate(); });
+  return el;
+}
+
+function render() {
+  /* outlets */
+  const wrap = $('outletList');
+  wrap.innerHTML = '';
+  data.outlets.forEach((o, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card' + (o.published ? '' : ' dim');
+    card.innerHTML = `<h3>${o.name || 'New outlet'}
+        <span class="pill ${o.published ? 'live' : 'draft'}">${o.published ? 'On the site' : 'Draft'}</span>
+        <span class="pill">${o.brand || ''}</span></h3>
+      <p class="muted">Web address: /locations/${o.slug || '…'}/ — don't change this after the outlet is live.</p>`;
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    grid.append(
+      field('Outlet name', o.name, (v) => o.name = v),
+      field('Brand', o.brand, (v) => o.brand = v),
+      field('Area label', o.badge, (v) => o.badge = v),
+      field('Web address (slug)', o.slug, (v) => o.slug = v),
+      field('Street address + unit', o.address, (v) => o.address = v),
+      field('Postal code', o.postal, (v) => o.postal = v),
+      field('Hours shown to customers', o.hours.display, (v) => o.hours.display = v, { placeholder: 'Daily 10:30am – 8:30pm' }),
+      field('Opens (24h)', o.hours.open, (v) => o.hours.open = v || null, { placeholder: '10:30' }),
+      field('Closes (24h)', o.hours.close, (v) => o.hours.close = v || null, { placeholder: '20:30' }),
+      field('Nearest MRT / transport', o.transport, (v) => o.transport = v),
+      field('Phone', o.phone, (v) => o.phone = v || null, { placeholder: '+65 9058 9674' }),
+      field('Google Maps search text', o.mapsQuery, (v) => o.mapsQuery = v),
+      field('Latitude', o.geo?.lat, (v) => { o.geo = o.geo || {}; o.geo.lat = parseFloat(v); }),
+      field('Longitude', o.geo?.lng, (v) => { o.geo = o.geo || {}; o.geo.lng = parseFloat(v); }),
+    );
+    card.append(grid);
+    const note = field('Extra note (optional)', o.note, (v) => o.note = v || undefined, { type: 'textarea' });
+    note.style.marginTop = '12px';
+    card.append(note);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.style.marginTop = '14px';
+    const toggle = document.createElement('button');
+    toggle.className = 'ghost';
+    toggle.textContent = o.published ? 'Take off the site' : 'Publish to the site';
+    toggle.onclick = () => { o.published = !o.published; markDirty(); render(); validate(); };
+    const del = document.createElement('button');
+    del.className = 'danger';
+    del.textContent = 'Delete';
+    del.onclick = () => {
+      if (!confirm(`Delete ${o.name || 'this outlet'} completely?\n\nIf the stall might reopen, use "Take off the site" instead — it keeps the details.`)) return;
+      data.outlets.splice(idx, 1); markDirty(); render(); validate();
+    };
+    const geo = document.createElement('button');
+    geo.className = 'ghost';
+    geo.textContent = 'Look up coordinates';
+    geo.onclick = async () => {
+      if (!/^\d{6}$/.test(String(o.postal || ''))) return alert('Enter a 6-digit postal code first.');
+      geo.disabled = true; geo.textContent = 'Looking up…';
+      try {
+        const r = await fetch(`https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${o.postal}&returnGeom=Y&getAddrDetails=Y&pageNum=1`);
+        const j = await r.json();
+        const hit = j.results && j.results[0];
+        if (!hit) throw new Error('no result');
+        if (!confirm(`OneMap found:\n\n${hit.BUILDING}\n${hit.ADDRESS}\n\nUse these coordinates?`)) return;
+        o.geo = { lat: parseFloat(hit.LATITUDE), lng: parseFloat(hit.LONGITUDE) };
+        markDirty(); render(); validate();
+      } catch (e) { alert('Lookup failed — enter the coordinates manually from onemap.gov.sg'); }
+      finally { geo.disabled = false; geo.textContent = 'Look up coordinates'; }
+    };
+    row.append(toggle, geo, del);
+    card.append(row);
+    wrap.append(card);
+  });
+
+  /* menu */
+  const ml = $('menuList');
+  ml.innerHTML = '';
+  data.menu.sections.forEach((sec) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<h3>${sec.name}</h3>`;
+    sec.items.forEach((it) => {
+      const g = document.createElement('div');
+      g.className = 'grid';
+      g.style.marginBottom = '10px';
+      g.append(
+        field('Item name', it.name, (v) => it.name = v),
+        field('Price', it.price, (v) => it.price = v, { placeholder: '9.00' }),
+        field('Card description', it.desc, (v) => it.desc = v),
+      );
+      card.append(g);
+    });
+    ml.append(card);
+  });
+  const sl = $('sidesList'); sl.innerHTML = '';
+  data.menu.sides.forEach((s) => sl.append(field(s.name, s.price, (v) => s.price = v)));
+  const al = $('addonsList'); al.innerHTML = '';
+  data.menu.setAddOns.forEach((s) => al.append(field(s.name + ' (in a set)', s.price, (v) => s.price = v)));
+
+  /* promo */
+  $('pmActive').value = String(!!data.promo.active);
+  $('promoState').textContent = data.promo.active ? 'Running' : 'Off';
+  $('promoState').className = 'pill ' + (data.promo.active ? 'live' : 'draft');
+  $('pmKicker').value = data.promo.kicker || '';
+  $('pmTitle').value = data.promo.title || '';
+  $('pmCode').value = data.promo.code || '';
+  $('pmCta').value = data.promo.cta || '';
+  $('pmDesc').value = data.promo.desc || '';
+  $('pmUrl').value = data.promo.url || '';
+  $('pmEnds').value = data.promo.endsISO ? data.promo.endsISO.slice(0, 16) : '';
+
+  /* settings */
+  $('stGa4').value = data.site.analytics.ga4MeasurementId || '';
+  $('stEmail').value = data.site.email || '';
+  $('stOrder').value = data.site.orderUrl || '';
+  $('stPhone').value = data.site.cateringPhone || '';
+  $('stIg').value = data.site.instagram || '';
+  $('stIgSis').value = data.site.sisterBrandInstagram || '';
+  $('stTiktok').value = data.site.tiktok || '';
+  $('stFb').value = data.site.facebook || '';
+}
+
+/* simple inputs bind directly */
+const bind = (id, apply) => $(id).addEventListener('input', (e) => { apply(e.target.value); markDirty(); validate(); });
+bind('pmKicker', (v) => data.promo.kicker = v);
+bind('pmTitle', (v) => data.promo.title = v);
+bind('pmCode', (v) => data.promo.code = v);
+bind('pmCta', (v) => data.promo.cta = v);
+bind('pmDesc', (v) => data.promo.desc = v);
+bind('pmUrl', (v) => data.promo.url = v);
+bind('pmEnds', (v) => data.promo.endsISO = v ? new Date(v).toISOString() : null);
+$('pmActive').addEventListener('change', (e) => {
+  data.promo.active = e.target.value === 'true';
+  $('promoState').textContent = data.promo.active ? 'Running' : 'Off';
+  $('promoState').className = 'pill ' + (data.promo.active ? 'live' : 'draft');
+  markDirty(); validate();
+});
+bind('stGa4', (v) => data.site.analytics.ga4MeasurementId = v.trim() || null);
+bind('stEmail', (v) => data.site.email = v.trim());
+bind('stOrder', (v) => data.site.orderUrl = v.trim());
+bind('stPhone', (v) => data.site.cateringPhone = v.trim());
+bind('stIg', (v) => data.site.instagram = v.trim());
+bind('stIgSis', (v) => data.site.sisterBrandInstagram = v.trim());
+bind('stTiktok', (v) => data.site.tiktok = v.trim() || null);
+bind('stFb', (v) => data.site.facebook = v.trim() || null);
+
+/* tabs */
+document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach((x) => x.setAttribute('aria-selected', String(x === t)));
+  document.querySelectorAll('.panel').forEach((p) => p.hidden = p.id !== t.dataset.panel);
+}));
+
+/* add outlet */
+$('btnAddOutlet').addEventListener('click', () => {
+  data.outlets.push({
+    slug: '', brand: 'Berempah Bros', name: '', badge: '', address: '', postal: '',
+    hours: { display: 'Opening hours to be confirmed', open: null, close: null },
+    transport: '', phone: null, geo: { lat: 0, lng: 0 }, mapsQuery: '',
+    opened: new Date().toISOString().slice(0, 7), published: false,
+  });
+  markDirty(); render(); validate();
+  window.scrollTo(0, document.body.scrollHeight);
+});
+
+/* connect / disconnect */
+$('btnConnect').addEventListener('click', () => {
+  if (localStorage.getItem(LS_TOKEN)) {
+    if (!confirm('Disconnect GitHub from this browser?')) return;
+    localStorage.removeItem(LS_TOKEN);
+    $('connState').textContent = 'Not connected';
+    $('connState').classList.remove('live');
+    $('btnConnect').textContent = 'Connect GitHub';
+    $('btnSave').disabled = true;
+    return;
+  }
+  const t = prompt('Paste your GitHub personal access token.\n\nFine-grained token, this repository only, Contents: Read and write.\nIt is stored only in this browser.');
+  if (!t) return;
+  localStorage.setItem(LS_TOKEN, t.trim());
+  $('connState').textContent = 'GitHub connected';
+  $('connState').classList.add('live');
+  $('btnConnect').textContent = 'Disconnect';
+  $('btnSave').disabled = !dirty;
+  setStatus('Connected. Save & Publish is ready.');
+});
+
+/* download */
+$('btnDownload').addEventListener('click', () => {
+  if (validate().length) return alert('Fix the listed problems first.');
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'site.json';
+  a.click();
+  setStatus('Downloaded. Give this file to your developer to commit.');
+});
+
+/* save via GitHub Contents API */
+$('btnSave').addEventListener('click', async () => {
+  if (validate().length) return alert('Fix the listed problems first.');
+  const token = localStorage.getItem(LS_TOKEN);
+  if (!token) return alert('Connect GitHub first.');
+  const summary = prompt('Short note about this change (shown in the site history):', 'content: update site data');
+  if (summary === null) return;
+
+  $('btnSave').disabled = true;
+  setStatus('Saving…');
+  const api = `https://api.github.com/repos/${REPO.owner}/${REPO.name}/contents/${REPO.path}`;
+  const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' };
+  try {
+    const cur = await fetch(`${api}?ref=${REPO.branch}`, { headers });
+    if (!cur.ok) throw new Error(cur.status === 401 ? 'Token rejected — check it has Contents: Read and write on this repo.' : `GitHub error ${cur.status}`);
+    const meta = await cur.json();
+    const body = {
+      message: summary || 'content: update site data',
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2) + '\n'))),
+      sha: meta.sha,
+      branch: REPO.branch,
+    };
+    const put = await fetch(api, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!put.ok) throw new Error(`Save failed (${put.status}) — someone may have edited the file at the same time. Reload and try again.`);
+    dirty = false;
+    setStatus('Saved. The site rebuilds and goes live in about a minute.');
+  } catch (e) {
+    setStatus('Not saved.');
+    alert(e.message);
+  } finally {
+    $('btnSave').disabled = !dirty;
+  }
+});
+
+addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+load();
+</script>
+
+</body>
+</html>
