@@ -1,0 +1,11 @@
+# Normalise text files to LF in the repository.
+# The build writes LF; without this, Windows checkouts store CRLF and every
+# build looks like a change, which breaks the CI drift check.
+* text=auto eol=lf
+
+# Binary assets must never be touched.
+*.webp binary
+*.png binary
+*.jpg binary
+*.woff2 binary
+*.otf binary
