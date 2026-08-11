@@ -55,7 +55,7 @@ const locCards = outlets.map((o, i) => {
   const brandStyle = o.brand !== 'Berempah Bros' ? ' style="border-color:var(--pandan)"' : '';
   const numStyle = o.brand !== 'Berempah Bros' ? ' style="background:var(--pandan);color:#fff"' : '';
   return `        <article class="loc-card reveal"${hoursAttr}${brandStyle}>
-          <span class="loc-num"${numStyle}>NO. ${num} — ${esc(o.badge).toUpperCase()}</span>
+          <span class="loc-num"${numStyle}>NO. ${num} — ${esc(String(o.badge).toUpperCase())}</span>
           <h3><a href="${o.slug}/" style="text-decoration:none">${esc(o.name)}</a></h3>
           <p class="loc-line">${icon.pin} ${esc(o.address)}, S(${o.postal})</p>
           <p class="loc-line">${icon.clock} ${esc(o.hours.display)}</p>
