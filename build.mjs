@@ -29,7 +29,9 @@ function region(file, name, html) {
   const src = readFileSync(p, 'utf8');
   const re = new RegExp(`(<!-- BUILD:${name} -->)[\\s\\S]*?(<!-- /BUILD:${name} -->)`);
   if (!re.test(src)) throw new Error(`Missing BUILD:${name} markers in ${file}`);
-  const out = src.replace(re, `$1\n${html.trimEnd()}\n$2`);
+  // Replacer must be a function: generated content contains prices like "$1.80",
+  // and in a string replacement `$1` would expand to a capture group.
+  const out = src.replace(re, (_match, open, close) => `${open}\n${html.trimEnd()}\n${close}`);
   if (out !== src) { writeFileSync(p, out); touched++; console.log(`  updated ${file} → ${name}`); }
 }
 
