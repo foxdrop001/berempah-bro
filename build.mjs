@@ -39,7 +39,7 @@ if (dupes.length) throw new Error(`Duplicate outlet slug(s): ${[...new Set(dupes
 const mapsUrl = (o) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.mapsQuery)}`;
 // Full name for structured data: "Brand — Location", but don't repeat the
 // brand when the outlet name already leads with it (e.g. Gepuk Guys' outlet).
-const fullName = (o) => o.name.startsWith(o.brand) ? o.name : `${o.brand} — ${o.name}`;
+const fullName = (o) => (o.brand && o.name.startsWith(o.brand)) ? o.name : [o.brand, o.name].filter(Boolean).join(' — ');
 
 /** Replace a marked region inside a file. */
 function region(file, name, html) {
@@ -100,11 +100,12 @@ region('locations/index.html', 'outlets', [locCards, comingCards].filter(Boolean
  * 2. Menu page — cards, sides, builder, note
  * ------------------------------------------------------------------ */
 const mains = menu.sections.flatMap((s) => s.items).filter((i) => i.slug !== 'feast2');
-// Optional fields default sanely so an item added or edited through the
-// dashboard (which does not surface image/tags) can never crash the build or
-// emit a broken <img>; image falls back to the slug.
+// Optional fields default sanely so an item edited through the dashboard
+// (which does not surface image/tags) still builds; image falls back to the
+// slug, and an item with neither fails loudly rather than emitting a broken img.
 const menuCards = mains.map((it) => {
   const image = it.image || it.slug;
+  if (!image) throw new Error(`menu item ${it.name || '(unnamed)'}: needs an image or a slug`);
   const tags = Array.isArray(it.tags) ? it.tags : [];
   return `        <article class="chit reveal">
           <div class="chit-photo">
@@ -183,7 +184,7 @@ region('contact/index.html', 'catering-outlets',
  * ------------------------------------------------------------------ */
 const totalStalls = outlets.length + comingSoon.length;
 const ayam = mains.find((m) => m.slug === 'ayam') ?? mains[0];
-const brandCount = new Set(data.outlets.map((o) => o.brand)).size;
+const brandCount = new Set(outlets.map((o) => o.brand)).size;
 region('index.html', 'hero-stats', `        <div><b>16</b>spices in the rempah</div>
         <div><b>${totalStalls}</b>stalls · ${brandCount} brands</div>
         <div><b>$${ayam.price.replace('.00', '')}</b>signature ayam set</div>
