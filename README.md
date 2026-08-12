@@ -97,7 +97,14 @@ the custom-domain migration checklist.
 
 ---
 
-## Still to confirm with the brand
+## Project status
+
+[CHANGELOG.md](CHANGELOG.md) records what has been built, the defects found
+while testing and how they were fixed, and what is deliberately left for later.
+[docs/roadmap.md](docs/roadmap.md) covers the forward plan (loyalty, accounts,
+direct ordering, CRM) with effort and business value.
+
+### Still to confirm with the brand
 
 Search the HTML for `PLACEHOLDER`:
 
@@ -107,3 +114,6 @@ Search the HTML for `PLACEHOLDER`:
 4. **Instagram gallery** — three tiles link to real posts; three link to the profile
 5. **Font licence** — Meaty Bliss (TimelessType.co) is self-hosted from the brand's
    artwork package; confirm the licence covers web embedding
+6. **GA4 measurement ID** — analytics stays dormant until one is set in `data/site.json`
+7. **Form activation** — one click on the FormSubmit activation email enables the
+   contact form and Crunch Club signups
