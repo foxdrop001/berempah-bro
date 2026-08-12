@@ -1,3 +1,8 @@
 node_modules/
 qa/
 PROJECT-NOTES.md
+
+# CI workflow lives here but cannot be pushed by the deploy credential
+# (needs a token with "workflow" scope). Enable it once via the GitHub UI —
+# see README. Source of truth: docs/ci-workflow.yml
+.github/

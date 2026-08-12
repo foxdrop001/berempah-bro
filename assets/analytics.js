@@ -70,6 +70,9 @@
 
   // Form submissions worth counting.
   document.addEventListener('submit', function (e) {
+    // The page's own validation may cancel this; a rejected attempt is not a
+    // conversion, so don't count it.
+    if (e.defaultPrevented) return;
     var f = e.target;
     if (!f || !f.id) return;
     if (f.id === 'cateringForm') track('catering_submit', { headcount: (f.querySelector('[name="headcount"]') || {}).value });
