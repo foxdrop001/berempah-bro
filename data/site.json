@@ -4,6 +4,7 @@
     "name": "Berempah Bros",
     "tagline": "Spice. Crunch. Shiok.",
     "baseUrl": "https://effortxd.github.io/berempah-bro",
+    "contentUpdated": "2026-08-12",
     "email": "berempahbros.general@gmail.com",
     "orderUrl": "https://berempahbros.oddle.me/",
     "instagram": "https://www.instagram.com/berempahbros/",
@@ -12,9 +13,10 @@
     "cateringPhoneE164": "+6590589674",
     "tiktok": null,
     "facebook": null,
-    "analytics": { "ga4MeasurementId": null }
+    "analytics": {
+      "ga4MeasurementId": null
+    }
   },
-
   "menu": {
     "_source": "Live delivery menu at berempahbros.oddle.me — verify before editing. Last verified 2026-08-08.",
     "deliveryFee": "6.80",
@@ -22,36 +24,116 @@
       {
         "name": "Signature Mains",
         "items": [
-          { "slug": "ayam", "name": "Ayam Berempah", "price": "9.00", "image": "ayam", "tags": ["Bestseller", "Thigh or Breast"], "desc": "The signature. Overnight 16-spice marinade, fried golden, buried in crunch.", "menuDesc": "Signature tender chicken topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar &amp; very power sambal belachan" },
-          { "slug": "pork", "name": "Pork Berempah", "price": "10.20", "image": "pork", "tags": ["Spicy"], "desc": "Super tender fried pork loin chop with deep rempah flavour and serious crackle.", "menuDesc": "Super tender fried pork loin chop topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar &amp; very power sambal belachan" },
-          { "slug": "fish", "name": "Fish Berempah", "price": "10.20", "image": "fish", "tags": ["Spicy"], "desc": "Flaky fish in a light rempah crust — all the fire and crunch, lighter on its feet.", "menuDesc": "Signature fried fish topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar &amp; very power sambal belachan" },
-          { "slug": "unagi", "name": "Unagi Berempah", "price": "14.40", "image": "unagi", "tags": ["Premium"], "desc": "The premium plate — briny, buttery unagi meets bold berempah spices.", "menuDesc": "Melt-in-the-mouth tender Japanese unagi fried to a crisp perfection with our rempah batter, topped with typhoon shelter crumbs" }
+          {
+            "slug": "ayam",
+            "name": "Ayam Berempah",
+            "price": "9.00",
+            "image": "ayam",
+            "tags": [
+              "Bestseller",
+              "Thigh or Breast"
+            ],
+            "desc": "The signature. Overnight 16-spice marinade, fried golden, buried in crunch.",
+            "menuDesc": "Signature tender chicken topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar &amp; very power sambal belachan"
+          },
+          {
+            "slug": "pork",
+            "name": "Pork Berempah",
+            "price": "10.20",
+            "image": "pork",
+            "tags": [
+              "Spicy"
+            ],
+            "desc": "Super tender fried pork loin chop with deep rempah flavour and serious crackle.",
+            "menuDesc": "Super tender fried pork loin chop topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar &amp; very power sambal belachan"
+          },
+          {
+            "slug": "fish",
+            "name": "Fish Berempah",
+            "price": "10.20",
+            "image": "fish",
+            "tags": [
+              "Spicy"
+            ],
+            "desc": "Flaky fish in a light rempah crust — all the fire and crunch, lighter on its feet.",
+            "menuDesc": "Signature fried fish topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar &amp; very power sambal belachan"
+          },
+          {
+            "slug": "unagi",
+            "name": "Unagi Berempah",
+            "price": "14.40",
+            "image": "unagi",
+            "tags": [
+              "Premium"
+            ],
+            "desc": "The premium plate — briny, buttery unagi meets bold berempah spices.",
+            "menuDesc": "Melt-in-the-mouth tender Japanese unagi fried to a crisp perfection with our rempah batter, topped with typhoon shelter crumbs"
+          }
         ]
       },
       {
         "name": "Party Platter",
         "items": [
-          { "slug": "feast2", "name": "Berempah Bros Feast For 2", "price": "25.80", "image": "feast", "tags": ["For Sharing"], "desc": "Two proteins with begedil, otah berempah, mushroom berempah, coconut rice, sambal, achar and crunchy crumbs.", "menuDesc": "A delightful feast for two featuring your choice of two proteins paired with crispy begedil, aromatic otah berempah, savory mushroom berempah, fragrant coconut rice with sambal, tangy achar and crunchy crumbs" }
+          {
+            "slug": "feast2",
+            "name": "Berempah Bros Feast For 2",
+            "price": "25.80",
+            "image": "feast",
+            "tags": [
+              "For Sharing"
+            ],
+            "desc": "Two proteins with begedil, otah berempah, mushroom berempah, coconut rice, sambal, achar and crunchy crumbs.",
+            "menuDesc": "A delightful feast for two featuring your choice of two proteins paired with crispy begedil, aromatic otah berempah, savory mushroom berempah, fragrant coconut rice with sambal, tangy achar and crunchy crumbs"
+          }
         ]
       }
     ],
     "sides": [
-      { "name": "Crispy Fried Egg", "price": "1.80" },
-      { "name": "Begedil", "price": "1.80" },
-      { "name": "Otah Berempah", "price": "2.40" },
-      { "name": "Mushroom Berempah", "price": "4.20" },
-      { "name": "Luncheon Meat", "price": "1.45" }
+      {
+        "name": "Crispy Fried Egg",
+        "price": "1.80"
+      },
+      {
+        "name": "Begedil",
+        "price": "1.80"
+      },
+      {
+        "name": "Otah Berempah",
+        "price": "2.40"
+      },
+      {
+        "name": "Mushroom Berempah",
+        "price": "4.20"
+      },
+      {
+        "name": "Luncheon Meat",
+        "price": "1.45"
+      }
     ],
     "setAddOns": [
-      { "name": "Crispy Fried Egg", "price": "1.40" },
-      { "name": "Begedil", "price": "1.40" },
-      { "name": "Otah Berempah", "price": "1.82" },
-      { "name": "Mushroom Berempah", "price": "3.16" }
+      {
+        "name": "Crispy Fried Egg",
+        "price": "1.40"
+      },
+      {
+        "name": "Begedil",
+        "price": "1.40"
+      },
+      {
+        "name": "Otah Berempah",
+        "price": "1.82"
+      },
+      {
+        "name": "Mushroom Berempah",
+        "price": "3.16"
+      }
     ],
-    "chickenParts": ["Thigh", "Breast"],
+    "chickenParts": [
+      "Thigh",
+      "Breast"
+    ],
     "note": "Prices from our <a href=\"https://berempahbros.oddle.me/\" target=\"_blank\" rel=\"noopener\">delivery menu</a> · stall counter prices may differ · Islandwide delivery $6.80 · Menu includes pork — not halal-certified"
   },
-
   "promo": {
     "active": true,
     "kicker": "First-Timer Deal",
@@ -62,14 +144,12 @@
     "cta": "Order with BEREMPAH6",
     "url": "https://berempahbros.oddle.me/"
   },
-
   "catering": {
     "headline": "Feed The Whole Kampung",
     "offer": "Bulk orders &amp; group buys: 15% off (capped at $25 off).",
     "source": "Official bulk-order poster artwork (1353_Berempah_Bros_Poster_Bulk Order_R1_FA)",
     "phone": "9058 9674"
   },
-
   "outlets": [
     {
       "slug": "beauty-world",
@@ -78,10 +158,17 @@
       "badge": "The Original",
       "address": "144 Upper Bukit Timah Road, #04-51",
       "postal": "588177",
-      "hours": { "display": "Daily 10:30am – 8:30pm", "open": "10:30", "close": "20:30" },
+      "hours": {
+        "display": "Daily 10:30am – 8:30pm",
+        "open": "10:30",
+        "close": "20:30"
+      },
       "transport": "Beauty World MRT · DT5",
       "phone": null,
-      "geo": { "lat": 1.3424126, "lng": 103.776539 },
+      "geo": {
+        "lat": 1.3424126,
+        "lng": 103.776539
+      },
       "mapsQuery": "Berempah Bros Beauty World Food Centre",
       "opened": "2026-01",
       "published": true
@@ -93,10 +180,17 @@
       "badge": "Sembawang",
       "address": "21 Canberra Link, #01-25",
       "postal": "756973",
-      "hours": { "display": "Daily 10:00am – 8:45pm", "open": "10:00", "close": "20:45" },
+      "hours": {
+        "display": "Daily 10:00am – 8:45pm",
+        "open": "10:00",
+        "close": "20:45"
+      },
       "transport": "Sembawang MRT · NS11 Exit D",
       "phone": "+65 9058 9674",
-      "geo": { "lat": 1.4482633, "lng": 103.822763 },
+      "geo": {
+        "lat": 1.4482633,
+        "lng": 103.822763
+      },
       "mapsQuery": "Berempah Bros Bukit Canberra Hawker Centre",
       "opened": "2026-02",
       "published": true
@@ -108,10 +202,17 @@
       "badge": "Sengkang",
       "address": "267 Compassvale Link, #01-02, Stall 5",
       "postal": "540267",
-      "hours": { "display": "Opening hours to be confirmed", "open": null, "close": null },
+      "hours": {
+        "display": "Opening hours to be confirmed",
+        "open": null,
+        "close": null
+      },
       "transport": "Next to Ranggung LRT",
       "phone": "+65 9630 3690",
-      "geo": { "lat": 1.3837444, "lng": 103.897046 },
+      "geo": {
+        "lat": 1.3837444,
+        "lng": 103.897046
+      },
       "mapsQuery": "Happy Hawkers 267 Compassvale Link",
       "opened": "2026-04",
       "published": true
@@ -123,10 +224,17 @@
       "badge": "Bidadari",
       "address": "202C Bidadari Park Drive",
       "postal": "363202",
-      "hours": { "display": "Opening hours to be confirmed", "open": null, "close": null },
+      "hours": {
+        "display": "Opening hours to be confirmed",
+        "open": null,
+        "close": null
+      },
       "transport": "Woodleigh MRT · NE11",
       "phone": null,
-      "geo": { "lat": 1.339791, "lng": 103.872013 },
+      "geo": {
+        "lat": 1.339791,
+        "lng": 103.872013
+      },
       "mapsQuery": "Woodleigh Village Hawker Centre",
       "opened": "2026-06",
       "published": true
@@ -138,10 +246,17 @@
       "badge": "Sister Brand",
       "address": "531 Bedok North Street 3, #01-680, Stall 3",
       "postal": "460531",
-      "hours": { "display": "Daily 10:30am – 10:30pm", "open": "10:30", "close": "22:30" },
+      "hours": {
+        "display": "Daily 10:30am – 10:30pm",
+        "open": "10:30",
+        "close": "22:30"
+      },
       "transport": "Bedok North",
       "phone": null,
-      "geo": { "lat": 1.3331299, "lng": 103.926153 },
+      "geo": {
+        "lat": 1.3331299,
+        "lng": 103.926153
+      },
       "mapsQuery": "Jofa Coffeeshop 531 Bedok North Street 3",
       "opened": "2026-07",
       "note": "Indonesian-style gepuk — no pork, no lard. Ayam $9.90 · Squid $10.90 · Duck Confit $16.50",
@@ -149,7 +264,6 @@
       "published": true
     }
   ],
-
   "_unpublishedOutletExample": {
     "_comment": "Copy this into the outlets array, set published:true, fill every field, then run `npm run build`.",
     "slug": "outlet-slug",
@@ -158,10 +272,17 @@
     "badge": "Area",
     "address": "Street address, #unit",
     "postal": "000000",
-    "hours": { "display": "Daily 10:00am – 9:00pm", "open": "10:00", "close": "21:00" },
+    "hours": {
+      "display": "Daily 10:00am – 9:00pm",
+      "open": "10:00",
+      "close": "21:00"
+    },
     "transport": "Nearest MRT",
     "phone": null,
-    "geo": { "lat": 0, "lng": 0 },
+    "geo": {
+      "lat": 0,
+      "lng": 0
+    },
     "mapsQuery": "Search text for Google Maps",
     "opened": "2026-01",
     "published": false

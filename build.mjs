@@ -21,6 +21,20 @@ const base = site.baseUrl.replace(/\/$/, '');
 let touched = 0;
 
 const esc = (s) => String(s).replace(/&(?![a-z#0-9]+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+// A slug becomes a directory name and a URL path. Anything outside this shape
+// could write files outside the project (e.g. "../../elsewhere") or produce a
+// broken URL, so refuse to build rather than trust the data file.
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+for (const o of data.outlets) {
+  if (!SLUG_RE.test(String(o.slug ?? ''))) {
+    throw new Error(
+      `Invalid outlet slug ${JSON.stringify(o.slug)} (outlet: ${o.name ?? 'unnamed'}).\n` +
+      '  Slugs must be lowercase letters, digits and single hyphens, e.g. "bukit-canberra".');
+  }
+}
+const dupes = data.outlets.map((o) => o.slug).filter((s, i, a) => a.indexOf(s) !== i);
+if (dupes.length) throw new Error(`Duplicate outlet slug(s): ${[...new Set(dupes)].join(', ')}`);
 const mapsUrl = (o) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.mapsQuery)}`;
 
 /** Replace a marked region inside a file. */
@@ -270,12 +284,19 @@ for (const o of outlets) {
 /* ------------------------------------------------------------------ *
  * 7. Sitemap
  * ------------------------------------------------------------------ */
-const today = process.env.BUILD_DATE || new Date().toISOString().slice(0, 10);
+// lastmod must NOT be "today": the build would then produce a different
+// sitemap on every calendar day, so a rebuild of unchanged content would look
+// like a change and fail CI's drift check. It reflects when the content was
+// last edited, which is what search engines actually want.
+const lastmod = process.env.BUILD_DATE || data.site.contentUpdated;
+if (!/^\d{4}-\d{2}-\d{2}$/.test(String(lastmod))) {
+  throw new Error('site.contentUpdated must be an ISO date (YYYY-MM-DD) in data/site.json');
+}
 const urls = ['', 'story/', 'menu/', 'locations/', 'careers/', 'contact/', 'news/',
   ...outlets.map((o) => `locations/${o.slug}/`)];
 writeFileSync(path.join(ROOT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  urls.map((u) => `  <url><loc>${base}/${u}</loc><lastmod>${today}</lastmod><changefreq>${u === '' || u === 'news/' ? 'weekly' : 'monthly'}</changefreq></url>`).join('\n') +
+  urls.map((u) => `  <url><loc>${base}/${u}</loc><lastmod>${lastmod}</lastmod><changefreq>${u === '' || u === 'news/' ? 'weekly' : 'monthly'}</changefreq></url>`).join('\n') +
   `\n</urlset>\n`);
 console.log(`  sitemap.xml (${urls.length} urls)`);
 

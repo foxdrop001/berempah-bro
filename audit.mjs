@@ -10,7 +10,23 @@ const issues = [];
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const consoleErrs = [];
-page.on('console', m => { if (m.type() === 'error') consoleErrs.push(m.text()); });
+// Failures fetching third-party resources (fonts, analytics) are network
+// conditions, not defects in this site — counting them makes CI flaky. Local
+// failures and any script error still fail the audit.
+const isThirdPartyNetworkNoise = (text) =>
+  /Failed to load resource/i.test(text) &&
+  !/file:\/\/|localhost|127\.0\.0\.1/i.test(text);
+page.on('console', m => {
+  if (m.type() !== 'error') return;
+  const text = m.text();
+  const url = m.location?.().url || '';
+  const external = /^https?:\/\//i.test(url) && !/localhost|127\.0\.0\.1/i.test(url);
+  if (external && isThirdPartyNetworkNoise(text)) {
+    console.log(`  (ignored third-party network error: ${url})`);
+    return;
+  }
+  consoleErrs.push(text);
+});
 page.on('pageerror', e => consoleErrs.push('pageerror: ' + e.message));
 await page.goto(url, { waitUntil: 'load' });
 
