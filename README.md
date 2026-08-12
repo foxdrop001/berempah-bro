@@ -63,6 +63,7 @@ workflows in [`.claude/skills/`](.claude/skills/):
 | Task | Guide |
 |------|-------|
 | Add or update an outlet | [docs/add-outlet.md](docs/add-outlet.md) |
+| Privacy notice (PDPA) | privacy/index.html — static content page |
 | Change menu items or prices | [docs/update-menu.md](docs/update-menu.md) |
 | Start / stop / change a promotion | [docs/update-promo.md](docs/update-promo.md) |
 | Run the checks | [docs/testing.md](docs/testing.md) |

@@ -334,7 +334,7 @@ const lastmod = process.env.BUILD_DATE || data.site.contentUpdated;
 if (!/^\d{4}-\d{2}-\d{2}$/.test(String(lastmod))) {
   throw new Error('site.contentUpdated must be an ISO date (YYYY-MM-DD) in data/site.json');
 }
-const urls = ['', 'story/', 'menu/', 'locations/', 'careers/', 'contact/', 'news/',
+const urls = ['', 'story/', 'menu/', 'locations/', 'careers/', 'contact/', 'news/', 'privacy/',
   ...outlets.map((o) => `locations/${o.slug}/`)];
 writeFileSync(path.join(ROOT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +

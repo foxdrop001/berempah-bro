@@ -8,7 +8,7 @@
     "test": "node test.mjs",
     "audit": "node audit.mjs",
     "dev": "node tools/serve.mjs",
-    "admin": "node tools/serve.mjs & echo Open http://localhost:5000/admin/"
+    "admin": "echo Open http://localhost:5000/admin/ & node tools/serve.mjs"
   },
   "keywords": [],
   "author": "",
