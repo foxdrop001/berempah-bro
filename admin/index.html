@@ -224,19 +224,26 @@ function validate() {
   if (ga && !/^G-[A-Z0-9]{6,}$/i.test(ga)) errs.push('GA4 Measurement ID should look like G-XXXXXXXXXX');
 
   const box = $('issues'), list = $('issueList');
-  list.innerHTML = errs.map((e) => `<li>${e}</li>`).join('');
+  list.innerHTML = errs.map((e) => `<li>${h(e)}</li>`).join('');
   box.hidden = errs.length === 0;
   return errs;
 }
 
 /* ---------------- render ---------------- */
+// Anything from site.json is untrusted text here: a stray "<" in an outlet
+// name would otherwise be parsed as markup when injected via innerHTML.
+function h(v) {
+  return String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function field(label, value, oninput, opts = {}) {
   const id = 'f' + Math.random().toString(36).slice(2, 8);
   const el = document.createElement('div');
-  el.innerHTML = `<label for="${id}">${label}</label>` +
+  el.innerHTML = `<label for="${id}">${h(label)}</label>` +
     (opts.type === 'textarea'
       ? `<textarea id="${id}"></textarea>`
-      : `<input id="${id}" ${opts.type ? `type="${opts.type}"` : ''} ${opts.placeholder ? `placeholder="${opts.placeholder}"` : ''}>`);
+      : `<input id="${id}" ${opts.type ? `type="${h(opts.type)}"` : ''} ${opts.placeholder ? `placeholder="${h(opts.placeholder)}"` : ''}>`);
   const input = el.querySelector('input,textarea');
   input.value = value ?? '';
   input.addEventListener('input', () => { oninput(input.value); markDirty(); validate(); });
@@ -250,10 +257,10 @@ function render() {
   data.outlets.forEach((o, idx) => {
     const card = document.createElement('div');
     card.className = 'card' + (o.published ? '' : ' dim');
-    card.innerHTML = `<h3>${o.name || 'New outlet'}
+    card.innerHTML = `<h3>${h(o.name || 'New outlet')}
         <span class="pill ${o.published ? 'live' : 'draft'}">${o.published ? 'On the site' : 'Draft'}</span>
-        <span class="pill">${o.brand || ''}</span></h3>
-      <p class="muted">Web address: /locations/${o.slug || '…'}/ — don't change this after the outlet is live.</p>`;
+        <span class="pill">${h(o.brand || '')}</span></h3>
+      <p class="muted">Web address: /locations/${h(o.slug || '…')}/ — don't change this after the outlet is live.</p>`;
     const grid = document.createElement('div');
     grid.className = 'grid';
     grid.append(
@@ -319,7 +326,7 @@ function render() {
   data.menu.sections.forEach((sec) => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `<h3>${sec.name}</h3>`;
+    card.innerHTML = `<h3>${h(sec.name)}</h3>`;
     sec.items.forEach((it) => {
       const g = document.createElement('div');
       g.className = 'grid';

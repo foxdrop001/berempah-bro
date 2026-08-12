@@ -90,7 +90,20 @@ Singapore); it cannot tell you a price is out of date.
 ## Deployment
 
 Every push to `main` publishes to GitHub Pages (`gh-pages` branch is kept in
-sync). CI runs the build and the full audit on every push and pull request.
+sync).
+
+**Continuous integration is written but not yet switched on.** The workflow
+lives at [`docs/ci-workflow.yml`](docs/ci-workflow.yml); GitHub only runs
+workflows from `.github/workflows/`, and adding a file there requires a token
+with `workflow` scope, which the deploy credential deliberately does not have.
+One person with repo access enables it once:
+
+1. On GitHub → **Actions** → *set up a workflow yourself*
+2. Name it `ci.yml`, paste the contents of `docs/ci-workflow.yml`, commit
+
+From then on every push and pull request runs the build, fails if generated
+output was not committed, and runs the full page audit. Until then, run
+`npm test` locally before pushing — `.claude/skills/ship-changes` does this.
 
 See [docs/deploy.md](docs/deploy.md) for the DigitalOcean App Platform path and
 the custom-domain migration checklist.
