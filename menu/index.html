@@ -274,11 +274,10 @@
   </section>
 
   <!-- ============ PROMO (LTO) ============ -->
-<section class="lto" id="promo" aria-labelledby="lto-title" hidden>
+<section class="lto" id="promo" aria-label="Promotion" hidden>
   <div class="container">
-    <!-- Live promo: BEREMPAH6 (real first-order code from berempahbros.oddle.me). Edit the PROMO config in the lto script to change or retire it. -->
 <!-- BUILD:promo -->
-      <div class="lto-chit reveal">
+      <div class="lto-chit reveal" data-ends="">
         <span class="lto-stamp" aria-hidden="true">Promo Code</span>
         <div class="lto-main">
           <span class="kicker">First-Timer Deal</span>
@@ -704,75 +703,59 @@
   })();
 
   // ===== LTO promo =====
-(function(){
-  // Live promo: BEREMPAH6 — real first-order code from berempahbros.oddle.me.
-  // Set active:false to retire, or give endsISO an ISO date to get a countdown back.
-  var PROMO={
-    active:true,
-    title:"$6 Off Your First Order",
-    desc:"New to the Bros? Code BEREMPAH6 takes $6 off (min. $60 spend) your first delivery order \u2014 islandwide at a flat $6.80.",
-    endsISO:null,
-    cta:"Order with BEREMPAH6",
-    url:"https://berempahbros.oddle.me/"
-  };
-
-  function init(){
+  // The promo copy is rendered by the build from data/site.json. This only
+  // does the one job the server cannot: hide the promo once it has expired.
+  (function(){
     var root=document.querySelector('.lto');
     if(!root){return;}
     function hide(){root.hidden=true;root.style.display='none';}
 
-    var ends=PROMO.endsISO?new Date(PROMO.endsISO).getTime():null;
-    if(!PROMO.active||(ends!==null&&(isNaN(ends)||Date.now()>=ends))){hide();return;}
-    root.hidden=false;
+    function init(){
+      var chit=root.querySelector('.lto-chit');
+      if(!chit){hide();return;}              // build emitted "promo inactive"
 
-    var titleEl=root.querySelector('.lto-title');
-    if(titleEl){titleEl.textContent=PROMO.title;}
-    var descEl=root.querySelector('.lto-desc');
-    if(descEl){descEl.textContent=PROMO.desc;}
-    var ctaEl=root.querySelector('.lto-cta');
-    if(ctaEl){
-      ctaEl.href=PROMO.url;
-      var txt=ctaEl.querySelector('.lto-cta-txt');
-      if(txt){txt.textContent=PROMO.cta;}
+      var raw=chit.getAttribute('data-ends')||'';
+      var ends=raw?new Date(raw).getTime():null;
+      if(ends!==null&&(isNaN(ends)||Date.now()>=ends)){hide();return;}
+      root.hidden=false;
+
+      var countEl=root.querySelector('.lto-count');
+      if(ends===null){
+        if(countEl){countEl.style.display='none';}
+        return;                              // evergreen — no countdown
+      }
+
+      var endsEl=root.querySelector('[data-lto="ends"]');
+      if(endsEl){
+        try{
+          endsEl.textContent='Ends '+new Intl.DateTimeFormat('en-SG',{
+            timeZone:'Asia/Singapore',weekday:'short',day:'numeric',month:'short',
+            hour:'numeric',minute:'2-digit',hour12:true
+          }).format(new Date(ends));
+        }catch(e){}
+      }
+      var dEl=root.querySelector('[data-lto="d"]');
+      var hEl=root.querySelector('[data-lto="h"]');
+      var mEl=root.querySelector('[data-lto="m"]');
+      if(!dEl||!hEl||!mEl){return;}
+      function pad(n){return (n<10?'0':'')+n;}
+      var iv=null;
+      function tick(){
+        var left=ends-Date.now();
+        if(left<=0){if(iv){clearInterval(iv);}hide();return;}
+        var totalMins=Math.floor(left/60000);
+        dEl.textContent=pad(Math.min(Math.floor(totalMins/1440),99));
+        hEl.textContent=pad(Math.floor((totalMins%1440)/60));
+        mEl.textContent=pad(totalMins%60);
+      }
+      tick();
+      iv=setInterval(tick,60000);
+      document.addEventListener('visibilitychange',function(){if(!document.hidden){tick();}});
     }
 
-    var countEl=root.querySelector('.lto-count');
-    if(ends===null){
-      if(countEl){countEl.style.display='none';}
-      return; // evergreen — static "First order only" line stands
-    }
-
-    var endsEl=root.querySelector('[data-lto="ends"]');
-    if(endsEl){
-      try{
-        endsEl.textContent='Ends '+new Intl.DateTimeFormat('en-SG',{
-          timeZone:'Asia/Singapore',weekday:'short',day:'numeric',month:'short',
-          hour:'numeric',minute:'2-digit',hour12:true
-        }).format(new Date(ends));
-      }catch(e){}
-    }
-    var dEl=root.querySelector('[data-lto="d"]');
-    var hEl=root.querySelector('[data-lto="h"]');
-    var mEl=root.querySelector('[data-lto="m"]');
-    if(!dEl||!hEl||!mEl){return;}
-    function pad(n){return (n<10?'0':'')+n;}
-    var iv=null;
-    function tick(){
-      var left=ends-Date.now();
-      if(left<=0){if(iv){clearInterval(iv);}hide();return;}
-      var totalMins=Math.floor(left/60000);
-      dEl.textContent=pad(Math.min(Math.floor(totalMins/1440),99));
-      hEl.textContent=pad(Math.floor((totalMins%1440)/60));
-      mEl.textContent=pad(totalMins%60);
-    }
-    tick();
-    iv=setInterval(tick,60000);
-    document.addEventListener('visibilitychange',function(){if(!document.hidden){tick();}});
-  }
-
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}
-  else{init();}
-})();
+    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}
+    else{init();}
+  })();
   // ===== Catering =====
 (function(){
   var section=document.querySelector('.catering');

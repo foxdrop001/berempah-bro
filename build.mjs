@@ -120,7 +120,10 @@ region('menu/index.html', 'menu-note', `      <p class="menu-note">${menu.note}<
 /* ------------------------------------------------------------------ *
  * 3. Promo block (menu page)
  * ------------------------------------------------------------------ */
-const promoHtml = promo.active ? `      <div class="lto-chit reveal">
+// data-ends carries the only promo fact the browser still needs: when to stop
+// showing it. Everything visible is rendered here, so the page has no second
+// copy of the promo to drift out of sync.
+const promoHtml = promo.active ? `      <div class="lto-chit reveal" data-ends="${esc(promo.endsISO ?? '')}">
         <span class="lto-stamp" aria-hidden="true">Promo Code</span>
         <div class="lto-main">
           <span class="kicker">${esc(promo.kicker)}</span>
@@ -262,20 +265,28 @@ for (const o of outlets) {
   const others = outlets.filter((x) => x.slug !== o.slug).map((x) =>
     `          <a class="loc-chip" href="../${x.slug}/" style="text-decoration:none">${esc(x.name)}</a>`).join('\n');
 
-  const html = shell
-    .replace(/\{\{TITLE\}\}/g, `${esc(o.name)} — ${esc(o.brand)} | Singapore`)
-    .replace(/\{\{DESC\}\}/g, `${esc(o.brand)} at ${esc(o.name)} — ${esc(o.address)}, Singapore ${o.postal}. ${esc(o.hours.display)}. Directions, hours and islandwide delivery.`)
-    .replace(/\{\{SLUG\}\}/g, o.slug)
-    .replace(/\{\{BASE\}\}/g, base)
-    .replace(/\{\{JSONLD\}\}/g, `${JSON.stringify(ld, null, 2)}\n</script>\n<script type="application/ld+json">\n${JSON.stringify(crumbs, null, 2)}`)
-    .replace(/\{\{BADGE\}\}/g, esc(o.badge))
-    .replace(/\{\{BRAND\}\}/g, esc(o.brand))
-    .replace(/\{\{NAME\}\}/g, esc(o.name))
-    .replace(/\{\{DETAILS\}\}/g, details)
-    .replace(/\{\{MAPS\}\}/g, mapsUrl(o))
-    .replace(/\{\{ORDER\}\}/g, site.orderUrl)
-    .replace(/\{\{OTHERS\}\}/g, others)
-    .replace(/\{\{HOURS_ATTR\}\}/g, o.hours.open ? ` data-hours="${o.hours.open}-${o.hours.close}"` : '');
+  const tokens = {
+    TITLE: `${esc(o.name)} — ${esc(o.brand)} | Singapore`,
+    DESC: `${esc(o.brand)} at ${esc(o.name)} — ${esc(o.address)}, Singapore ${o.postal}. ${esc(o.hours.display)}. Directions, hours and islandwide delivery.`,
+    SLUG: o.slug,
+    BASE: base,
+    JSONLD: `${JSON.stringify(ld, null, 2)}\n</script>\n<script type="application/ld+json">\n${JSON.stringify(crumbs, null, 2)}`,
+    BADGE: esc(o.badge),
+    BRAND: esc(o.brand),
+    NAME: esc(o.name),
+    DETAILS: details,
+    MAPS: mapsUrl(o),
+    ORDER: site.orderUrl,
+    OTHERS: others,
+    HOURS_ATTR: o.hours.open ? ` data-hours="${o.hours.open}-${o.hours.close}"` : '',
+  };
+  // Substituted values are literal text, so the replacement must be a function:
+  // as a string, "$$" would collapse to "$" and "$&" would re-insert the match.
+  // priceRange "$$" in the structured data is a live example.
+  const html = shell.replace(/\{\{([A-Z_]+)\}\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(tokens, key) ? tokens[key] : match);
+  const leftover = html.match(/\{\{[A-Z_]+\}\}/g);
+  if (leftover) throw new Error(`Unresolved template token(s) in ${o.slug}: ${[...new Set(leftover)].join(', ')}`);
   writeFileSync(path.join(dir, 'index.html'), html);
   touched++;
   console.log(`  generated locations/${o.slug}/`);

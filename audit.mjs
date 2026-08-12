@@ -126,15 +126,21 @@ if (hasBuilder) {
   await expect(page.evaluate(() => document.getElementById('builderDesc').textContent.includes('Ayam Berempah (Thigh)')), 'builder: desc shows ayam with cut');
 }
 
-if (await page.evaluate(() => !!document.querySelector('.lto'))) {
-  await expect(page.evaluate(() => {
+// Promo assertions read the data file rather than hardcoding a code, so
+// retiring or changing a promo in site.json does not fail the audit.
+if (await page.evaluate(() => !!document.querySelector('.lto-chit'))) {
+  const { readFileSync } = await import('fs');
+  const { promo } = JSON.parse(readFileSync(path.join(here, 'data', 'site.json'), 'utf8'));
+  await expect(page.evaluate((code) => {
     const p = document.querySelector('.lto');
-    return p && !p.hidden && p.textContent.includes('BEREMPAH6');
-  }), 'promo visible with BEREMPAH6');
-  await expect(page.evaluate(() => {
-    const c = document.querySelector('.lto-count');
-    return c && getComputedStyle(c).display === 'none';
-  }), 'promo countdown hidden (evergreen)');
+    return p && !p.hidden && p.textContent.includes(code);
+  }, promo.code), `promo visible with ${promo.code}`);
+  if (!promo.endsISO) {
+    await expect(page.evaluate(() => {
+      const c = document.querySelector('.lto-count');
+      return c && getComputedStyle(c).display === 'none';
+    }), 'promo countdown hidden (evergreen)');
+  }
 }
 
 if (await page.evaluate(() => !!document.querySelector('.faq-item'))) {
