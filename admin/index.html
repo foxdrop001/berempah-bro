@@ -200,7 +200,7 @@ function validate() {
   const seen = new Set();
   data.outlets.forEach((o) => {
     const w = o.name || o.slug || 'new outlet';
-    if (!/^[a-z0-9-]+$/.test(o.slug || '')) errs.push(`${w}: web address must be lowercase letters, numbers and hyphens only`);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(o.slug || '')) errs.push(`${w}: web address must be lowercase letters and numbers with single hyphens between them, e.g. bukit-canberra (no leading, trailing or doubled hyphens)`);
     if (seen.has(o.slug)) errs.push(`${w}: duplicate web address "${o.slug}"`);
     seen.add(o.slug);
     if (!o.published) return;
@@ -338,8 +338,15 @@ function render() {
         field('Item name', it.name, (v) => it.name = v),
         field('Price', it.price, (v) => it.price = v, { placeholder: '9.00' }),
         field('Card description', it.desc, (v) => it.desc = v),
+        field('Menu description (used for search engines)', it.menuDesc || '', (v) => it.menuDesc = v, { type: 'textarea' }),
       );
       card.append(g);
+      if (it.image) {
+        const note = document.createElement('p');
+        note.className = 'muted';
+        note.textContent = `Photo: assets/${h(it.image)}.webp — to change it, replace that image file.`;
+        card.append(note);
+      }
     });
     ml.append(card);
   });

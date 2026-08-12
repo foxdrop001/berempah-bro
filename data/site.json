@@ -264,6 +264,13 @@
       "published": true
     }
   ],
+  "comingSoon": [
+    {
+      "badge": "Just Dropped",
+      "name": "Our Sixth Stall",
+      "note": "The next Berempah Bros counter is on the way — location announced first on Instagram."
+    }
+  ],
   "_unpublishedOutletExample": {
     "_comment": "Copy this into the outlets array, set published:true, fill every field, then run `npm run build`.",
     "slug": "outlet-slug",

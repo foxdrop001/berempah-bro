@@ -90,9 +90,17 @@
     track('menu_builder_use', {});
   }, { passive: true });
 
-  // Thank-you states after the form provider redirects back.
+  // Thank-you states after the form provider redirects back. Strip the flag
+  // from the URL once counted, so a refresh or a shared/bookmarked link does
+  // not record the same conversion again.
   var q = new URLSearchParams(location.search);
-  if (q.has('sent')) track('contact_submit_confirmed', {});
-  if (q.has('joined')) track('signup_confirmed', {});
-  if (q.has('catering')) track('catering_submit_confirmed', {});
+  var confirmed = { sent: 'contact_submit_confirmed', joined: 'signup_confirmed', catering: 'catering_submit_confirmed' };
+  var counted = false;
+  Object.keys(confirmed).forEach(function (flag) {
+    if (q.has(flag)) { track(confirmed[flag], {}); q.delete(flag); counted = true; }
+  });
+  if (counted && window.history && history.replaceState) {
+    var qs = q.toString();
+    history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+  }
 })();

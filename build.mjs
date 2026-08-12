@@ -17,10 +17,11 @@ const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const data = JSON.parse(readFileSync(path.join(ROOT, 'data', 'site.json'), 'utf8'));
 const { site, menu, promo, catering } = data;
 const outlets = data.outlets.filter((o) => o.published);
+const comingSoon = Array.isArray(data.comingSoon) ? data.comingSoon : [];
 const base = site.baseUrl.replace(/\/$/, '');
 let touched = 0;
 
-const esc = (s) => String(s).replace(/&(?![a-z#0-9]+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const esc = (s) => String(s).replace(/&(?![a-z#0-9]+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 // A slug becomes a directory name and a URL path. Anything outside this shape
 // could write files outside the project (e.g. "../../elsewhere") or produce a
@@ -36,6 +37,9 @@ for (const o of data.outlets) {
 const dupes = data.outlets.map((o) => o.slug).filter((s, i, a) => a.indexOf(s) !== i);
 if (dupes.length) throw new Error(`Duplicate outlet slug(s): ${[...new Set(dupes)].join(', ')}`);
 const mapsUrl = (o) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.mapsQuery)}`;
+// Full name for structured data: "Brand — Location", but don't repeat the
+// brand when the outlet name already leads with it (e.g. Gepuk Guys' outlet).
+const fullName = (o) => o.name.startsWith(o.brand) ? o.name : `${o.brand} — ${o.name}`;
 
 /** Replace a marked region inside a file. */
 function region(file, name, html) {
@@ -81,23 +85,39 @@ const locCards = outlets.map((o, i) => {
           <span class="loc-chip"><a href="${site.orderUrl}" target="_blank" rel="noopener" style="text-decoration:none" data-track="order" data-outlet="${o.slug}">Order ↗</a></span>
         </article>`;
 }).join('\n');
-region('locations/index.html', 'outlets', locCards);
+const comingCards = comingSoon.map((c, i) => {
+  const num = String(outlets.length + i + 1).padStart(2, '0');
+  return `        <article class="loc-card reveal" style="border-style:dashed">
+          <span class="loc-num" style="background:var(--turmeric);color:var(--ink)">NO. ${num} — ${esc(String(c.badge || 'Coming Soon').toUpperCase())}</span>
+          <h3>${esc(c.name || 'Coming Soon')}</h3>
+          ${c.note ? `<p class="loc-line">${icon.spice} ${esc(c.note)}</p>` : ''}
+          <span class="loc-chip"><a href="${site.instagram}" target="_blank" rel="noopener" style="text-decoration:none">Watch on Instagram ↗</a></span>
+        </article>`;
+}).join('\n');
+region('locations/index.html', 'outlets', [locCards, comingCards].filter(Boolean).join('\n'));
 
 /* ------------------------------------------------------------------ *
  * 2. Menu page — cards, sides, builder, note
  * ------------------------------------------------------------------ */
 const mains = menu.sections.flatMap((s) => s.items).filter((i) => i.slug !== 'feast2');
-const menuCards = mains.map((it) => `        <article class="chit reveal">
+// Optional fields default sanely so an item added or edited through the
+// dashboard (which does not surface image/tags) can never crash the build or
+// emit a broken <img>; image falls back to the slug.
+const menuCards = mains.map((it) => {
+  const image = it.image || it.slug;
+  const tags = Array.isArray(it.tags) ? it.tags : [];
+  return `        <article class="chit reveal">
           <div class="chit-photo">
-            <img src="../assets/${it.image}.webp" srcset="../assets/sm/${it.image}.webp 800w, ../assets/${it.image}.webp 1149w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="${esc(it.name)} — ${esc(it.desc)}" loading="lazy">
+            <img src="../assets/${image}.webp" srcset="../assets/sm/${image}.webp 800w, ../assets/${image}.webp 1149w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="${esc(it.name)} — ${esc(it.desc)}" loading="lazy">
             <span class="chit-price">$${it.price}</span>
           </div>
           <div class="chit-body">
             <h3>${esc(it.name)}</h3>
             <p>${esc(it.desc)}</p>
-            <div class="tag-row">${it.tags.map((t) => `<span class="tag${/best/i.test(t) ? ' best' : /spicy/i.test(t) ? ' hot' : ''}">${esc(t)}</span>`).join('')}</div>
+            <div class="tag-row">${tags.map((t) => `<span class="tag${/best/i.test(t) ? ' best' : /spicy/i.test(t) ? ' hot' : ''}">${esc(t)}</span>`).join('')}</div>
           </div>
-        </article>`).join('\n');
+        </article>`;
+}).join('\n');
 region('menu/index.html', 'menu-cards', menuCards);
 
 const sidesRow = `        <h3>Sides</h3>\n` + menu.sides.map((s) => `        <span class="addon">${esc(s.name)} <b>$${s.price}</b></span>`).join('\n');
@@ -148,6 +168,11 @@ const promoHtml = promo.active ? `      <div class="lto-chit reveal" data-ends="
 region('menu/index.html', 'promo', promoHtml);
 
 
+/* Catering offer line — single source is data.catering. The offer text carries
+   an intentional &amp; entity, so it is emitted raw (like menu.note). */
+region('menu/index.html', 'catering',
+  `        <b style="color:var(--paper)">${catering.offer}</b><br>Call <a href="tel:${site.cateringPhoneE164}" style="color:#F2BE8E;font-weight:700">${esc(site.cateringPhone)}</a> for catering enquiries, or DM us on Instagram with your date, headcount and venue.`);
+
 /* Catering form outlet dropdown */
 region('contact/index.html', 'catering-outlets',
   ['                <option>No preference</option>',
@@ -156,11 +181,12 @@ region('contact/index.html', 'catering-outlets',
 /* ------------------------------------------------------------------ *
  * 4. Home — stats + JSON-LD
  * ------------------------------------------------------------------ */
-const bbCount = outlets.filter((o) => o.brand === 'Berempah Bros').length;
-const totalStalls = outlets.length + (data.outlets.some((o) => !o.published) ? 1 : 0);
+const totalStalls = outlets.length + comingSoon.length;
+const ayam = mains.find((m) => m.slug === 'ayam') ?? mains[0];
+const brandCount = new Set(data.outlets.map((o) => o.brand)).size;
 region('index.html', 'hero-stats', `        <div><b>16</b>spices in the rempah</div>
-        <div><b>${totalStalls}</b>stalls · ${new Set(outlets.map((o) => o.brand)).size} brands</div>
-        <div><b>$${mains[0].price.replace('.00', '')}</b>signature ayam set</div>
+        <div><b>${totalStalls}</b>stalls · ${brandCount} brands</div>
+        <div><b>$${ayam.price.replace('.00', '')}</b>signature ayam set</div>
         <div><b>#1</b>MasterChef SG S2</div>`);
 
 const restaurantLd = {
@@ -175,7 +201,7 @@ const restaurantLd = {
   menu: site.orderUrl,
   location: outlets.map((o) => ({
     '@type': 'FoodEstablishment',
-    name: `${o.brand} — ${o.name}`,
+    name: fullName(o),
     url: `${base}/locations/${o.slug}/`,
     address: { '@type': 'PostalAddress', streetAddress: o.address, postalCode: o.postal, addressCountry: 'SG' },
     ...(o.phone ? { telephone: o.phone } : {}),
@@ -218,20 +244,25 @@ region('menu/index.html', 'jsonld', `<script type="application/ld+json">\n${JSON
  * ------------------------------------------------------------------ */
 const shell = readFileSync(path.join(ROOT, 'templates', 'outlet.html'), 'utf8');
 const outletsDir = path.join(ROOT, 'locations');
-// clear previously generated dirs (they carry a marker file)
+// Clear previously generated dirs. The marker names the slug it belongs to,
+// and we only delete a folder whose marker matches its own name — so a folder
+// hand-copied from a generated one (carrying a stale marker) is never removed.
 for (const d of readdirSync(outletsDir, { withFileTypes: true }).filter((d) => d.isDirectory())) {
-  if (existsSync(path.join(outletsDir, d.name, '.generated'))) rmSync(path.join(outletsDir, d.name), { recursive: true });
+  const marker = path.join(outletsDir, d.name, '.generated');
+  if (existsSync(marker) && readFileSync(marker, 'utf8').trim() === d.name) {
+    rmSync(path.join(outletsDir, d.name), { recursive: true });
+  }
 }
 
 for (const o of outlets) {
   const dir = path.join(outletsDir, o.slug);
   mkdirSync(dir, { recursive: true });
-  writeFileSync(path.join(dir, '.generated'), 'generated by build.mjs — do not edit this folder by hand\n');
+  writeFileSync(path.join(dir, '.generated'), `${o.slug}\n`);
 
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
-    name: `${o.brand} — ${o.name}`,
+    name: fullName(o),
     url: `${base}/locations/${o.slug}/`,
     image: `${base}/assets/og-image.jpg`,
     servesCuisine: ['Malaysian', 'Singaporean'],
@@ -266,8 +297,8 @@ for (const o of outlets) {
     `          <a class="loc-chip" href="../${x.slug}/" style="text-decoration:none">${esc(x.name)}</a>`).join('\n');
 
   const tokens = {
-    TITLE: `${esc(o.name)} — ${esc(o.brand)} | Singapore`,
-    DESC: `${esc(o.brand)} at ${esc(o.name)} — ${esc(o.address)}, Singapore ${o.postal}. ${esc(o.hours.display)}. Directions, hours and islandwide delivery.`,
+    TITLE: `${esc(fullName(o))} | Singapore`,
+    DESC: `${esc(fullName(o))} — ${esc(o.address)}, Singapore ${o.postal}. ${esc(o.hours.display)}. Directions, hours and islandwide delivery.`,
     SLUG: o.slug,
     BASE: base,
     JSONLD: `${JSON.stringify(ld, null, 2)}\n</script>\n<script type="application/ld+json">\n${JSON.stringify(crumbs, null, 2)}`,
@@ -278,7 +309,7 @@ for (const o of outlets) {
     MAPS: mapsUrl(o),
     ORDER: site.orderUrl,
     OTHERS: others,
-    HOURS_ATTR: o.hours.open ? ` data-hours="${o.hours.open}-${o.hours.close}"` : '',
+    HOURS_ATTR: o.hours.open && o.hours.close ? ` data-hours="${o.hours.open}-${o.hours.close}"` : '',
   };
   // Substituted values are literal text, so the replacement must be a function:
   // as a string, "$$" would collapse to "$" and "$&" would re-insert the match.
