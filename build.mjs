@@ -172,7 +172,7 @@ region('menu/index.html', 'promo', promoHtml);
 /* Catering offer line — single source is data.catering. The offer text carries
    an intentional &amp; entity, so it is emitted raw (like menu.note). */
 region('menu/index.html', 'catering',
-  `        <b style="color:var(--paper)">${catering.offer}</b><br>Call <a href="tel:${site.cateringPhoneE164}" style="color:#F2BE8E;font-weight:700">${esc(site.cateringPhone)}</a> for catering enquiries, or DM us on Instagram with your date, headcount and venue.`);
+  `        <b style="color:var(--paper)">${esc(catering.offer)}</b><br>Call <a href="tel:${site.cateringPhoneE164}" style="color:#F2BE8E;font-weight:700">${esc(site.cateringPhone)}</a> for catering enquiries, or DM us on Instagram with your date, headcount and venue.`);
 
 /* Catering form outlet dropdown */
 region('contact/index.html', 'catering-outlets',

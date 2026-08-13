@@ -56,6 +56,21 @@
   details.help li{margin-left:18px}
   code{background:var(--paper-2);padding:1px 5px;border-radius:3px;font-size:.85em}
   .dim{opacity:.55}
+  /* collapsible cards keep the page short when there is a lot of content */
+  details.card > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:1.15rem;font-weight:700}
+  details.card > summary::-webkit-details-marker{display:none}
+  details.card > summary::before{content:"▸";color:var(--orange);font-size:.9em;transition:transform .15s}
+  details.card[open] > summary::before{transform:rotate(90deg)}
+  details.card > summary .muted{font-weight:400}
+  details.card{padding:14px 18px}
+  details.card[open]{padding-bottom:18px}
+  .item{border:1.5px solid var(--line);border-radius:5px;padding:12px;margin-bottom:10px;background:#FFFDF8}
+  .item-tools{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .btn-sm{padding:5px 10px;min-height:34px;font-size:.8rem}
+  .btn-sm.danger{background:#FDECEA;border-color:var(--bad);color:var(--bad)}
+  .addbtn{margin-top:2px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+  .count{font-size:.8rem;color:var(--ink-70)}
 </style>
 </head>
 <body>
@@ -96,24 +111,41 @@
     <button class="tab" role="tab" aria-selected="true" data-panel="pOutlets">Outlets</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="pMenu">Menu &amp; Prices</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="pPromo">Promotion</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="pComing">Coming Soon</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="pSettings">Settings</button>
   </div>
 
   <section class="panel" id="pOutlets" role="tabpanel">
+    <div class="toolbar">
+      <button class="ghost btn-sm" type="button" id="btnExpandOutlets">Expand all</button>
+      <button class="ghost btn-sm" type="button" id="btnCollapseOutlets">Collapse all</button>
+      <span class="count" id="outletCount"></span>
+    </div>
     <div id="outletList"></div>
-    <button class="ghost" id="btnAddOutlet" type="button">+ Add outlet</button>
+    <button class="ghost addbtn" id="btnAddOutlet" type="button">+ Add outlet</button>
   </section>
 
   <section class="panel" id="pMenu" role="tabpanel" hidden>
     <div id="menuList"></div>
     <div class="card">
       <h3>Sides <span class="muted">(à-la-carte prices)</span></h3>
-      <div id="sidesList" class="grid"></div>
+      <div id="sidesList"></div>
+      <button class="ghost btn-sm addbtn" type="button" id="btnAddSide">+ Add side</button>
     </div>
     <div class="card">
       <h3>Set add-ons <span class="muted">(cheaper modifier prices inside a set)</span></h3>
-      <div id="addonsList" class="grid"></div>
+      <div id="addonsList"></div>
+      <button class="ghost btn-sm addbtn" type="button" id="btnAddAddon">+ Add add-on</button>
     </div>
+  </section>
+
+  <section class="panel" id="pComing" role="tabpanel" hidden>
+    <div class="card">
+      <h3>Coming-soon stalls</h3>
+      <p class="muted">These show as dashed "watch this space" cards on the Locations page and count toward the total on the home page. When a stall is confirmed, delete its coming-soon card here and add it as a real outlet.</p>
+    </div>
+    <div id="comingList"></div>
+    <button class="ghost addbtn" id="btnAddComing" type="button">+ Add coming-soon stall</button>
   </section>
 
   <section class="panel" id="pPromo" role="tabpanel" hidden>
@@ -149,6 +181,14 @@
         <div><label for="stOrder">Ordering store URL</label><input id="stOrder" type="url"></div>
         <div><label for="stPhone">Catering phone</label><input id="stPhone"></div>
       </div>
+    </div>
+    <div class="card">
+      <h3>Catering offer</h3>
+      <p class="muted">The line shown in the catering section of the menu page.</p>
+      <div class="grid">
+        <div><label for="stCatHead">Section headline</label><input id="stCatHead"></div>
+      </div>
+      <div style="margin-top:12px"><label for="stCatOffer">Offer text</label><textarea id="stCatOffer"></textarea></div>
     </div>
     <div class="card">
       <h3>Social</h3>
@@ -218,11 +258,18 @@ function validate() {
   });
   const price = (v) => /^\d+\.\d{2}$/.test(String(v));
   data.menu.sections.forEach((s) => s.items.forEach((i) => {
-    if (!price(i.price)) errs.push(`${i.name}: price must look like 9.00`);
+    const w = i.name || 'a menu item';
     if (!i.name) errs.push('a menu item has no name');
+    if (!price(i.price)) errs.push(`${w}: price must look like 9.00`);
+    if (!(i.image || i.slug)) errs.push(`${w}: needs a photo file name (the image in assets/, without .webp)`);
+    if (i.slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(i.slug)) errs.push(`${w}: slug must be lowercase letters/numbers with single hyphens`);
   }));
   [...data.menu.sides, ...data.menu.setAddOns].forEach((s) => {
-    if (!price(s.price)) errs.push(`${s.name}: price must look like 1.80`);
+    if (!s.name) errs.push('a side or add-on has no name');
+    if (!price(s.price)) errs.push(`${s.name || 'a side/add-on'}: price must look like 1.80`);
+  });
+  (data.comingSoon || []).forEach((c, i) => {
+    if (!c.name && !c.badge) errs.push(`coming-soon card ${i + 1}: give it at least a badge or a title`);
   });
   if (data.promo.active && !data.promo.code) errs.push('Promotion is running but has no code');
   if (data.promo.active && !data.promo.title) errs.push('Promotion is running but has no headline');
@@ -256,17 +303,46 @@ function field(label, value, oninput, opts = {}) {
   return el;
 }
 
+// Move-up / move-down / delete controls for any array-backed list.
+function listControls(arr, idx, after, opts = {}) {
+  const box = document.createElement('div');
+  box.className = 'item-tools';
+  const mk = (label, cls, fn, disabled) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn-sm ' + cls; b.textContent = label;
+    b.disabled = !!disabled; b.onclick = fn; return b;
+  };
+  const swap = (a, i, j) => { const t = a[i]; a[i] = a[j]; a[j] = t; };
+  box.append(
+    mk('↑ Up', 'ghost', () => { swap(arr, idx, idx - 1); markDirty(); after(); }, idx === 0),
+    mk('↓ Down', 'ghost', () => { swap(arr, idx, idx + 1); markDirty(); after(); }, idx === arr.length - 1),
+    mk('Delete', 'danger', () => {
+      if (!confirm(opts.confirm || 'Delete this item?')) return;
+      arr.splice(idx, 1); markDirty(); after();
+    }),
+  );
+  return box;
+}
+const rerender = () => { render(); validate(); };
+
 function render() {
-  /* outlets */
+  /* outlets — each is collapsible so the page stays short */
   const wrap = $('outletList');
   wrap.innerHTML = '';
+  $('outletCount').textContent = `${data.outlets.filter((o) => o.published).length} on the site · ${data.outlets.length} total`;
   data.outlets.forEach((o, idx) => {
-    const card = document.createElement('div');
+    const card = document.createElement('details');
     card.className = 'card' + (o.published ? '' : ' dim');
-    card.innerHTML = `<h3>${h(o.name || 'New outlet')}
+    if (!o.slug || !o.name) card.open = true; // new/incomplete outlets start open
+    const sum = document.createElement('summary');
+    sum.innerHTML = `${h(o.name || 'New outlet')}
         <span class="pill ${o.published ? 'live' : 'draft'}">${o.published ? 'On the site' : 'Draft'}</span>
-        <span class="pill">${h(o.brand || '')}</span></h3>
-      <p class="muted">Web address: /locations/${h(o.slug || '…')}/ — don't change this after the outlet is live.</p>`;
+        <span class="pill">${h(o.brand || '')}</span>`;
+    card.append(sum);
+    const addr = document.createElement('p');
+    addr.className = 'muted';
+    addr.innerHTML = `Web address: /locations/${h(o.slug || '…')}/ — don't change this after the outlet is live.`;
+    card.append(addr);
     const grid = document.createElement('div');
     grid.className = 'grid';
     grid.append(
@@ -296,13 +372,13 @@ function render() {
     const toggle = document.createElement('button');
     toggle.className = 'ghost';
     toggle.textContent = o.published ? 'Take off the site' : 'Publish to the site';
-    toggle.onclick = () => { o.published = !o.published; markDirty(); render(); validate(); };
+    toggle.onclick = () => { o.published = !o.published; markDirty(); rerender(); };
     const del = document.createElement('button');
     del.className = 'danger';
     del.textContent = 'Delete';
     del.onclick = () => {
       if (!confirm(`Delete ${o.name || 'this outlet'} completely?\n\nIf the stall might reopen, use "Take off the site" instead — it keeps the details.`)) return;
-      data.outlets.splice(idx, 1); markDirty(); render(); validate();
+      data.outlets.splice(idx, 1); markDirty(); rerender();
     };
     const geo = document.createElement('button');
     geo.className = 'ghost';
@@ -317,7 +393,7 @@ function render() {
         if (!hit) throw new Error('no result');
         if (!confirm(`OneMap found:\n\n${hit.BUILDING}\n${hit.ADDRESS}\n\nUse these coordinates?`)) return;
         o.geo = { lat: parseFloat(hit.LATITUDE), lng: parseFloat(hit.LONGITUDE) };
-        markDirty(); render(); validate();
+        markDirty(); rerender();
       } catch (e) { alert('Lookup failed — enter the coordinates manually from onemap.gov.sg'); }
       finally { geo.disabled = false; geo.textContent = 'Look up coordinates'; }
     };
@@ -326,37 +402,80 @@ function render() {
     wrap.append(card);
   });
 
-  /* menu */
+  /* menu — sections are collapsible; items can be added, reordered, deleted */
   const ml = $('menuList');
   ml.innerHTML = '';
-  data.menu.sections.forEach((sec) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `<h3>${h(sec.name)}</h3>`;
-    sec.items.forEach((it) => {
+  data.menu.sections.forEach((sec, si) => {
+    const card = document.createElement('details');
+    card.className = 'card'; card.open = true;
+    const sum = document.createElement('summary');
+    sum.innerHTML = `${h(sec.name)} <span class="muted">${sec.items.length} item${sec.items.length === 1 ? '' : 's'}</span>`;
+    card.append(sum);
+    sec.items.forEach((it, ii) => {
+      const box = document.createElement('div');
+      box.className = 'item';
       const g = document.createElement('div');
       g.className = 'grid';
-      g.style.marginBottom = '10px';
       g.append(
         field('Item name', it.name, (v) => it.name = v),
         field('Price', it.price, (v) => it.price = v, { placeholder: '9.00' }),
-        field('Card description', it.desc, (v) => it.desc = v),
-        field('Menu description (used for search engines)', it.menuDesc || '', (v) => it.menuDesc = v, { type: 'textarea' }),
+        field('Photo file (in assets, without .webp)', it.image || '', (v) => it.image = v.trim() || undefined, { placeholder: 'ayam' }),
+        field('Slug (id)', it.slug || '', (v) => it.slug = v.trim()),
+        field('Tags (comma separated)', (it.tags || []).join(', '), (v) => it.tags = v.split(',').map((t) => t.trim()).filter(Boolean)),
       );
-      card.append(g);
-      if (it.image) {
-        const note = document.createElement('p');
-        note.className = 'muted';
-        note.textContent = `Photo: assets/${h(it.image)}.webp — to change it, replace that image file.`;
-        card.append(note);
-      }
+      box.append(g);
+      const d1 = field('Card description', it.desc, (v) => it.desc = v, { type: 'textarea' });
+      d1.style.marginTop = '10px'; box.append(d1);
+      const d2 = field('Menu description (search engines)', it.menuDesc || '', (v) => it.menuDesc = v, { type: 'textarea' });
+      d2.style.marginTop = '10px'; box.append(d2);
+      box.append(listControls(sec.items, ii, rerender, { confirm: `Delete "${it.name || 'this item'}"?` }));
+      card.append(box);
     });
+    const add = document.createElement('button');
+    add.className = 'ghost btn-sm addbtn'; add.type = 'button'; add.textContent = '+ Add item to ' + sec.name;
+    add.onclick = () => { sec.items.push({ slug: '', name: '', price: '', image: '', tags: [], desc: '', menuDesc: '' }); markDirty(); rerender(); };
+    card.append(add);
     ml.append(card);
   });
+
+  const priceRow = (arr, idx, suffix) => {
+    const box = document.createElement('div');
+    box.className = 'item';
+    const g = document.createElement('div'); g.className = 'grid';
+    g.append(
+      field('Name', arr[idx].name, (v) => arr[idx].name = v),
+      field('Price' + (suffix || ''), arr[idx].price, (v) => arr[idx].price = v, { placeholder: '1.80' }),
+    );
+    box.append(g);
+    box.append(listControls(arr, idx, rerender, { confirm: `Delete "${arr[idx].name || 'this'}"?` }));
+    return box;
+  };
   const sl = $('sidesList'); sl.innerHTML = '';
-  data.menu.sides.forEach((s) => sl.append(field(s.name, s.price, (v) => s.price = v)));
+  data.menu.sides.forEach((s, i) => sl.append(priceRow(data.menu.sides, i)));
   const al = $('addonsList'); al.innerHTML = '';
-  data.menu.setAddOns.forEach((s) => al.append(field(s.name + ' (in a set)', s.price, (v) => s.price = v)));
+  data.menu.setAddOns.forEach((s, i) => al.append(priceRow(data.menu.setAddOns, i, ' (in a set)')));
+
+  /* coming soon */
+  data.comingSoon = Array.isArray(data.comingSoon) ? data.comingSoon : [];
+  const cl = $('comingList'); cl.innerHTML = '';
+  data.comingSoon.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const g = document.createElement('div'); g.className = 'grid';
+    g.append(
+      field('Badge (e.g. Just Dropped)', c.badge || '', (v) => c.badge = v),
+      field('Card title', c.name || '', (v) => c.name = v, { placeholder: 'Our Sixth Stall' }),
+    );
+    card.append(g);
+    const note = field('Note', c.note || '', (v) => c.note = v, { type: 'textarea' });
+    note.style.marginTop = '10px'; card.append(note);
+    card.append(listControls(data.comingSoon, i, rerender, { confirm: 'Remove this coming-soon card?' }));
+    cl.append(card);
+  });
+
+  /* catering */
+  $('stCatHead').value = (data.catering && data.catering.headline) || '';
+  $('stCatOffer').value = (data.catering && data.catering.offer) || '';
 
   /* promo */
   $('pmActive').value = String(!!data.promo.active);
@@ -404,6 +523,8 @@ bind('stIg', (v) => data.site.instagram = v.trim());
 bind('stIgSis', (v) => data.site.sisterBrandInstagram = v.trim());
 bind('stTiktok', (v) => data.site.tiktok = v.trim() || null);
 bind('stFb', (v) => data.site.facebook = v.trim() || null);
+bind('stCatHead', (v) => { data.catering = data.catering || {}; data.catering.headline = v; });
+bind('stCatOffer', (v) => { data.catering = data.catering || {}; data.catering.offer = v; });
 
 /* tabs */
 document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
@@ -419,9 +540,22 @@ $('btnAddOutlet').addEventListener('click', () => {
     transport: '', phone: null, geo: { lat: 0, lng: 0 }, mapsQuery: '',
     opened: new Date().toISOString().slice(0, 7), published: false,
   });
-  markDirty(); render(); validate();
+  markDirty(); rerender();
   window.scrollTo(0, document.body.scrollHeight);
 });
+
+/* add side / add-on / coming-soon */
+$('btnAddSide').addEventListener('click', () => { data.menu.sides.push({ name: '', price: '' }); markDirty(); rerender(); });
+$('btnAddAddon').addEventListener('click', () => { data.menu.setAddOns.push({ name: '', price: '' }); markDirty(); rerender(); });
+$('btnAddComing').addEventListener('click', () => {
+  data.comingSoon = Array.isArray(data.comingSoon) ? data.comingSoon : [];
+  data.comingSoon.push({ badge: 'Coming Soon', name: '', note: '' });
+  markDirty(); rerender();
+});
+
+/* expand / collapse all outlet cards */
+$('btnExpandOutlets').addEventListener('click', () => $('outletList').querySelectorAll('details').forEach((d) => d.open = true));
+$('btnCollapseOutlets').addEventListener('click', () => $('outletList').querySelectorAll('details').forEach((d) => d.open = false));
 
 /* connect / disconnect */
 $('btnConnect').addEventListener('click', () => {
