@@ -57,8 +57,7 @@ Words, layout, styling → edit the HTML/CSS.
 
 ## Common tasks
 
-Detailed step-by-step guides live in [`docs/`](docs/) and as agent-runnable
-workflows in [`.claude/skills/`](.claude/skills/):
+Detailed step-by-step guides live in [`docs/`](docs/):
 
 | Task | Guide |
 |------|-------|
@@ -104,7 +103,7 @@ One person with repo access enables it once:
 
 From then on every push and pull request runs the build, fails if generated
 output was not committed, and runs the full page audit. Until then, run
-`npm test` locally before pushing — `.claude/skills/ship-changes` does this.
+`npm test` locally before pushing.
 
 See [docs/deploy.md](docs/deploy.md) for the DigitalOcean App Platform path and
 the custom-domain migration checklist.

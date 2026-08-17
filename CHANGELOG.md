@@ -13,8 +13,8 @@ Goal: make the site maintainable by someone other than whoever built it.
 - **One source of truth.** All prices, outlets, promos and catering terms live in `data/site.json`. The build renders them into the pages, so nothing can drift between the menu page, the home page and the search-engine data.
 - **A page per outlet.** Each outlet gets its own page, map link, hours and local-SEO data, generated from the data file. Adding an outlet is one JSON entry.
 - **Conversion tracking.** Order clicks, directions, calls, promo clicks, catering enquiries and signups are tracked in GA4. Dormant until a measurement ID is added.
-- **Automated checks.** `npm test` verifies the data, then loads every page in a real browser to catch broken images, dead links, accessibility problems and layout breaks. Runs automatically on every push.
-- **Docs for humans and AI.** README, `CLAUDE.md`, task guides in `docs/`, and runnable workflows in `.claude/skills/` for adding outlets, updating the menu and shipping changes.
+- **Automated checks.** `npm test` verifies the data, then loads every page in a real browser to catch broken images, dead links, accessibility problems and layout breaks. Run it before each deploy.
+- **Docs.** README plus step-by-step guides in `docs/` for adding outlets, updating the menu, running the checks and shipping changes.
 
 **Deliberately not built yet** — see [docs/roadmap.md](docs/roadmap.md)
 
