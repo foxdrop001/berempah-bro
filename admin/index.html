@@ -130,7 +130,7 @@
       <li><b>Save &amp; Publish</b> commits the file to GitHub. The change appears on the live site after the next site build. Ask your developer if it hasn't shown up.</li>
       <li>Everything is checked before saving: bad postcodes, malformed prices or coordinates outside Singapore are blocked.</li>
     </ul>
-    <p><b>Connecting GitHub:</b> create a fine-grained personal access token at
+    <p id="connectHelp"><b>Connecting GitHub:</b> create a fine-grained personal access token at
       <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings</a>
       with access limited to the <code>berempah-bro</code> repository and <b>Contents: Read and write</b> permission.
       The token is stored only in this browser and never leaves it except to talk to GitHub.
@@ -249,6 +249,10 @@
 const REPO = { owner: 'effortxd', name: 'berempah-bro', branch: 'main', path: 'data/site.json' };
 const LS_TOKEN = 'bb_admin_token';
 let data = null, dirty = false, loadedSha = null, saving = false, editSeq = 0;
+// With no token connected, the page runs as a plain preview: the GitHub
+// controls stay hidden so a shared link shows a clean dashboard. Opening
+// /admin/?connect brings the Connect button back to set a device up.
+const canConnect = new URLSearchParams(location.search).has('connect');
 
 const $ = (id) => document.getElementById(id);
 // Storage access can throw (browser set to block site data) — treat as "no token".
@@ -261,13 +265,24 @@ const setStatus = (msg, kind) => { const el = $('status'); el.textContent = msg;
 const markDirty = () => {
   dirty = true; editSeq++;
   $('btnSave').disabled = saving || !getToken();
-  setStatus(getToken() ? 'Unsaved changes' : 'Unsaved changes. Click Connect GitHub (top right) to be able to save.', 'warn');
+  if (getToken()) setStatus('Unsaved changes', 'warn');
+  else if (canConnect) setStatus('Unsaved changes. Click Connect GitHub (top right) to be able to save.', 'warn');
+  else setStatus('Preview only. Edits here are not saved to the site.', 'warn');
 };
 
 /* ---------------- load ---------------- */
 async function load() {
   const tok = getToken();
-  if (tok) { $('connState').textContent = 'GitHub connected'; $('connState').classList.add('live'); $('btnConnect').textContent = 'Disconnect'; }
+  if (tok) {
+    $('connState').textContent = 'GitHub connected'; $('connState').classList.add('live'); $('btnConnect').textContent = 'Disconnect';
+    $('btnConnect').hidden = false; $('btnSave').hidden = false;
+  } else if (canConnect) {
+    $('btnConnect').hidden = false; $('btnSave').hidden = false;
+  } else {
+    $('btnConnect').hidden = true; $('btnSave').hidden = true;
+    $('connectHelp').hidden = true;
+    $('connState').textContent = 'Preview';
+  }
   setStatus('Loading…');
   try {
     if (tok) {
@@ -287,7 +302,9 @@ async function load() {
     }
     render();
     validate();
-    setStatus(tok ? 'Loaded the latest saved version. Edit anything above.' : 'Loaded. Connect GitHub (top right) to be able to save.');
+    setStatus(tok ? 'Loaded the latest saved version. Edit anything above.'
+      : canConnect ? 'Loaded. Connect GitHub (top right) to be able to save.'
+      : 'Loaded. This is a preview of the content dashboard.');
   } catch (e) {
     data = null;
     setStatus(`Could not load the site data (${e.message}). Check the connection, then reload the data.`, 'bad');
@@ -780,7 +797,7 @@ $('btnSave').addEventListener('click', async () => {
   }
 });
 
-addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+addEventListener('beforeunload', (e) => { if (dirty && getToken()) { e.preventDefault(); e.returnValue = ''; } });
 load();
 </script>
 
