@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.github.com; form-action 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.github.com https://www.onemap.gov.sg; form-action 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(top!==self){try{top.location.replace(self.location.href)}catch(e){document.documentElement.style.display='none'}}</script>
 <title>Content Dashboard — Berempah Bros</title>
@@ -92,7 +92,6 @@
     <p>This dashboard edits one file — <code>data/site.json</code> — which is the single source of truth for the website's menu, outlets and promotions.</p>
     <ul>
       <li><b>Save &amp; Publish</b> commits the file to GitHub. The change appears on the live site after the next site build — ask your developer if it hasn't shown up.</li>
-      <li><b>Download</b> saves the file to your computer instead, if a developer prefers to review it first.</li>
       <li>Everything is checked before saving — bad postcodes, malformed prices or coordinates outside Singapore are blocked.</li>
     </ul>
     <p><b>Connecting GitHub:</b> create a fine-grained personal access token at
@@ -206,7 +205,6 @@
 <div class="bar">
   <span class="status" id="status">Loading…</span>
   <div class="row">
-    <button class="ghost" id="btnDownload" type="button">Download file</button>
     <button class="primary" id="btnSave" type="button" disabled>Save &amp; Publish</button>
   </div>
 </div>
@@ -589,17 +587,6 @@ $('btnConnect').addEventListener('click', () => {
   $('btnConnect').textContent = 'Disconnect';
   $('btnSave').disabled = !dirty;
   setStatus('Connected. Save & Publish is ready.');
-});
-
-/* download */
-$('btnDownload').addEventListener('click', () => {
-  if (validate().length) return alert('Fix the listed problems first.');
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'site.json';
-  a.click();
-  setStatus('Downloaded. Give this file to your developer to commit.');
 });
 
 /* save via GitHub Contents API */
