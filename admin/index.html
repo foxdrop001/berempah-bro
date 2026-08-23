@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.github.com https://www.onemap.gov.sg; form-action 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -19,25 +19,36 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Karla',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;font-size:15px}
   a{color:var(--deep)}
-  header{background:var(--ink);color:var(--paper);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
-  header h1{font-size:1.4rem;letter-spacing:.01em;line-height:1.2}
+  header{background:var(--ink);color:var(--paper);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+  header h1{font-size:clamp(1.05rem,2vw + .55rem,1.4rem);letter-spacing:.01em;line-height:1.2}
   header .sub{font-size:.82rem;color:#CDB995}
+  /* pills sit on the dark header here — restate them for that surface */
+  header .pill{background:rgba(245,235,216,.08);color:#CDB995;border-color:#8A7360}
+  header .pill.live{background:rgba(46,107,63,.35);color:#A5DCB1;border-color:#5E9C6D}
+  header button{background:var(--paper);color:var(--ink)}
   .wrap{max-width:1080px;margin:0 auto;padding:24px}
-  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
-  .tab{padding:9px 16px;border:2px solid var(--ink);background:var(--paper-2);cursor:pointer;font-weight:700;font-size:.85rem;border-radius:4px}
+  /* one scrollable row on small screens, wrapping row on wide ones */
+  .tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:20px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+  .tabs::-webkit-scrollbar{height:6px}
+  .tabs::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  .tab{padding:9px 16px;min-height:44px;white-space:nowrap;border:2px solid var(--ink);background:var(--paper-2);cursor:pointer;font-weight:700;font-size:.85rem;border-radius:4px;transition:background .15s ease}
+  .tab:hover{background:var(--white)}
   .tab[aria-selected="true"]{background:var(--orange);color:var(--ink)}
+  @media (min-width:720px){.tabs{flex-wrap:wrap;overflow:visible;padding-bottom:0}}
   .panel[hidden]{display:none}
   .card{background:var(--white);border:2px solid var(--ink);border-radius:6px;padding:18px;margin-bottom:16px}
   .card h3{font-size:1.25rem;line-height:1.25;margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .muted{color:var(--ink-70);font-size:.82rem}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
   label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-70);margin-bottom:4px}
-  input,select,textarea{width:100%;font:inherit;padding:9px 11px;border:2px solid var(--line);border-radius:4px;background:var(--white);color:var(--ink);min-height:42px}
+  /* 16px inputs: below that, iPhones zoom the whole page on focus */
+  input,select,textarea{width:100%;font-family:inherit;font-size:16px;padding:9px 11px;border:2px solid var(--line);border-radius:4px;background:var(--white);color:var(--ink);min-height:42px;caret-color:var(--orange)}
   input:focus,select:focus,textarea:focus{outline:2px solid var(--orange);outline-offset:1px;border-color:var(--ink)}
   input[aria-invalid="true"]{border-color:var(--bad);background:#FDECEA}
   textarea{min-height:76px;resize:vertical}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  button{font:inherit;font-weight:700;cursor:pointer;border:2px solid var(--ink);border-radius:4px;padding:10px 18px;background:var(--paper-2);min-height:42px}
+  button{font:inherit;font-weight:700;cursor:pointer;border:2px solid var(--ink);border-radius:4px;padding:10px 18px;background:var(--paper-2);min-height:42px;transition:background .15s ease,transform .06s ease}
+  button:not(:disabled):active{transform:translateY(1px)}
   button.primary{background:var(--orange)}
   button.ghost{background:var(--white)}
   button.danger{background:#FDECEA;border-color:var(--bad);color:var(--bad)}
@@ -71,6 +82,31 @@
   .addbtn{margin-top:2px}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
   .count{font-size:.8rem;color:var(--ink-70)}
+  /* summary rows: name first, pills wrap as one unit */
+  details.card > summary .sum-name{flex:1 1 auto;min-width:0}
+  details.card > summary .sum-pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  /* status feedback colours on the dark bar */
+  .bar .status[data-kind="warn"]{color:var(--orange-light)}
+  .bar .status[data-kind="ok"]{color:#A5DCB1}
+  .bar .status[data-kind="bad"]{color:#F4A69E}
+  .bar{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+  .bar button.primary:disabled{background:#5C4632;border-color:#5C4632;color:#B39B7E;opacity:1}
+  :focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+  ::selection{background:var(--orange-light);color:var(--ink)}
+  @media (pointer:coarse){
+    button{min-height:46px}
+    .btn-sm{min-height:44px;padding:8px 12px}
+  }
+  @media (max-width:640px){
+    .wrap{padding:16px 14px}
+    header{padding:10px 14px}
+    header .sub{display:none}
+    .card{padding:14px}
+    details.card{padding:12px 14px}
+    .bar{flex-direction:column;align-items:stretch;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom))}
+    .bar .row{width:100%}
+    .bar .row button{flex:1}
+  }
 </style>
 </head>
 <body>
@@ -89,10 +125,10 @@
 <div class="wrap">
   <details class="help">
     <summary>How this works (read once)</summary>
-    <p>This dashboard edits one file — <code>data/site.json</code> — which is the single source of truth for the website's menu, outlets and promotions.</p>
+    <p>This dashboard edits one file, <code>data/site.json</code>, which is the single source of truth for the website's menu, outlets and promotions.</p>
     <ul>
-      <li><b>Save &amp; Publish</b> commits the file to GitHub. The change appears on the live site after the next site build — ask your developer if it hasn't shown up.</li>
-      <li>Everything is checked before saving — bad postcodes, malformed prices or coordinates outside Singapore are blocked.</li>
+      <li><b>Save &amp; Publish</b> commits the file to GitHub. The change appears on the live site after the next site build. Ask your developer if it hasn't shown up.</li>
+      <li>Everything is checked before saving: bad postcodes, malformed prices or coordinates outside Singapore are blocked.</li>
     </ul>
     <p><b>Connecting GitHub:</b> create a fine-grained personal access token at
       <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings</a>
@@ -160,7 +196,7 @@
         <div><label for="pmCta">Button text</label><input id="pmCta"></div>
         <div><label for="pmEnds">Ends (blank = no end date)</label><input id="pmEnds" type="datetime-local"></div>
       </div>
-      <div style="margin-top:12px"><label for="pmDesc">Description — include the conditions</label><textarea id="pmDesc"></textarea></div>
+      <div style="margin-top:12px"><label for="pmDesc">Description (include the conditions)</label><textarea id="pmDesc"></textarea></div>
       <div style="margin-top:12px"><label for="pmUrl">Link</label><input id="pmUrl" type="url"></div>
     </div>
   </section>
@@ -168,7 +204,7 @@
   <section class="panel" id="pSettings" role="tabpanel" hidden>
     <div class="card">
       <h3>Analytics</h3>
-      <p class="muted">Paste the GA4 Measurement ID (looks like <code>G-XXXXXXXXXX</code>). Leave blank to keep tracking off — events are recorded locally either way.</p>
+      <p class="muted">Paste the GA4 Measurement ID (looks like <code>G-XXXXXXXXXX</code>). Leave blank to keep tracking off; events are recorded locally either way.</p>
       <div class="grid">
         <div><label for="stGa4">GA4 Measurement ID</label><input id="stGa4" placeholder="G-XXXXXXXXXX"></div>
       </div>
@@ -191,7 +227,7 @@
     </div>
     <div class="card">
       <h3>Social</h3>
-      <p class="muted">Leave TikTok/Facebook blank until official accounts exist — blank links are hidden, not broken.</p>
+      <p class="muted">Leave TikTok/Facebook blank until official accounts exist. Blank links are hidden, not broken.</p>
       <div class="grid">
         <div><label for="stIg">Instagram</label><input id="stIg" type="url"></div>
         <div><label for="stIgSis">Gepuk Guys Instagram</label><input id="stIgSis" type="url"></div>
@@ -212,30 +248,63 @@
 <script>
 const REPO = { owner: 'effortxd', name: 'berempah-bro', branch: 'main', path: 'data/site.json' };
 const LS_TOKEN = 'bb_admin_token';
-let data = null, dirty = false;
+let data = null, dirty = false, loadedSha = null, saving = false, editSeq = 0;
 
 const $ = (id) => document.getElementById(id);
-const setStatus = (msg) => { $('status').textContent = msg; };
-const markDirty = () => { dirty = true; $('btnSave').disabled = !localStorage.getItem(LS_TOKEN); setStatus('Unsaved changes'); };
+// Storage access can throw (browser set to block site data) — treat as "no token".
+const getToken = () => { try { return localStorage.getItem(LS_TOKEN); } catch (e) { return null; } };
+const setToken = (t) => {
+  try { if (t === null) localStorage.removeItem(LS_TOKEN); else localStorage.setItem(LS_TOKEN, t); return true; }
+  catch (e) { alert('This browser is blocking site data, so the token cannot be remembered here.'); return false; }
+};
+const setStatus = (msg, kind) => { const el = $('status'); el.textContent = msg; if (kind) el.dataset.kind = kind; else delete el.dataset.kind; };
+const markDirty = () => {
+  dirty = true; editSeq++;
+  $('btnSave').disabled = saving || !getToken();
+  setStatus(getToken() ? 'Unsaved changes' : 'Unsaved changes. Click Connect GitHub (top right) to be able to save.', 'warn');
+};
 
 /* ---------------- load ---------------- */
 async function load() {
-  try {
-    const res = await fetch('../data/site.json?cb=' + Date.now());
-    data = await res.json();
-    render();
-    setStatus('Loaded. Edit anything above.');
-  } catch (e) {
-    setStatus('Could not load data/site.json — open this page through a web server, not a file:// path.');
-  }
-  const tok = localStorage.getItem(LS_TOKEN);
+  const tok = getToken();
   if (tok) { $('connState').textContent = 'GitHub connected'; $('connState').classList.add('live'); $('btnConnect').textContent = 'Disconnect'; }
+  setStatus('Loading…');
+  try {
+    if (tok) {
+      // Read the file actually being edited (branch main via the API), not the
+      // possibly older copy the live site serves — and remember its sha so a
+      // save is refused instead of overwriting someone else's newer version.
+      const r = await fetch(`https://api.github.com/repos/${REPO.owner}/${REPO.name}/contents/${REPO.path}?ref=${REPO.branch}`,
+        { headers: { Authorization: `Bearer ${tok}`, Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+      if (!r.ok) throw new Error(r.status === 401 ? 'the token was rejected' : `GitHub error ${r.status}`);
+      const meta = await r.json();
+      loadedSha = meta.sha;
+      data = JSON.parse(decodeURIComponent(escape(atob(String(meta.content).replace(/\n/g, '')))));
+    } else {
+      const res = await fetch('../data/site.json?cb=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      data = await res.json();
+    }
+    render();
+    validate();
+    setStatus(tok ? 'Loaded the latest saved version. Edit anything above.' : 'Loaded. Connect GitHub (top right) to be able to save.');
+  } catch (e) {
+    data = null;
+    setStatus(`Could not load the site data (${e.message}). Check the connection, then reload the data.`, 'bad');
+    if (!$('btnRetry')) {
+      const b = document.createElement('button');
+      b.id = 'btnRetry'; b.className = 'ghost'; b.textContent = 'Reload data'; b.type = 'button';
+      b.onclick = () => { b.remove(); load(); };
+      $('status').after(b);
+    }
+  }
 }
 
 /* ---------------- validation (mirrors test.mjs) ---------------- */
 function validate() {
   const errs = [];
   const seen = new Set();
+  if (!data.outlets.some((o) => o.published)) errs.push('At least one outlet must stay on the site: the build refuses an empty locations page');
   data.outlets.forEach((o) => {
     const w = o.name || o.slug || 'new outlet';
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(o.slug || '')) errs.push(`${w}: web address must be lowercase letters and numbers with single hyphens between them, e.g. bukit-canberra (no leading, trailing or doubled hyphens)`);
@@ -252,6 +321,7 @@ function validate() {
     if (hrs.close && !/^\d{2}:\d{2}$/.test(hrs.close)) errs.push(`${w}: closing time must look like 20:30`);
     if (!!hrs.open !== !!hrs.close) errs.push(`${w}: fill in both opening and closing time, or leave both blank`);
     if (hrs.open && hrs.close && hrs.open >= hrs.close) errs.push(`${w}: closing time must be after opening time`);
+    if (hrs.open && !/\d/.test(String(hrs.display || ''))) errs.push(`${w}: "Hours shown to customers" must state the actual times (it still says "${hrs.display || 'nothing'}")`);
     if (o.phone && !/^\+65 ?\d{4} ?\d{4}$/.test(o.phone)) errs.push(`${w}: phone must look like +65 9058 9674`);
   });
   const price = (v) => /^\d+\.\d{2}$/.test(String(v));
@@ -269,8 +339,11 @@ function validate() {
   (data.comingSoon || []).forEach((c, i) => {
     if (!c.name && !c.badge) errs.push(`coming-soon card ${i + 1}: give it at least a badge or a title`);
   });
+  if (!data.menu.sections.some((s) => s.items.some((i) => i.slug === 'ayam'))) errs.push('Keep one menu item with the slug "ayam" (the home page reads the signature set price from it)');
   if (data.promo.active && !data.promo.code) errs.push('Promotion is running but has no code');
   if (data.promo.active && !data.promo.title) errs.push('Promotion is running but has no headline');
+  if (data.promo.active && !data.promo.url) errs.push('Promotion is running but has no link for the button');
+  if (data.promo.active && !data.promo.cta) errs.push('Promotion is running but has no button text');
   const ga = data.site.analytics.ga4MeasurementId;
   if (ga && !/^G-[A-Z0-9]{6,}$/i.test(ga)) errs.push('GA4 Measurement ID should look like G-XXXXXXXXXX');
 
@@ -294,7 +367,7 @@ function field(label, value, oninput, opts = {}) {
   el.innerHTML = `<label for="${id}">${h(label)}</label>` +
     (opts.type === 'textarea'
       ? `<textarea id="${id}"></textarea>`
-      : `<input id="${id}" ${opts.type ? `type="${h(opts.type)}"` : ''} ${opts.placeholder ? `placeholder="${h(opts.placeholder)}"` : ''}>`);
+      : `<input id="${id}" ${opts.type ? `type="${h(opts.type)}"` : ''} ${opts.inputmode ? `inputmode="${h(opts.inputmode)}"` : ''} ${opts.placeholder ? `placeholder="${h(opts.placeholder)}"` : ''}>`);
   const input = el.querySelector('input,textarea');
   input.value = value ?? '';
   input.addEventListener('input', () => { oninput(input.value); markDirty(); validate(); });
@@ -314,14 +387,35 @@ function listControls(arr, idx, after, opts = {}) {
   box.append(
     mk('↑ Up', 'ghost', () => { swap(arr, idx, idx - 1); markDirty(); after(); }, idx === 0),
     mk('↓ Down', 'ghost', () => { swap(arr, idx, idx + 1); markDirty(); after(); }, idx === arr.length - 1),
-    mk('Delete', 'danger', () => {
+  );
+  if (!opts.noDelete) {
+    box.append(mk('Delete', 'danger', () => {
       if (!confirm(opts.confirm || 'Delete this item?')) return;
       arr.splice(idx, 1); markDirty(); after();
-    }),
-  );
+    }));
+  }
   return box;
 }
 const rerender = () => { render(); validate(); };
+
+// Stable identity for collapse-state across re-renders: keyed by the object
+// itself, so editing a slug or reordering doesn't snap the card shut.
+const cardKeys = new WeakMap();
+let cardKeySeq = 0;
+const keyOf = (obj) => {
+  let k = cardKeys.get(obj);
+  if (!k) { k = 'k' + (++cardKeySeq); cardKeys.set(obj, k); }
+  return k;
+};
+
+// Accepts "1.3049" — or a pasted "1.3049, 103.8318" pair straight from Google
+// Maps, which fills both fields instead of silently keeping only the first.
+function setGeo(geo, which, v) {
+  const pair = String(v).split(',').map((s) => parseFloat(s));
+  if (pair.length === 2 && pair.every(Number.isFinite)) { geo.lat = pair[0]; geo.lng = pair[1]; rerender(); return; }
+  const n = parseFloat(v);
+  geo[which] = Number.isFinite(n) ? n : null; // never store NaN in the data file
+}
 
 function render() {
   /* outlets — each is collapsible so the page stays short */
@@ -332,19 +426,21 @@ function render() {
   wrap.innerHTML = '';
   $('outletCount').textContent = `${data.outlets.filter((o) => o.published).length} on the site · ${data.outlets.length} total`;
   data.outlets.forEach((o, idx) => {
+    // A hand-edited data file may lack the hours object the fields below expect.
+    o.hours = o.hours || { display: '', open: null, close: null };
     const card = document.createElement('details');
-    card.dataset.key = o.slug || 'outlet-' + idx;
+    card.dataset.key = keyOf(o);
     card.className = 'card' + (o.published ? '' : ' dim');
     if (!o.slug || !o.name) card.open = true; // new/incomplete outlets start open
     else if (openOutlets.has(card.dataset.key)) card.open = true;
     const sum = document.createElement('summary');
-    sum.innerHTML = `${h(o.name || 'New outlet')}
-        <span class="pill ${o.published ? 'live' : 'draft'}">${o.published ? 'On the site' : 'Draft'}</span>
-        <span class="pill">${h(o.brand || '')}</span>`;
+    sum.innerHTML = `<span class="sum-name">${h(o.name || 'New outlet')}</span>
+        <span class="sum-pills"><span class="pill ${o.published ? 'live' : 'draft'}">${o.published ? 'On the site' : 'Draft'}</span>
+        <span class="pill">${h(o.brand || '')}</span></span>`;
     card.append(sum);
     const addr = document.createElement('p');
     addr.className = 'muted';
-    addr.innerHTML = `Web address: /locations/${h(o.slug || '…')}/ — don't change this after the outlet is live.`;
+    addr.innerHTML = `Web address: /locations/${h(o.slug || '…')}/ (don't change this after the outlet is live).`;
     card.append(addr);
     const grid = document.createElement('div');
     grid.className = 'grid';
@@ -354,15 +450,15 @@ function render() {
       field('Area label', o.badge, (v) => o.badge = v),
       field('Web address (slug)', o.slug, (v) => o.slug = v),
       field('Street address + unit', o.address, (v) => o.address = v),
-      field('Postal code', o.postal, (v) => o.postal = v),
+      field('Postal code', o.postal, (v) => o.postal = v, { inputmode: 'numeric' }),
       field('Hours shown to customers', o.hours.display, (v) => o.hours.display = v, { placeholder: 'Daily 10:30am – 8:30pm' }),
       field('Opens (24h)', o.hours.open, (v) => o.hours.open = v || null, { placeholder: '10:30' }),
       field('Closes (24h)', o.hours.close, (v) => o.hours.close = v || null, { placeholder: '20:30' }),
       field('Nearest MRT / transport', o.transport, (v) => o.transport = v),
-      field('Phone', o.phone, (v) => o.phone = v || null, { placeholder: '+65 9058 9674' }),
+      field('Phone', o.phone, (v) => o.phone = v || null, { placeholder: '+65 9058 9674', inputmode: 'tel' }),
       field('Google Maps search text', o.mapsQuery, (v) => o.mapsQuery = v),
-      field('Latitude', o.geo?.lat, (v) => { o.geo = o.geo || {}; o.geo.lat = parseFloat(v); }),
-      field('Longitude', o.geo?.lng, (v) => { o.geo = o.geo || {}; o.geo.lng = parseFloat(v); }),
+      field('Latitude', o.geo?.lat, (v) => { o.geo = o.geo || {}; setGeo(o.geo, 'lat', v); }, { inputmode: 'decimal' }),
+      field('Longitude', o.geo?.lng, (v) => { o.geo = o.geo || {}; setGeo(o.geo, 'lng', v); }, { inputmode: 'decimal' }),
     );
     card.append(grid);
     const note = field('Extra note (optional)', o.note, (v) => o.note = v || undefined, { type: 'textarea' });
@@ -380,7 +476,7 @@ function render() {
     del.className = 'danger';
     del.textContent = 'Delete';
     del.onclick = () => {
-      if (!confirm(`Delete ${o.name || 'this outlet'} completely?\n\nIf the stall might reopen, use "Take off the site" instead — it keeps the details.`)) return;
+      if (!confirm(`Delete ${o.name || 'this outlet'} completely?\n\nIf the stall might reopen, use "Take off the site" instead, which keeps the details.`)) return;
       data.outlets.splice(idx, 1); markDirty(); rerender();
     };
     const geo = document.createElement('button');
@@ -402,6 +498,8 @@ function render() {
     };
     row.append(toggle, geo, del);
     card.append(row);
+    // Locations-page order is this list's order — let staff reorder outlets too.
+    card.append(listControls(data.outlets, idx, rerender, { noDelete: true }));
     wrap.append(card);
   });
 
@@ -412,11 +510,11 @@ function render() {
   ml.innerHTML = '';
   data.menu.sections.forEach((sec, si) => {
     const card = document.createElement('details');
-    card.dataset.key = 'sec-' + si;
+    card.dataset.key = keyOf(sec);
     card.className = 'card';
     card.open = hadSections ? openSections.has(card.dataset.key) : true;
     const sum = document.createElement('summary');
-    sum.innerHTML = `${h(sec.name)} <span class="muted">${sec.items.length} item${sec.items.length === 1 ? '' : 's'}</span>`;
+    sum.innerHTML = `<span class="sum-name">${h(sec.name)}</span> <span class="muted">${sec.items.length} item${sec.items.length === 1 ? '' : 's'}</span>`;
     card.append(sum);
     sec.items.forEach((it, ii) => {
       const box = document.createElement('div');
@@ -425,7 +523,7 @@ function render() {
       g.className = 'grid';
       g.append(
         field('Item name', it.name, (v) => it.name = v),
-        field('Price', it.price, (v) => it.price = v, { placeholder: '9.00' }),
+        field('Price', it.price, (v) => it.price = v, { placeholder: '9.00', inputmode: 'decimal' }),
         field('Photo file (in assets, without .webp)', it.image || '', (v) => it.image = v.trim() || undefined, { placeholder: 'ayam' }),
         field('Slug (id)', it.slug || '', (v) => it.slug = v.trim()),
         field('Tags (comma separated)', (it.tags || []).join(', '), (v) => it.tags = v.split(',').map((t) => t.trim()).filter(Boolean)),
@@ -451,7 +549,7 @@ function render() {
     const g = document.createElement('div'); g.className = 'grid';
     g.append(
       field('Name', arr[idx].name, (v) => arr[idx].name = v),
-      field('Price' + (suffix || ''), arr[idx].price, (v) => arr[idx].price = v, { placeholder: '1.80' }),
+      field('Price' + (suffix || ''), arr[idx].price, (v) => arr[idx].price = v, { placeholder: '1.80', inputmode: 'decimal' }),
     );
     box.append(g);
     box.append(listControls(arr, idx, rerender, { confirm: `Delete "${arr[idx].name || 'this'}"?` }));
@@ -512,14 +610,20 @@ function render() {
 }
 
 /* simple inputs bind directly */
-const bind = (id, apply) => $(id).addEventListener('input', (e) => { apply(e.target.value); markDirty(); validate(); });
+const bind = (id, apply) => $(id).addEventListener('input', (e) => { if (!data) return; apply(e.target.value); markDirty(); validate(); });
 bind('pmKicker', (v) => data.promo.kicker = v);
 bind('pmTitle', (v) => data.promo.title = v);
 bind('pmCode', (v) => data.promo.code = v);
 bind('pmCta', (v) => data.promo.cta = v);
 bind('pmDesc', (v) => data.promo.desc = v);
 bind('pmUrl', (v) => data.promo.url = v);
-bind('pmEnds', (v) => data.promo.endsISO = v ? new Date(v).toISOString() : null);
+bind('pmEnds', (v) => {
+  // Some browsers fall back to a plain text input for datetime-local; ignore
+  // half-typed values instead of throwing on every keystroke.
+  if (!v) { data.promo.endsISO = null; return; }
+  const d = new Date(v);
+  if (!isNaN(d.getTime())) data.promo.endsISO = d.toISOString();
+});
 $('pmActive').addEventListener('change', (e) => {
   data.promo.active = e.target.value === 'true';
   $('promoState').textContent = data.promo.active ? 'Running' : 'Off';
@@ -537,14 +641,38 @@ bind('stFb', (v) => data.site.facebook = v.trim() || null);
 bind('stCatHead', (v) => { data.catering = data.catering || {}; data.catering.headline = v; });
 bind('stCatOffer', (v) => { data.catering = data.catering || {}; data.catering.offer = v; });
 
-/* tabs */
-document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
-  document.querySelectorAll('.tab').forEach((x) => x.setAttribute('aria-selected', String(x === t)));
+/* tabs — full ARIA tabs contract: roving tabindex + arrow keys */
+const tabs = [...document.querySelectorAll('.tab')];
+tabs.forEach((t) => {
+  t.id = 'tab-' + t.dataset.panel;
+  t.setAttribute('aria-controls', t.dataset.panel);
+  t.tabIndex = t.getAttribute('aria-selected') === 'true' ? 0 : -1;
+});
+document.querySelectorAll('.panel').forEach((p) => p.setAttribute('aria-labelledby', 'tab-' + p.id));
+function selectTab(t) {
+  tabs.forEach((x) => {
+    const sel = x === t;
+    x.setAttribute('aria-selected', String(sel));
+    x.tabIndex = sel ? 0 : -1;
+  });
   document.querySelectorAll('.panel').forEach((p) => p.hidden = p.id !== t.dataset.panel);
-}));
+}
+tabs.forEach((t) => {
+  t.addEventListener('click', () => selectTab(t));
+  t.addEventListener('keydown', (e) => {
+    const i = tabs.indexOf(t);
+    let j = null;
+    if (e.key === 'ArrowRight') j = (i + 1) % tabs.length;
+    else if (e.key === 'ArrowLeft') j = (i - 1 + tabs.length) % tabs.length;
+    else if (e.key === 'Home') j = 0;
+    else if (e.key === 'End') j = tabs.length - 1;
+    if (j !== null) { e.preventDefault(); tabs[j].focus(); selectTab(tabs[j]); }
+  });
+});
 
 /* add outlet */
 $('btnAddOutlet').addEventListener('click', () => {
+  if (!data) return;
   data.outlets.push({
     slug: '', brand: 'Berempah Bros', name: '', badge: '', address: '', postal: '',
     hours: { display: 'Opening hours to be confirmed', open: null, close: null },
@@ -556,9 +684,10 @@ $('btnAddOutlet').addEventListener('click', () => {
 });
 
 /* add side / add-on / coming-soon */
-$('btnAddSide').addEventListener('click', () => { data.menu.sides.push({ name: '', price: '' }); markDirty(); rerender(); });
-$('btnAddAddon').addEventListener('click', () => { data.menu.setAddOns.push({ name: '', price: '' }); markDirty(); rerender(); });
+$('btnAddSide').addEventListener('click', () => { if (!data) return; data.menu.sides.push({ name: '', price: '' }); markDirty(); rerender(); });
+$('btnAddAddon').addEventListener('click', () => { if (!data) return; data.menu.setAddOns.push({ name: '', price: '' }); markDirty(); rerender(); });
 $('btnAddComing').addEventListener('click', () => {
+  if (!data) return;
   data.comingSoon = Array.isArray(data.comingSoon) ? data.comingSoon : [];
   data.comingSoon.push({ badge: 'Coming Soon', name: '', note: '' });
   markDirty(); rerender();
@@ -570,9 +699,9 @@ $('btnCollapseOutlets').addEventListener('click', () => $('outletList').querySel
 
 /* connect / disconnect */
 $('btnConnect').addEventListener('click', () => {
-  if (localStorage.getItem(LS_TOKEN)) {
+  if (getToken()) {
     if (!confirm('Disconnect GitHub from this browser?')) return;
-    localStorage.removeItem(LS_TOKEN);
+    setToken(null);
     $('connState').textContent = 'Not connected';
     $('connState').classList.remove('live');
     $('btnConnect').textContent = 'Connect GitHub';
@@ -581,45 +710,73 @@ $('btnConnect').addEventListener('click', () => {
   }
   const t = prompt('Paste your GitHub personal access token.\n\nFine-grained token, this repository only, Contents: Read and write.\nIt is stored only in this browser.');
   if (!t) return;
-  localStorage.setItem(LS_TOKEN, t.trim());
+  if (!setToken(t.trim())) return;
   $('connState').textContent = 'GitHub connected';
   $('connState').classList.add('live');
   $('btnConnect').textContent = 'Disconnect';
-  $('btnSave').disabled = !dirty;
-  setStatus('Connected. Save & Publish is ready.');
+  if (dirty) {
+    $('btnSave').disabled = false;
+    setStatus('Connected. Save & Publish is ready.');
+  } else {
+    // Nothing typed yet — refresh from the latest saved version and capture
+    // its sha, so this session gets proper conflict protection.
+    load();
+  }
 });
 
 /* save via GitHub Contents API */
 $('btnSave').addEventListener('click', async () => {
-  if (validate().length) return alert('Fix the listed problems first.');
-  const token = localStorage.getItem(LS_TOKEN);
-  if (!token) return alert('Connect GitHub first.');
-  const summary = prompt('Short note about this change (shown in the site history):', 'content: update site data');
-  if (summary === null) return;
-
+  if (!data || saving) return;
+  if (validate().length) {
+    $('issues').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return alert('Fix the listed problems first — they are shown at the top of the page.');
+  }
+  const token = getToken();
+  if (!token) return alert('Connect GitHub first (top right).');
+  saving = true;
   $('btnSave').disabled = true;
   setStatus('Saving…');
   const api = `https://api.github.com/repos/${REPO.owner}/${REPO.name}/contents/${REPO.path}`;
   const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' };
   try {
-    const cur = await fetch(`${api}?ref=${REPO.branch}`, { headers });
-    if (!cur.ok) throw new Error(cur.status === 401 ? 'Token rejected — check it has Contents: Read and write on this repo.' : `GitHub error ${cur.status}`);
-    const meta = await cur.json();
+    // The sha captured at load time is the version these edits started from.
+    // Saving with it makes GitHub refuse the write if someone else saved since,
+    // instead of silently overwriting their change.
+    let sha = loadedSha;
+    if (!sha) {
+      const cur = await fetch(`${api}?ref=${REPO.branch}`, { headers, cache: 'no-store' });
+      if (!cur.ok) throw new Error(cur.status === 401 ? 'The token was rejected — check it has Contents: Read and write on this repository.' : `GitHub error ${cur.status}`);
+      sha = (await cur.json()).sha;
+    }
+    const seqAtSend = editSeq;
     const body = {
-      message: summary || 'content: update site data',
+      message: 'update site content from the dashboard',
       content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2) + '\n'))),
-      sha: meta.sha,
+      sha,
       branch: REPO.branch,
     };
-    const put = await fetch(api, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (!put.ok) throw new Error(`Save failed (${put.status}) — someone may have edited the file at the same time. Reload and try again.`);
-    dirty = false;
-    setStatus('Saved to GitHub. The change goes live with the next site build.');
+    const put = await fetch(api, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store' });
+    if (put.status === 409) {
+      throw new Error('Someone else saved changes after this page loaded, so nothing was overwritten.\n\nKeep this tab open (your edits are safe here), open the dashboard in a NEW tab to see their version, then re-apply your change there and save.');
+    }
+    if (put.status === 401 || put.status === 403 || put.status === 404) {
+      throw new Error(`GitHub refused the save (${put.status}). The token probably lacks "Contents: Read and write" on this repository, or has expired.\n\nYour edits are still here — click Disconnect, then Connect GitHub with a new token, and save again.`);
+    }
+    if (!put.ok) throw new Error(`Save failed (${put.status}). Your edits are still in this tab — try again in a minute.`);
+    const saved = await put.json();
+    loadedSha = saved && saved.content && saved.content.sha ? saved.content.sha : null;
+    if (editSeq === seqAtSend) {
+      dirty = false;
+      setStatus('Saved to GitHub. The change goes live with the next site build.', 'ok');
+    } else {
+      setStatus('Saved — but edits made while it was saving are not included yet. Save again.', 'warn');
+    }
   } catch (e) {
-    setStatus('Not saved.');
+    setStatus('Not saved.', 'bad');
     alert(e.message);
   } finally {
-    $('btnSave').disabled = !dirty;
+    saving = false;
+    $('btnSave').disabled = !dirty || !getToken();
   }
 });
 

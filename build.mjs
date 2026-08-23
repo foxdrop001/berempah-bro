@@ -187,9 +187,15 @@ region('menu/index.html', 'promo', promoHtml);
 
 
 /* Catering offer line — single source is data.catering. The offer is stored
-   as plain text and escaped here like every other data value. */
+   as plain text and escaped here like every other data value. The tel: link is
+   derived from the displayed number, so editing the phone in the dashboard
+   updates what the link dials too. */
+const cateringTel = (() => {
+  const digits = String(site.cateringPhone || '').replace(/[^\d+]/g, '');
+  return digits.startsWith('+') ? digits : '+65' + digits;
+})();
 region('menu/index.html', 'catering',
-  `        <b style="color:var(--paper)">${esc(catering.offer)}</b><br>Call <a href="tel:${site.cateringPhoneE164}" style="color:#F2BE8E;font-weight:700">${esc(site.cateringPhone)}</a> for catering enquiries, or DM us on Instagram with your date, headcount and venue.`);
+  `        <b style="color:var(--paper)">${esc(catering.offer)}</b><br>Call <a href="tel:${cateringTel}" style="color:#F2BE8E;font-weight:700">${esc(site.cateringPhone)}</a> for catering enquiries, or DM us on Instagram with your date, headcount and venue.`);
 
 /* Catering form outlet dropdown */
 region('contact/index.html', 'catering-outlets',
