@@ -78,7 +78,7 @@
 <header>
   <div>
     <h1>Berempah Bros — Content Dashboard</h1>
-    <p class="sub">Edit menu, outlets, promos and settings. Changes publish to the live site.</p>
+    <p class="sub">Edit menu, outlets, promos and settings. Saves commit to the site's data file.</p>
   </div>
   <div class="row">
     <span id="connState" class="pill">Not connected</span>
@@ -91,7 +91,7 @@
     <summary>How this works (read once)</summary>
     <p>This dashboard edits one file — <code>data/site.json</code> — which is the single source of truth for the website's menu, outlets and promotions.</p>
     <ul>
-      <li><b>Save &amp; Publish</b> commits the file to GitHub. The site rebuilds and goes live automatically in about a minute.</li>
+      <li><b>Save &amp; Publish</b> commits the file to GitHub. The change appears on the live site after the next site build — ask your developer if it hasn't shown up.</li>
       <li><b>Download</b> saves the file to your computer instead, if a developer prefers to review it first.</li>
       <li>Everything is checked before saving — bad postcodes, malformed prices or coordinates outside Singapore are blocked.</li>
     </ul>
@@ -214,7 +214,7 @@
 <script>
 const REPO = { owner: 'effortxd', name: 'berempah-bro', branch: 'main', path: 'data/site.json' };
 const LS_TOKEN = 'bb_admin_token';
-let data = null, sha = null, dirty = false;
+let data = null, dirty = false;
 
 const $ = (id) => document.getElementById(id);
 const setStatus = (msg) => { $('status').textContent = msg; };
@@ -328,12 +328,17 @@ const rerender = () => { render(); validate(); };
 function render() {
   /* outlets — each is collapsible so the page stays short */
   const wrap = $('outletList');
+  // Remember which cards the editor had open, so a re-render (add / delete /
+  // publish toggle) doesn't snap everything shut and lose their place.
+  const openOutlets = new Set([...wrap.querySelectorAll('details[data-key]')].filter((d) => d.open).map((d) => d.dataset.key));
   wrap.innerHTML = '';
   $('outletCount').textContent = `${data.outlets.filter((o) => o.published).length} on the site · ${data.outlets.length} total`;
   data.outlets.forEach((o, idx) => {
     const card = document.createElement('details');
+    card.dataset.key = o.slug || 'outlet-' + idx;
     card.className = 'card' + (o.published ? '' : ' dim');
     if (!o.slug || !o.name) card.open = true; // new/incomplete outlets start open
+    else if (openOutlets.has(card.dataset.key)) card.open = true;
     const sum = document.createElement('summary');
     sum.innerHTML = `${h(o.name || 'New outlet')}
         <span class="pill ${o.published ? 'live' : 'draft'}">${o.published ? 'On the site' : 'Draft'}</span>
@@ -404,10 +409,14 @@ function render() {
 
   /* menu — sections are collapsible; items can be added, reordered, deleted */
   const ml = $('menuList');
+  const hadSections = ml.children.length > 0;
+  const openSections = new Set([...ml.querySelectorAll('details[data-key]')].filter((d) => d.open).map((d) => d.dataset.key));
   ml.innerHTML = '';
   data.menu.sections.forEach((sec, si) => {
     const card = document.createElement('details');
-    card.className = 'card'; card.open = true;
+    card.dataset.key = 'sec-' + si;
+    card.className = 'card';
+    card.open = hadSections ? openSections.has(card.dataset.key) : true;
     const sum = document.createElement('summary');
     sum.innerHTML = `${h(sec.name)} <span class="muted">${sec.items.length} item${sec.items.length === 1 ? '' : 's'}</span>`;
     card.append(sum);
@@ -487,7 +496,11 @@ function render() {
   $('pmCta').value = data.promo.cta || '';
   $('pmDesc').value = data.promo.desc || '';
   $('pmUrl').value = data.promo.url || '';
-  $('pmEnds').value = data.promo.endsISO ? data.promo.endsISO.slice(0, 16) : '';
+  // endsISO is stored as UTC; the datetime-local field shows local wall-clock
+  // time. Convert on load so an open→save round-trip doesn't shift the time.
+  $('pmEnds').value = data.promo.endsISO
+    ? (() => { const d = new Date(data.promo.endsISO); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); })()
+    : '';
 
   /* settings */
   $('stGa4').value = data.site.analytics.ga4MeasurementId || '';
@@ -614,7 +627,7 @@ $('btnSave').addEventListener('click', async () => {
     const put = await fetch(api, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     if (!put.ok) throw new Error(`Save failed (${put.status}) — someone may have edited the file at the same time. Reload and try again.`);
     dirty = false;
-    setStatus('Saved. The site rebuilds and goes live in about a minute.');
+    setStatus('Saved to GitHub. The change goes live with the next site build.');
   } catch (e) {
     setStatus('Not saved.');
     alert(e.message);
