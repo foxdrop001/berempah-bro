@@ -89,21 +89,26 @@ Singapore); it cannot tell you a price is out of date.
 
 ## Deployment
 
-Every push to `main` publishes to GitHub Pages (`gh-pages` branch is kept in
-sync).
+The live site serves from the `gh-pages` branch; `main` holds the source.
+Publishing means getting a built `main` onto `gh-pages`.
 
-**Continuous integration is written but not yet switched on.** The workflow
-lives at [`docs/ci-workflow.yml`](docs/ci-workflow.yml); GitHub only runs
-workflows from `.github/workflows/`, and adding a file there requires a token
-with `workflow` scope, which the deploy credential deliberately does not have.
-One person with repo access enables it once:
+**Two workflows are written but not yet switched on** (GitHub only runs
+workflows from `.github/workflows/`, and adding a file there needs a token
+with `workflow` scope, which the deploy credential deliberately does not
+have). One person with repo access enables each once — on GitHub →
+**Actions** → *set up a workflow yourself*, then:
 
-1. On GitHub → **Actions** → *set up a workflow yourself*
-2. Name it `ci.yml`, paste the contents of `docs/ci-workflow.yml`, commit
+1. **`publish.yml`** — paste [`docs/publish-workflow.yml`](docs/publish-workflow.yml).
+   From then on, every dashboard save (or any push to `main`) rebuilds the
+   pages and publishes them automatically in about a minute. This makes
+   `/admin/` Save &amp; Publish the entire flow — no developer step.
+2. **`ci.yml`** — paste [`docs/ci-workflow.yml`](docs/ci-workflow.yml).
+   Every push and pull request then runs the build, fails on uncommitted
+   generated output, and runs the full page audit.
 
-From then on every push and pull request runs the build, fails if generated
-output was not committed, and runs the full page audit. Until then, run
-`npm test` locally before pushing.
+Until the publish workflow is on, deploy by hand: `npm run build`, commit,
+then `git push origin main main:gh-pages`. Until CI is on, run `npm test`
+locally before pushing.
 
 See [docs/deploy.md](docs/deploy.md) for the DigitalOcean App Platform path and
 the custom-domain migration checklist.

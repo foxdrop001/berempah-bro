@@ -1,0 +1,44 @@
+# Auto-publish: whenever anything lands on main (e.g. a dashboard save),
+# rebuild the pages from data/site.json and push the result to the live
+# gh-pages branch. Makes "Save & Publish" in /admin/ the whole flow.
+#
+# GitHub only runs workflows from .github/workflows/, and pushing a file
+# there needs a token with "workflow" scope that the deploy credential
+# does not have. One-time setup by someone with repo access:
+#   GitHub → Actions → "set up a workflow yourself" → name it publish.yml
+#   → paste this file → Commit. That's it.
+#
+# The build needs no npm install (node built-ins only), so a save is live
+# in about a minute. Pushes made by this workflow use the built-in token,
+# which cannot re-trigger workflows — no loops.
+
+name: publish
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+concurrency:
+  group: publish
+  cancel-in-progress: true
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build pages from the data file
+        run: node build.mjs
+      - name: Commit rebuilt output back to main
+        run: |
+          git config user.name "effortxd"
+          git config user.email "effortxd@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "rebuild pages from data"
+          git push origin main
+      - name: Publish to the live branch
+        run: git push --force origin main:gh-pages
