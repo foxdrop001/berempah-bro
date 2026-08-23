@@ -176,24 +176,8 @@
     });
   },{threshold:.12});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-  (function(){
-    try{
-      const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Singapore',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
-      const [h,m]=parts.split(':').map(Number);
-      const now=h*60+m;
-      document.querySelectorAll('[data-hours]').forEach(card=>{
-        const [o,c]=card.dataset.hours.split('-');
-        const [oh,om]=o.split(':').map(Number);
-        const [ch,cm]=c.split(':').map(Number);
-        const open=now>=oh*60+om&&now<ch*60+cm;
-        const chip=document.createElement('span');
-        chip.className='loc-chip '+(open?'open':'closed');
-        chip.textContent=open?'● Open now':'● Closed — opens '+o.replace(/^0/,'')+'am';
-        card.appendChild(chip);
-      });
-    }catch(e){}
-  })();
 </script>
+<script src="../../assets/open-now.js"></script>
 
 </body>
 </html>

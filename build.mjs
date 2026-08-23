@@ -41,17 +41,34 @@ const mapsUrl = (o) => `https://www.google.com/maps/search/?api=1&query=${encode
 // brand when the outlet name already leads with it (e.g. Gepuk Guys' outlet).
 const fullName = (o) => (o.brand && o.name.startsWith(o.brand)) ? o.name : [o.brand, o.name].filter(Boolean).join(' — ');
 
-/** Replace a marked region inside a file. */
+/** Replace a marked region inside a file. Pages are edited in memory and
+ *  flushed once each — not re-read and re-written per region. */
+const pages = new Map(); // file → { orig, cur }
 function region(file, name, html) {
-  const p = path.join(ROOT, file);
-  const src = readFileSync(p, 'utf8');
+  let page = pages.get(file);
+  if (!page) {
+    const src = readFileSync(path.join(ROOT, file), 'utf8');
+    page = { orig: src, cur: src };
+    pages.set(file, page);
+  }
   const re = new RegExp(`(<!-- BUILD:${name} -->)[\\s\\S]*?(<!-- /BUILD:${name} -->)`);
-  if (!re.test(src)) throw new Error(`Missing BUILD:${name} markers in ${file}`);
+  if (!re.test(page.cur)) throw new Error(`Missing BUILD:${name} markers in ${file}`);
   // Replacer must be a function: generated content contains prices like "$1.80",
   // and in a string replacement `$1` would expand to a capture group.
-  const out = src.replace(re, (_match, open, close) => `${open}\n${html.trimEnd()}\n${close}`);
-  if (out !== src) { writeFileSync(p, out); touched++; console.log(`  updated ${file} → ${name}`); }
+  page.cur = page.cur.replace(re, (_match, open, close) => `${open}\n${html.trimEnd()}\n${close}`);
 }
+function flushPages() {
+  for (const [file, page] of pages) {
+    if (page.cur === page.orig) continue;
+    writeFileSync(path.join(ROOT, file), page.cur);
+    touched++;
+    console.log(`  updated ${file}`);
+  }
+}
+
+// JSON-LD is embedded inside <script> tags: escape "<" so no data value can
+// close the tag early ("</script>") and smuggle markup into the page.
+const jsonLd = (obj) => JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
 
 /* ------------------------------------------------------------------ *
  * Shared fragments
@@ -81,8 +98,8 @@ const locCards = outlets.map((o, i) => {
           ${o.phone ? `<p class="loc-line">${icon.phone} <a href="tel:${o.phone.replace(/\s/g, '')}" data-track="call" data-outlet="${o.slug}">${esc(o.phone)}</a></p>` : ''}
           ${o.note ? `<p class="loc-line">${icon.spice} ${esc(o.note)}</p>` : ''}
           <span class="loc-chip"><a href="${o.slug}/" style="text-decoration:none">Outlet page →</a></span>
-          <span class="loc-chip"><a href="${mapsUrl(o)}" target="_blank" rel="noopener" style="text-decoration:none" data-track="directions" data-outlet="${o.slug}">Directions ↗</a></span>
-          <span class="loc-chip"><a href="${site.orderUrl}" target="_blank" rel="noopener" style="text-decoration:none" data-track="order" data-outlet="${o.slug}">Order ↗</a></span>
+          <span class="loc-chip"><a href="${esc(mapsUrl(o))}" target="_blank" rel="noopener" style="text-decoration:none" data-track="directions" data-outlet="${o.slug}">Directions ↗</a></span>
+          <span class="loc-chip"><a href="${esc(site.orderUrl)}" target="_blank" rel="noopener" style="text-decoration:none" data-track="order" data-outlet="${o.slug}">Order ↗</a></span>
         </article>`;
 }).join('\n');
 const comingCards = comingSoon.map((c, i) => {
@@ -91,7 +108,7 @@ const comingCards = comingSoon.map((c, i) => {
           <span class="loc-num" style="background:var(--turmeric);color:var(--ink)">NO. ${num} — ${esc(String(c.badge || 'Coming Soon').toUpperCase())}</span>
           <h3>${esc(c.name || 'Coming Soon')}</h3>
           ${c.note ? `<p class="loc-line">${icon.spice} ${esc(c.note)}</p>` : ''}
-          <span class="loc-chip"><a href="${site.instagram}" target="_blank" rel="noopener" style="text-decoration:none">Watch on Instagram ↗</a></span>
+          <span class="loc-chip"><a href="${esc(site.instagram)}" target="_blank" rel="noopener" style="text-decoration:none">Watch on Instagram ↗</a></span>
         </article>`;
 }).join('\n');
 region('locations/index.html', 'outlets', [locCards, comingCards].filter(Boolean).join('\n'));
@@ -125,7 +142,7 @@ const sidesRow = `        <h3>Sides</h3>\n` + menu.sides.map((s) => `        <sp
 region('menu/index.html', 'sides', sidesRow);
 
 const builderProteins = menu.sections.flatMap((s) => s.items).filter((i) => i.slug !== 'feast2')
-  .map((it, i) => `              <label class="chip"><input type="radio" name="protein" value="${it.price}" data-name="${esc(it.name)}"${i === 0 ? ' checked' : ''}><span>${esc(it.name.replace(' Berempah', ''))} $${it.price}</span></label>`).join('\n');
+  .map((it, i) => `              <label class="chip"><input type="radio" name="protein" value="${it.price}" data-slug="${it.slug || ''}" data-name="${esc(it.name)}"${i === 0 ? ' checked' : ''}><span>${esc(it.name.replace(' Berempah', ''))} $${it.price}</span></label>`).join('\n');
 region('menu/index.html', 'builder-proteins', builderProteins);
 
 const builderCuts = menu.chickenParts.map((c, i) =>
@@ -160,7 +177,7 @@ const promoHtml = promo.active ? `      <div class="lto-chit reveal" data-ends="
             <span class="lto-colon">:</span>
             <div class="lto-slot"><span class="lto-num" data-lto="m">--</span><span class="lto-lbl">mins</span></div>
           </div>
-          <a class="btn btn-gold lto-cta" href="${promo.url}" target="_blank" rel="noopener" data-track="promo" data-promo="${esc(promo.code)}">
+          <a class="btn btn-gold lto-cta" href="${esc(promo.url)}" target="_blank" rel="noopener" data-track="promo" data-promo="${esc(promo.code)}">
             <span class="lto-cta-txt">${esc(promo.cta)}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
@@ -169,8 +186,8 @@ const promoHtml = promo.active ? `      <div class="lto-chit reveal" data-ends="
 region('menu/index.html', 'promo', promoHtml);
 
 
-/* Catering offer line — single source is data.catering. The offer text carries
-   an intentional &amp; entity, so it is emitted raw (like menu.note). */
+/* Catering offer line — single source is data.catering. The offer is stored
+   as plain text and escaped here like every other data value. */
 region('menu/index.html', 'catering',
   `        <b style="color:var(--paper)">${esc(catering.offer)}</b><br>Call <a href="tel:${site.cateringPhoneE164}" style="color:#F2BE8E;font-weight:700">${esc(site.cateringPhone)}</a> for catering enquiries, or DM us on Instagram with your date, headcount and venue.`);
 
@@ -179,11 +196,23 @@ region('contact/index.html', 'catering-outlets',
   ['                <option>No preference</option>',
     ...outlets.map((o) => `                <option value="${esc(o.name)}">${esc(o.name)}</option>`)].join('\n'));
 
+/* FormSubmit return URLs. Rendered from baseUrl so a domain move cannot leave
+   the thank-you redirect (and its confirmation event) pointing at the old host. */
+region('contact/index.html', 'next-contact',
+  `          <input type="hidden" name="_next" value="${esc(base)}/contact/?sent=1">`);
+region('contact/index.html', 'next-catering',
+  `          <input type="hidden" name="_next" value="${esc(base)}/contact/?catering=1#catering">`);
+region('contact/index.html', 'next-club',
+  `            <input type="hidden" name="_next" value="${esc(base)}/contact/?joined=1">`);
+
 /* ------------------------------------------------------------------ *
  * 4. Home — stats + JSON-LD
  * ------------------------------------------------------------------ */
 const totalStalls = outlets.length + comingSoon.length;
-const ayam = mains.find((m) => m.slug === 'ayam') ?? mains[0];
+// The hero advertises this price as the signature ayam set — never silently
+// substitute another item's price if the slug goes missing.
+const ayam = mains.find((m) => m.slug === 'ayam');
+if (!ayam) throw new Error('hero stats: no menu item with slug "ayam" — the signature-set price comes from it');
 const brandCount = new Set(outlets.map((o) => o.brand)).size;
 region('index.html', 'hero-stats', `        <div><b>16</b>spices in the rempah</div>
         <div><b>${totalStalls}</b>stalls · ${brandCount} brands</div>
@@ -216,7 +245,7 @@ const restaurantLd = {
     } : {}),
   })),
 };
-region('index.html', 'jsonld', `<script type="application/ld+json">\n${JSON.stringify(restaurantLd, null, 2)}\n</script>`);
+region('index.html', 'jsonld', `<script type="application/ld+json">\n${jsonLd(restaurantLd)}\n</script>`);
 
 /* ------------------------------------------------------------------ *
  * 5. Menu JSON-LD
@@ -238,7 +267,10 @@ const menuLd = {
       ] },
   ],
 };
-region('menu/index.html', 'jsonld', `<script type="application/ld+json">\n${JSON.stringify(menuLd, null, 2)}\n</script>`);
+region('menu/index.html', 'jsonld', `<script type="application/ld+json">\n${jsonLd(menuLd)}\n</script>`);
+
+// Every marked region is rendered — write each touched page once.
+flushPages();
 
 /* ------------------------------------------------------------------ *
  * 6. Outlet detail pages
@@ -302,13 +334,13 @@ for (const o of outlets) {
     DESC: `${esc(fullName(o))} — ${esc(o.address)}, Singapore ${o.postal}. ${esc(o.hours.display)}. Directions, hours and islandwide delivery.`,
     SLUG: o.slug,
     BASE: base,
-    JSONLD: `${JSON.stringify(ld, null, 2)}\n</script>\n<script type="application/ld+json">\n${JSON.stringify(crumbs, null, 2)}`,
+    JSONLD: `${jsonLd(ld)}\n</script>\n<script type="application/ld+json">\n${jsonLd(crumbs)}`,
     BADGE: esc(o.badge),
     BRAND: esc(o.brand),
     NAME: esc(o.name),
     DETAILS: details,
-    MAPS: mapsUrl(o),
-    ORDER: site.orderUrl,
+    MAPS: esc(mapsUrl(o)),
+    ORDER: esc(site.orderUrl),
     OTHERS: others,
     HOURS_ATTR: o.hours.open && o.hours.close ? ` data-hours="${o.hours.open}-${o.hours.close}"` : '',
   };
@@ -346,8 +378,14 @@ console.log(`  sitemap.xml (${urls.length} urls)`);
 /* ------------------------------------------------------------------ *
  * 8. Analytics config (shared by every page)
  * ------------------------------------------------------------------ */
+// The ID lands inside a quoted JS literal — refuse anything that isn't a
+// plain GA4 id rather than emit a syntax error that kills every page's script.
+const ga4Id = site.analytics.ga4MeasurementId;
+if (ga4Id && !/^G-[A-Z0-9]+$/i.test(ga4Id)) {
+  throw new Error(`site.analytics.ga4MeasurementId ${JSON.stringify(ga4Id)} does not look like a GA4 id (G-XXXXXXXXXX)`);
+}
 writeFileSync(path.join(ROOT, 'assets', 'analytics-config.js'),
-  `/* generated by build.mjs from data/site.json */\nwindow.BB_GA4_ID = ${site.analytics.ga4MeasurementId ? `'${site.analytics.ga4MeasurementId}'` : 'null'};\n`);
+  `/* generated by build.mjs from data/site.json */\nwindow.BB_GA4_ID = ${ga4Id ? `'${ga4Id}'` : 'null'};\n`);
 console.log('  assets/analytics-config.js');
 
 console.log(`\nBuild complete — ${touched} files written, ${outlets.length} outlets published.`);

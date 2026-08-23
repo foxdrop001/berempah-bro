@@ -411,10 +411,10 @@
             <legend>Protein</legend>
             <div class="chip-row" id="proteinRow">
 <!-- BUILD:builder-proteins -->
-              <label class="chip"><input type="radio" name="protein" value="9.00" data-name="Ayam Berempah" checked><span>Ayam $9.00</span></label>
-              <label class="chip"><input type="radio" name="protein" value="10.20" data-name="Pork Berempah"><span>Pork $10.20</span></label>
-              <label class="chip"><input type="radio" name="protein" value="10.20" data-name="Fish Berempah"><span>Fish $10.20</span></label>
-              <label class="chip"><input type="radio" name="protein" value="14.40" data-name="Unagi Berempah"><span>Unagi $14.40</span></label>
+              <label class="chip"><input type="radio" name="protein" value="9.00" data-slug="ayam" data-name="Ayam Berempah" checked><span>Ayam $9.00</span></label>
+              <label class="chip"><input type="radio" name="protein" value="10.20" data-slug="pork" data-name="Pork Berempah"><span>Pork $10.20</span></label>
+              <label class="chip"><input type="radio" name="protein" value="10.20" data-slug="fish" data-name="Fish Berempah"><span>Fish $10.20</span></label>
+              <label class="chip"><input type="radio" name="protein" value="14.40" data-slug="unagi" data-name="Unagi Berempah"><span>Unagi $14.40</span></label>
 <!-- /BUILD:builder-proteins -->
             </div>
           </fieldset>
@@ -690,7 +690,7 @@
     if(!form||!sum||!desc||!cutGroup)return;
     function update(){
       const p=form.querySelector('input[name="protein"]:checked');
-      const isAyam=p.dataset.name==='Ayam Berempah';
+      const isAyam=p.dataset.slug==='ayam';
       cutGroup.style.opacity=isAyam?'1':'.35';
       cutGroup.querySelectorAll('input').forEach(i=>i.disabled=!isAyam);
       let total=parseFloat(p.value);
