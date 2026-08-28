@@ -211,6 +211,29 @@ region('contact/index.html', 'next-catering',
 region('contact/index.html', 'next-club',
   `            <input type="hidden" name="_next" value="${esc(base)}/contact/?joined=1">`);
 
+/* Enquiry email — every mailto link and form action renders from site.email,
+   so changing the inbox is one field in the data file. (The new inbox must
+   click FormSubmit's activation email once before the forms deliver.) */
+const mail = esc(site.email);
+region('contact/index.html', 'mail-general',
+  `          <a class="btn btn-chili" href="mailto:${mail}?subject=General%20Enquiry">Email Us</a>`);
+region('contact/index.html', 'mail-business',
+  `          <a class="btn btn-chili" href="mailto:${mail}?subject=Business%20%26%20Collaboration">Email Us</a>`);
+region('contact/index.html', 'mail-media',
+  `          <a class="btn btn-chili" href="mailto:${mail}?subject=Media%20%26%20Press">Email Us</a>`);
+region('contact/index.html', 'form-contact',
+  `        <form class="cform" id="contactFormEl" action="https://formsubmit.co/${mail}" method="POST">`);
+region('contact/index.html', 'form-catering',
+  `        <form class="cform" id="cateringForm" action="https://formsubmit.co/${mail}" method="POST">`);
+region('contact/index.html', 'form-club',
+  `          <form class="club-form" id="clubForm" action="https://formsubmit.co/${mail}" method="POST" novalidate>`);
+region('careers/index.html', 'mail-careers',
+  `          <a class="btn btn-chili" href="mailto:${mail}?subject=Job%20Application">Apply Now</a>`);
+
+/* Catering section headline on the menu page — editable in the dashboard */
+region('menu/index.html', 'catering-headline',
+  `        <h2 id="catering-title">${esc(catering.headline || 'Feed The Whole Kampung')}</h2>`);
+
 /* ------------------------------------------------------------------ *
  * 4. Home — stats + JSON-LD
  * ------------------------------------------------------------------ */
@@ -382,7 +405,89 @@ writeFileSync(path.join(ROOT, 'sitemap.xml'),
 console.log(`  sitemap.xml (${urls.length} urls)`);
 
 /* ------------------------------------------------------------------ *
- * 8. Analytics config (shared by every page)
+ * 8. Absolute URLs — canonical/OG tags, redirect stubs, robots, 404
+ * ------------------------------------------------------------------ */
+// Hand-authored heads carry absolute URLs. Refresh them from baseUrl so a
+// domain move (GitHub Pages → DigitalOcean → custom domain) is one field in
+// data/site.json plus a rebuild, not a hunt through every page.
+const setAttrUrl = (src, re, url) => src.replace(re, (_m, pre, post) => `${pre}${url}${post}`);
+let urlTouched = 0;
+for (const u of urls) {
+  const file = u === '' ? 'index.html' : `${u}index.html`;
+  const p = path.join(ROOT, file);
+  const src = readFileSync(p, 'utf8');
+  const pageUrl = `${base}/${u}`;
+  const ogImg = `${base}/assets/og-image.jpg`;
+  let out = src;
+  out = setAttrUrl(out, /(<link rel="canonical" href=")[^"]*(")/, pageUrl);
+  out = setAttrUrl(out, /(<meta property="og:url" content=")[^"]*(")/, pageUrl);
+  out = setAttrUrl(out, /(<meta property="og:image" content=")[^"]*(")/, ogImg);
+  out = setAttrUrl(out, /(<meta name="twitter:image" content=")[^"]*(")/, ogImg);
+  // Hand-authored breadcrumb JSON-LD on the top-level pages: first item is
+  // home, the rest point at the page itself. Outlet pages are regenerated
+  // from the template every build, so they are left alone here.
+  if (u.split('/').filter(Boolean).length <= 1) {
+    let itemIdx = 0;
+    out = out.replace(/("item": ")[^"]*(")/g, (_m, pre, post) => `${pre}${itemIdx++ === 0 ? `${base}/` : pageUrl}${post}`);
+    // Self-referencing JSON-LD urls with #fragments (the news page's blog
+    // posts) point at the page itself; keep the fragment, swap the origin.
+    out = out.replace(/("url": ")[^"#]*(#[^"]*")/g, (_m, pre, frag) => `${pre}${pageUrl}${frag}`);
+  }
+  if (out !== src) { writeFileSync(p, out); urlTouched++; }
+}
+for (const stub of ['story', 'menu', 'locations', 'careers', 'contact', 'news']) {
+  const p = path.join(ROOT, `${stub}.html`);
+  if (!existsSync(p)) continue;
+  const src = readFileSync(p, 'utf8');
+  const out = setAttrUrl(src, /(<link rel="canonical" href=")[^"]*(")/, `${base}/${stub}/`);
+  if (out !== src) { writeFileSync(p, out); urlTouched++; }
+}
+{
+  const p = path.join(ROOT, 'robots.txt');
+  const src = readFileSync(p, 'utf8');
+  const out = src.replace(/^Sitemap: .*$/m, `Sitemap: ${base}/sitemap.xml`);
+  if (out !== src) { writeFileSync(p, out); urlTouched++; }
+}
+if (urlTouched) console.log(`  refreshed absolute urls in ${urlTouched} files`);
+
+// 404 page: served for any missing path (GitHub Pages and DigitalOcean both
+// use a root 404.html). Links must be absolute because the page can render
+// at any depth, so it is generated here from baseUrl. Styles are inline: a
+// 404 should not depend on an asset that might itself be the missing file.
+writeFileSync(path.join(ROOT, '404.html'), `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Page not found — ${esc(site.name)}</title>
+<style>
+  body{margin:0;font-family:'Karla',system-ui,sans-serif;background:#F5EBD8;color:#281414;display:grid;min-height:100vh;place-items:center;text-align:center;padding:24px}
+  .box{max-width:26rem}
+  h1{font-size:3rem;margin:0 0 8px;text-transform:uppercase}
+  h1 em{font-style:normal;color:#A64809}
+  p{color:#543C34;line-height:1.5;margin:0 0 20px}
+  a.btn{display:inline-block;background:#F2701D;color:#281414;font-weight:700;text-decoration:none;border:2px solid #281414;border-radius:4px;padding:12px 22px;margin:4px}
+  a.plain{color:#A64809}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Wah, <em>lost lah</em></h1>
+  <p>This page doesn't exist (or the stall moved). The good stuff is still here:</p>
+  <p>
+    <a class="btn" href="${base}/">Home</a>
+    <a class="btn" href="${base}/menu/">Menu</a>
+    <a class="btn" href="${base}/locations/">Find a stall</a>
+  </p>
+</div>
+</body>
+</html>
+`);
+console.log('  404.html');
+
+/* ------------------------------------------------------------------ *
+ * 9. Analytics config (shared by every page)
  * ------------------------------------------------------------------ */
 // The ID lands inside a quoted JS literal — refuse anything that isn't a
 // plain GA4 id rather than emit a syntax error that kills every page's script.

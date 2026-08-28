@@ -110,6 +110,12 @@ Until the publish workflow is on, deploy by hand: `npm run build`, commit,
 then `git push origin main main:gh-pages`. Until CI is on, run `npm test`
 locally before pushing.
 
+**Moving to DigitalOcean:** the app spec lives at [`.do/app.yaml`](.do/app.yaml)
+(App Platform rebuilds and deploys on every push, so no workflow setup is
+needed there). The step-by-step move, including the custom domain and the
+one-field `baseUrl` switch, is in
+[docs/migrate-digitalocean.md](docs/migrate-digitalocean.md).
+
 See [docs/deploy.md](docs/deploy.md) for the DigitalOcean App Platform path and
 the custom-domain migration checklist.
 
