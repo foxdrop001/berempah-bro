@@ -25,6 +25,13 @@ page.on('console', m => {
     console.log(`  (ignored third-party network error: ${url})`);
     return;
   }
+  // Font preloads carry crossorigin (required to match how @font-face
+  // fetches), which cannot succeed from the file:// origin this audit uses.
+  // The font itself still loads via @font-face; only the preload fails here.
+  if (/\.woff2/i.test(url + ' ' + text) && /Failed to load resource|blocked by CORS policy/i.test(text)) {
+    console.log('  (ignored file:// font-preload CORS failure)');
+    return;
+  }
   consoleErrs.push(text);
 });
 page.on('pageerror', e => consoleErrs.push('pageerror: ' + e.message));
