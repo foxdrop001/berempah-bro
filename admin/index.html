@@ -211,6 +211,7 @@
     </div>
     <div class="card">
       <h3>Contact &amp; ordering</h3>
+      <p class="muted">The enquiries email feeds every Email button and all three forms. After changing it, the new inbox must click FormSubmit's one-time activation email before the forms deliver.</p>
       <div class="grid">
         <div><label for="stEmail">Enquiries email</label><input id="stEmail" type="email"></div>
         <div><label for="stOrder">Ordering store URL</label><input id="stOrder" type="url"></div>
@@ -227,7 +228,7 @@
     </div>
     <div class="card">
       <h3>Social</h3>
-      <p class="muted">Leave TikTok/Facebook blank until official accounts exist. Blank links are hidden, not broken.</p>
+      <p class="muted">TikTok/Facebook are stored for later: the footer links get wired in at the production build. Leave them blank until official accounts exist.</p>
       <div class="grid">
         <div><label for="stIg">Instagram</label><input id="stIg" type="url"></div>
         <div><label for="stIgSis">Gepuk Guys Instagram</label><input id="stIgSis" type="url"></div>
@@ -241,6 +242,7 @@
 <div class="bar">
   <span class="status" id="status">Loading…</span>
   <div class="row">
+    <button class="ghost" id="btnDiscard" type="button" hidden>Discard changes</button>
     <button class="primary" id="btnSave" type="button" disabled>Save &amp; Publish</button>
   </div>
 </div>
@@ -262,9 +264,21 @@ const setToken = (t) => {
   catch (e) { alert('This browser is blocking site data, so the token cannot be remembered here.'); return false; }
 };
 const setStatus = (msg, kind) => { const el = $('status'); el.textContent = msg; if (kind) el.dataset.kind = kind; else delete el.dataset.kind; };
+// Keep a rolling draft in this browser: phones evict background tabs without
+// firing the leave-warning, and the draft is what survives that.
+const LS_DRAFT = 'bb_admin_draft';
+let draftTimer = null;
+const saveDraft = () => {
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(() => { try { localStorage.setItem(LS_DRAFT, JSON.stringify({ t: Date.now(), data })); } catch (e) {} }, 500);
+};
+const clearDraft = () => { clearTimeout(draftTimer); try { localStorage.removeItem(LS_DRAFT); } catch (e) {} };
+
 const markDirty = () => {
   dirty = true; editSeq++;
+  saveDraft();
   $('btnSave').disabled = saving || !getToken();
+  $('btnDiscard').hidden = false;
   if (getToken()) setStatus('Unsaved changes', 'warn');
   else if (canConnect) setStatus('Unsaved changes. Click Connect GitHub (top right) to be able to save.', 'warn');
   else setStatus('Preview only. Edits here are not saved to the site.', 'warn');
@@ -300,9 +314,25 @@ async function load() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       data = await res.json();
     }
+    // Offer to restore a draft this browser was holding when it was last
+    // closed or evicted mid-edit.
+    let restored = false;
+    try {
+      const raw = localStorage.getItem(LS_DRAFT);
+      if (raw) {
+        const draft = JSON.parse(raw);
+        if (draft && draft.data && confirm('This browser has unsaved edits from an earlier session.\n\nRestore them? (They replace the saved version once you hit Save.)')) {
+          data = draft.data;
+          restored = true;
+        } else {
+          localStorage.removeItem(LS_DRAFT);
+        }
+      }
+    } catch (e) {}
     render();
     validate();
-    setStatus(tok ? 'Loaded the latest saved version. Edit anything above.'
+    if (restored) { markDirty(); }
+    else setStatus(tok ? 'Loaded the latest saved version. Edit anything above.'
       : canConnect ? 'Loaded. Connect GitHub (top right) to be able to save.'
       : 'Loaded. This is a preview of the content dashboard.');
   } catch (e) {
@@ -388,8 +418,35 @@ function field(label, value, oninput, opts = {}) {
   const input = el.querySelector('input,textarea');
   input.value = value ?? '';
   input.addEventListener('input', () => { oninput(input.value); markDirty(); validate(); });
+  // Normalise near-miss input when the field loses focus ("9.5" → "9.50",
+  // "$9" → "9.00", "9:30" → "09:30") instead of rejecting it at save time.
+  if (opts.norm || opts.afterBlur) {
+    input.addEventListener('blur', () => {
+      if (opts.norm) {
+        const n = opts.norm(input.value);
+        if (n !== String(input.value)) { input.value = n; oninput(n); markDirty(); validate(); }
+      }
+      if (opts.afterBlur) opts.afterBlur();
+    });
+  }
   return el;
 }
+
+const normPrice = (v) => {
+  if (!String(v).trim()) return v;
+  const n = parseFloat(String(v).replace(/[^0-9.]/g, ''));
+  return Number.isFinite(n) ? n.toFixed(2) : v;
+};
+const normTime = (v) => {
+  const m = String(v).trim().match(/^(\d{1,2})(?:[:.](\d{2}))?$/);
+  if (!m) return v;
+  return `${String(Math.min(23, +m[1])).padStart(2, '0')}:${m[2] || '00'}`;
+};
+const ampm = (t) => {
+  const p = t.split(':').map(Number);
+  const s = p[0] < 12 ? 'am' : 'pm';
+  return (((p[0] + 11) % 12) + 1) + (p[1] ? ':' + String(p[1]).padStart(2, '0') : '') + s;
+};
 
 // Move-up / move-down / delete controls for any array-backed list.
 function listControls(arr, idx, after, opts = {}) {
@@ -405,6 +462,12 @@ function listControls(arr, idx, after, opts = {}) {
     mk('↑ Up', 'ghost', () => { swap(arr, idx, idx - 1); markDirty(); after(); }, idx === 0),
     mk('↓ Down', 'ghost', () => { swap(arr, idx, idx + 1); markDirty(); after(); }, idx === arr.length - 1),
   );
+  if (opts.dup) {
+    box.append(mk('Duplicate', 'ghost', () => {
+      arr.splice(idx + 1, 0, opts.dup(structuredClone(arr[idx])));
+      markDirty(); after();
+    }));
+  }
   if (!opts.noDelete) {
     box.append(mk('Delete', 'danger', () => {
       if (!confirm(opts.confirm || 'Delete this item?')) return;
@@ -424,6 +487,19 @@ const keyOf = (obj) => {
   if (!k) { k = 'k' + (++cardKeySeq); cardKeys.set(obj, k); }
   return k;
 };
+
+// The customer-facing hours line and the 24h fields describe the same fact.
+// When the times are set and the display text has no times in it (e.g. the
+// "to be confirmed" default), write a sensible line so staff aren't asked to
+// type the same hours twice.
+function fillHoursDisplay(o) {
+  const hrs = o.hours || {};
+  if (hrs.open && hrs.close && !/\d/.test(String(hrs.display || ''))) {
+    hrs.display = `Daily ${ampm(hrs.open)} – ${ampm(hrs.close)}`;
+    markDirty();
+    rerender();
+  }
+}
 
 // Accepts "1.3049" — or a pasted "1.3049, 103.8318" pair straight from Google
 // Maps, which fills both fields instead of silently keeping only the first.
@@ -469,8 +545,8 @@ function render() {
       field('Street address + unit', o.address, (v) => o.address = v),
       field('Postal code', o.postal, (v) => o.postal = v, { inputmode: 'numeric' }),
       field('Hours shown to customers', o.hours.display, (v) => o.hours.display = v, { placeholder: 'Daily 10:30am – 8:30pm' }),
-      field('Opens (24h)', o.hours.open, (v) => o.hours.open = v || null, { placeholder: '10:30' }),
-      field('Closes (24h)', o.hours.close, (v) => o.hours.close = v || null, { placeholder: '20:30' }),
+      field('Opens (24h)', o.hours.open, (v) => o.hours.open = v || null, { placeholder: '10:30', norm: normTime, afterBlur: () => fillHoursDisplay(o) }),
+      field('Closes (24h)', o.hours.close, (v) => o.hours.close = v || null, { placeholder: '20:30', norm: normTime, afterBlur: () => fillHoursDisplay(o) }),
       field('Nearest MRT / transport', o.transport, (v) => o.transport = v),
       field('Phone', o.phone, (v) => o.phone = v || null, { placeholder: '+65 9058 9674', inputmode: 'tel' }),
       field('Google Maps search text', o.mapsQuery, (v) => o.mapsQuery = v),
@@ -515,8 +591,12 @@ function render() {
     };
     row.append(toggle, geo, del);
     card.append(row);
-    // Locations-page order is this list's order — let staff reorder outlets too.
-    card.append(listControls(data.outlets, idx, rerender, { noDelete: true }));
+    // Locations-page order is this list's order — let staff reorder outlets,
+    // and start a new stall from a copy instead of fourteen blank fields.
+    card.append(listControls(data.outlets, idx, rerender, {
+      noDelete: true,
+      dup: (c) => ({ ...c, slug: '', name: (c.name || 'Outlet') + ' copy', published: false }),
+    }));
     wrap.append(card);
   });
 
@@ -540,7 +620,7 @@ function render() {
       g.className = 'grid';
       g.append(
         field('Item name', it.name, (v) => it.name = v),
-        field('Price', it.price, (v) => it.price = v, { placeholder: '9.00', inputmode: 'decimal' }),
+        field('Price', it.price, (v) => it.price = v, { placeholder: '9.00', inputmode: 'decimal', norm: normPrice }),
         field('Photo file (in assets, without .webp)', it.image || '', (v) => it.image = v.trim() || undefined, { placeholder: 'ayam' }),
         field('Slug (id)', it.slug || '', (v) => it.slug = v.trim()),
         field('Tags (comma separated)', (it.tags || []).join(', '), (v) => it.tags = v.split(',').map((t) => t.trim()).filter(Boolean)),
@@ -550,7 +630,10 @@ function render() {
       d1.style.marginTop = '10px'; box.append(d1);
       const d2 = field('Menu description (search engines)', it.menuDesc || '', (v) => it.menuDesc = v, { type: 'textarea' });
       d2.style.marginTop = '10px'; box.append(d2);
-      box.append(listControls(sec.items, ii, rerender, { confirm: `Delete "${it.name || 'this item'}"?` }));
+      box.append(listControls(sec.items, ii, rerender, {
+        confirm: `Delete "${it.name || 'this item'}"?`,
+        dup: (c) => ({ ...c, slug: '', name: (c.name || 'Item') + ' copy' }),
+      }));
       card.append(box);
     });
     const add = document.createElement('button');
@@ -566,7 +649,7 @@ function render() {
     const g = document.createElement('div'); g.className = 'grid';
     g.append(
       field('Name', arr[idx].name, (v) => arr[idx].name = v),
-      field('Price' + (suffix || ''), arr[idx].price, (v) => arr[idx].price = v, { placeholder: '1.80', inputmode: 'decimal' }),
+      field('Price' + (suffix || ''), arr[idx].price, (v) => arr[idx].price = v, { placeholder: '1.80', inputmode: 'decimal', norm: normPrice }),
     );
     box.append(g);
     box.append(listControls(arr, idx, rerender, { confirm: `Delete "${arr[idx].name || 'this'}"?` }));
@@ -693,7 +776,7 @@ $('btnAddOutlet').addEventListener('click', () => {
   data.outlets.push({
     slug: '', brand: 'Berempah Bros', name: '', badge: '', address: '', postal: '',
     hours: { display: 'Opening hours to be confirmed', open: null, close: null },
-    transport: '', phone: null, geo: { lat: 0, lng: 0 }, mapsQuery: '',
+    transport: '', phone: null, geo: { lat: null, lng: null }, mapsQuery: '',
     opened: new Date().toISOString().slice(0, 7), published: false,
   });
   markDirty(); rerender();
@@ -713,6 +796,16 @@ $('btnAddComing').addEventListener('click', () => {
 /* expand / collapse all outlet cards */
 $('btnExpandOutlets').addEventListener('click', () => $('outletList').querySelectorAll('details').forEach((d) => d.open = true));
 $('btnCollapseOutlets').addEventListener('click', () => $('outletList').querySelectorAll('details').forEach((d) => d.open = false));
+
+/* discard unsaved edits and reload the saved version */
+$('btnDiscard').addEventListener('click', () => {
+  if (!confirm('Throw away your unsaved edits and reload the saved version?')) return;
+  clearDraft();
+  dirty = false;
+  $('btnDiscard').hidden = true;
+  $('btnSave').disabled = true;
+  load();
+});
 
 /* connect / disconnect */
 $('btnConnect').addEventListener('click', () => {
@@ -750,6 +843,19 @@ $('btnSave').addEventListener('click', async () => {
   }
   const token = getToken();
   if (!token) return alert('Connect GitHub first (top right).');
+  // Photo files live in assets/ and are added by the developer. Warn (not
+  // block) when an item names one that isn't on the site yet, so a typo
+  // doesn't quietly ship a broken image.
+  try {
+    const names = [...new Set(data.menu.sections.flatMap((s) => s.items).map((i) => i.image || i.slug).filter(Boolean))];
+    const missing = (await Promise.all(names.map((n) =>
+      fetch(`../assets/${n}.webp`, { method: 'HEAD', cache: 'no-store' }).then((r) => (r.ok ? null : n)).catch(() => n)
+    ))).filter(Boolean);
+    if (missing.length && !confirm(`These photo files are not on the site yet: ${missing.join(', ')}.\n\nSave anyway? (Ask the developer to add the image files.)`)) {
+      setStatus('Not saved.', 'bad');
+      return;
+    }
+  } catch (e) { /* network hiccup: don't block saving on a warning */ }
   saving = true;
   $('btnSave').disabled = true;
   setStatus('Saving…');
@@ -784,6 +890,8 @@ $('btnSave').addEventListener('click', async () => {
     loadedSha = saved && saved.content && saved.content.sha ? saved.content.sha : null;
     if (editSeq === seqAtSend) {
       dirty = false;
+      clearDraft();
+      $('btnDiscard').hidden = true;
       setStatus('Saved to GitHub. The change goes live with the next site build.', 'ok');
     } else {
       setStatus('Saved — but edits made while it was saving are not included yet. Save again.', 'warn');
