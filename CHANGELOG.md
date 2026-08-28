@@ -16,7 +16,7 @@ Goal: make the site maintainable by someone other than whoever built it.
 - **Automated checks.** `npm test` verifies the data, then loads every page in a real browser to catch broken images, dead links, accessibility problems and layout breaks. Run it before each deploy.
 - **Docs.** README plus step-by-step guides in `docs/` for adding outlets, updating the menu, running the checks and shipping changes.
 
-**Deliberately not built yet** — see [docs/roadmap.md](docs/roadmap.md)
+**Deliberately not built yet**
 
 - Loyalty, customer accounts and direct ordering — need a backend and a POS/payment decision; ordering runs through Oddle today.
 - PWA and push notifications — built, then dropped as not worth the complexity yet.

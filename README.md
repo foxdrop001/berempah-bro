@@ -17,7 +17,7 @@ npm test             # data checks + full page audit (needs Chromium)
 npm run dev          # serve locally at http://localhost:5000
 ```
 
-Nothing is required to *view* the site — the HTML is committed and works from any static host.
+Nothing is required to *view* the site: the HTML is committed and works from any static host.
 
 ---
 
@@ -47,8 +47,8 @@ Regions inside the HTML that come from data are wrapped in markers:
 <!-- /BUILD:menu-cards -->
 ```
 
-`build.mjs` only ever replaces what is *between* markers. Everything else — the
-brand copy, layout, design — is hand-authored and safe to edit directly.
+`build.mjs` only ever replaces what is *between* markers. Everything else (the
+brand copy, layout, design) is hand-authored and safe to edit directly.
 
 **Rule of thumb:** prices, outlet details and promos → edit `data/site.json`.
 Words, layout, styling → edit the HTML/CSS.
@@ -62,7 +62,7 @@ Detailed step-by-step guides live in [`docs/`](docs/):
 | Task | Guide |
 |------|-------|
 | Add or update an outlet | [docs/add-outlet.md](docs/add-outlet.md) |
-| Privacy notice (PDPA) | privacy/index.html — static content page |
+| Privacy notice (PDPA) | privacy/index.html (static content page) |
 | Change menu items or prices | [docs/update-menu.md](docs/update-menu.md) |
 | Start / stop / change a promotion | [docs/update-promo.md](docs/update-promo.md) |
 | Run the checks | [docs/testing.md](docs/testing.md) |
@@ -81,7 +81,7 @@ primary sources**, not copied from press articles:
 - Press quotes: quoted verbatim from the linked article
 
 `data/site.json` carries `_source` notes and a last-verified date. When editing,
-re-verify rather than trusting the file — third-party menus change silently.
+re-verify rather than trusting the file; third-party menus change silently.
 `npm test` enforces *format* (valid postcodes, prices, coordinates inside
 Singapore); it cannot tell you a price is out of date.
 
@@ -95,14 +95,14 @@ Publishing means getting a built `main` onto `gh-pages`.
 **Two workflows are written but not yet switched on** (GitHub only runs
 workflows from `.github/workflows/`, and adding a file there needs a token
 with `workflow` scope, which the deploy credential deliberately does not
-have). One person with repo access enables each once — on GitHub →
+have). One person with repo access enables each once: on GitHub →
 **Actions** → *set up a workflow yourself*, then:
 
-1. **`publish.yml`** — paste [`docs/publish-workflow.yml`](docs/publish-workflow.yml).
+1. **`publish.yml`**: paste [`docs/publish-workflow.yml`](docs/publish-workflow.yml).
    From then on, every dashboard save (or any push to `main`) rebuilds the
    pages and publishes them automatically in about a minute. This makes
-   `/admin/` Save &amp; Publish the entire flow — no developer step.
-2. **`ci.yml`** — paste [`docs/ci-workflow.yml`](docs/ci-workflow.yml).
+   `/admin/` Save &amp; Publish the entire flow, with no developer step.
+2. **`ci.yml`**: paste [`docs/ci-workflow.yml`](docs/ci-workflow.yml).
    Every push and pull request then runs the build, fails on uncommitted
    generated output, and runs the full page audit.
 
@@ -114,10 +114,8 @@ locally before pushing.
 (App Platform rebuilds and deploys on every push, so no workflow setup is
 needed there). The step-by-step move, including the custom domain and the
 one-field `baseUrl` switch, is in
-[docs/migrate-digitalocean.md](docs/migrate-digitalocean.md).
-
-See [docs/deploy.md](docs/deploy.md) for the DigitalOcean App Platform path and
-the custom-domain migration checklist.
+[docs/migrate-digitalocean.md](docs/migrate-digitalocean.md); day-to-day
+deploy notes stay in [docs/deploy.md](docs/deploy.md).
 
 ---
 
@@ -125,19 +123,17 @@ the custom-domain migration checklist.
 
 [CHANGELOG.md](CHANGELOG.md) records what has been built, the defects found
 while testing and how they were fixed, and what is deliberately left for later.
-[docs/roadmap.md](docs/roadmap.md) covers the forward plan (loyalty, accounts,
-direct ordering, CRM) with effort and business value.
 
 ### Still to confirm with the brand
 
 Search the HTML for `PLACEHOLDER`:
 
-1. **Outlet No. 06** — the newest stall's address (add it to `data/site.json`)
-2. **Catering tray concepts** on the menu page — confirm contents with the kitchen
-3. **TikTok / Facebook** — no official accounts exist yet; footer links are commented out
-4. **Instagram gallery** — three tiles link to real posts; three link to the profile
-5. **Font licence** — Meaty Bliss (TimelessType.co) is self-hosted from the brand's
+1. **Outlet No. 06**: the newest stall's address (add it to `data/site.json`)
+2. **Catering tray concepts** on the menu page: confirm contents with the kitchen
+3. **TikTok / Facebook**: no official accounts exist yet; footer links are commented out
+4. **Instagram gallery**: three tiles link to real posts; three link to the profile
+5. **Font licence**: Meaty Bliss (TimelessType.co) is self-hosted from the brand's
    artwork package; confirm the licence covers web embedding
-6. **GA4 measurement ID** — analytics stays dormant until one is set in `data/site.json`
-7. **Form activation** — one click on the FormSubmit activation email enables the
+6. **GA4 measurement ID**: analytics stays dormant until one is set in `data/site.json`
+7. **Form activation**: one click on the FormSubmit activation email enables the
    contact form and Crunch Club signups
