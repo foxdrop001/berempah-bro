@@ -107,7 +107,8 @@ registrar, typically:
 | CNAME | `www` | `cname.vercel-dns.com` |
 
 Remove GoDaddy's parking/forwarding first. Once Vercel shows the domain as
-valid, set `"baseUrl": "https://berempahbros.com"` in `data/site.json`,
+valid, set `"baseUrl": "https://www.berempahbros.com"` in `data/site.json`
+(use whichever of the two Vercel lists as primary; the other redirects to it),
 `npm run build`, commit and push. That updates canonical links, the sitemap,
 share previews and form redirects in one go. The printed QR code already
 points to `https://berempahbros.com/`.
@@ -143,5 +144,5 @@ Only after step 4 works:
 - [ ] VAPID keys copied (or new pair made)
 - [ ] Upstash Redis created and connected, subscribers imported
 - [ ] Redeployed; dashboard login, save and Notify tab all work
-- [ ] Domain connected, `baseUrl` switched to `https://berempahbros.com`
+- [ ] Domain connected, `baseUrl` matches the primary domain (currently `https://www.berempahbros.com`)
 - [ ] Old Vercel project, database, GitHub Pages, DigitalOcean and tokens switched off
