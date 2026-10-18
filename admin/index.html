@@ -632,7 +632,9 @@ function render() {
       d2.style.marginTop = '10px'; box.append(d2);
       box.append(listControls(sec.items, ii, rerender, {
         confirm: `Delete "${it.name || 'this item'}"?`,
-        dup: (c) => ({ ...c, slug: '', name: (c.name || 'Item') + ' copy' }),
+        // The photo falls back to the slug, so keep it explicit on the copy —
+        // clearing the slug would otherwise leave the copy with no image.
+        dup: (c) => ({ ...c, image: c.image || c.slug, slug: '', name: (c.name || 'Item') + ' copy' }),
       }));
       card.append(box);
     });
@@ -725,6 +727,7 @@ bind('pmEnds', (v) => {
   if (!isNaN(d.getTime())) data.promo.endsISO = d.toISOString();
 });
 $('pmActive').addEventListener('change', (e) => {
+  if (!data) return;
   data.promo.active = e.target.value === 'true';
   $('promoState').textContent = data.promo.active ? 'Running' : 'Off';
   $('promoState').className = 'pill ' + (data.promo.active ? 'live' : 'draft');
@@ -816,6 +819,10 @@ $('btnConnect').addEventListener('click', () => {
     $('connState').classList.remove('live');
     $('btnConnect').textContent = 'Connect GitHub';
     $('btnSave').disabled = true;
+    // Edits stay in this tab (and the draft) — say so instead of leaving a
+    // stale "Unsaved changes" line that implies Save still works.
+    if (dirty) setStatus('Disconnected. Your edits are kept in this browser; connect again to save them.', 'warn');
+    else setStatus('Disconnected.');
     return;
   }
   const t = prompt('Paste your GitHub personal access token.\n\nFine-grained token, this repository only, Contents: Read and write.\nIt is stored only in this browser.');
@@ -872,6 +879,9 @@ $('btnSave').addEventListener('click', async () => {
       sha = (await cur.json()).sha;
     }
     const seqAtSend = editSeq;
+    // The sitemap's lastmod comes from contentUpdated; stamp today's Singapore
+    // date so search engines see that dashboard edits changed the content.
+    data.site.contentUpdated = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Singapore' }).format(new Date());
     const body = {
       message: 'update site content from the dashboard',
       content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2) + '\n'))),
@@ -905,7 +915,7 @@ $('btnSave').addEventListener('click', async () => {
   }
 });
 
-addEventListener('beforeunload', (e) => { if (dirty && getToken()) { e.preventDefault(); e.returnValue = ''; } });
+addEventListener('beforeunload', (e) => { if (dirty && (getToken() || canConnect)) { e.preventDefault(); e.returnValue = ''; } });
 load();
 </script>
 

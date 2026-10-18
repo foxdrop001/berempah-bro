@@ -18,7 +18,9 @@ createServer(async (req, res) => {
   try {
     let rel = decodeURIComponent(req.url.split('?')[0]);
     let file = path.join(ROOT, rel);
-    if (!file.startsWith(ROOT)) { res.writeHead(403).end('forbidden'); return; }
+    // Compare against ROOT plus a separator: a bare prefix check would let
+    // "/../Berempah Bros-old/x" through, since that sibling shares the prefix.
+    if (file !== ROOT && !file.startsWith(ROOT + path.sep)) { res.writeHead(403).end('forbidden'); return; }
     try { if ((await stat(file)).isDirectory()) file = path.join(file, 'index.html'); }
     catch { /* fall through to 404 */ }
     const body = await readFile(file);
