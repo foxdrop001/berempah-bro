@@ -15,7 +15,9 @@ append `?cb=$(date +%s)` when verifying immediately after a push.
 
 ## Content-only changes
 
-Non-technical edits go through the dashboard at `/admin/` — it commits
+Non-technical edits go through the dashboard (secret address + login, set in
+Vercel: see `middleware.js` for the ADMIN_PATH / ADMIN_USER / ADMIN_PASSWORD
+settings). It commits
 `data/site.json` directly to GitHub and the same CI pipeline publishes it. No
 local setup required.
 

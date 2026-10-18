@@ -101,7 +101,7 @@ have). One person with repo access enables each once: on GitHub →
 1. **`publish.yml`**: paste [`docs/publish-workflow.yml`](docs/publish-workflow.yml).
    From then on, every dashboard save (or any push to `main`) rebuilds the
    pages and publishes them automatically in about a minute. This makes
-   `/admin/` Save &amp; Publish the entire flow, with no developer step.
+   the dashboard's Save &amp; Publish the entire flow, with no developer step.
 2. **`ci.yml`**: paste [`docs/ci-workflow.yml`](docs/ci-workflow.yml).
    Every push and pull request then runs the build, fails on uncommitted
    generated output, and runs the full page audit.
