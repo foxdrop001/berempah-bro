@@ -252,7 +252,7 @@ const ayam = mains.find((m) => m.slug === 'ayam');
 if (!ayam) throw new Error('hero stats: no menu item with slug "ayam" — the signature-set price comes from it');
 const brandCount = new Set(outlets.map((o) => o.brand)).size;
 region('index.html', 'hero-stats', `        <div><b>16</b>spices in the rempah</div>
-        <div><b>${totalStalls}</b>stalls · ${brandCount} brands</div>
+        <div><b>${outlets.length}</b>stalls · ${brandCount} brands</div>
         <div><b>$${ayam.price.replace('.00', '')}</b>signature ayam set</div>
         <div><b>#1</b>MasterChef SG S2</div>`);
 
