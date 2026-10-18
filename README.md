@@ -90,33 +90,24 @@ Singapore); it cannot tell you a price is out of date.
 
 ## Deployment
 
-The live site serves from the `gh-pages` branch; `main` holds the source.
-Publishing means getting a built `main` onto `gh-pages`.
+The live site is **www.berempahbros.com**, hosted on Vercel (team `wetrade1`,
+project `berempah-bro`). Vercel runs `node build.mjs` on every push and
+serves the repo root (`vercel.json`). `middleware.js` adds the dashboard
+login, push notifications and the Insights counter.
 
-**Two workflows are written but not yet switched on** (GitHub only runs
-workflows from `.github/workflows/`, and adding a file there needs a token
-with `workflow` scope, which the deploy credential deliberately does not
-have). One person with repo access enables each once: on GitHub →
-**Actions** → *set up a workflow yourself*, then:
+Vercel deploys from a private mirror, `effortxd/berempah-bros-site`. The
+client's repo is `foxdrop001/berempah-bro`. One `git push origin main` sends
+to both. Dashboard saves go to the mirror, so to bring the client's repo up
+to date run:
 
-1. **`publish.yml`**: paste [`docs/publish-workflow.yml`](docs/publish-workflow.yml).
-   From then on, every dashboard save (or any push to `main`) rebuilds the
-   pages and publishes them automatically in about a minute. This makes
-   the dashboard's Save &amp; Publish the entire flow, with no developer step.
-2. **`ci.yml`**: paste [`docs/ci-workflow.yml`](docs/ci-workflow.yml).
-   Every push and pull request then runs the build, fails on uncommitted
-   generated output, and runs the full page audit.
+```bash
+git sync
+```
 
-Until the publish workflow is on, deploy by hand: `npm run build`, commit,
-then `git push origin main main:gh-pages`. Until CI is on, run `npm test`
-locally before pushing.
-
-**Moving to DigitalOcean:** the app spec lives at [`.do/app.yaml`](.do/app.yaml)
-(App Platform rebuilds and deploys on every push, so no workflow setup is
-needed there). The step-by-step move, including the custom domain and the
-one-field `baseUrl` switch, is in
-[docs/migrate-digitalocean.md](docs/migrate-digitalocean.md); day-to-day
-deploy notes stay in [docs/deploy.md](docs/deploy.md).
+Run `npm test` before pushing. Settings that must stay secret (dashboard
+address and login, push keys, database) live in Vercel's environment
+variables, never in the repo. The full picture, and how to hand hosting to
+the client later, is in [docs/handover.md](docs/handover.md).
 
 ---
 
