@@ -1,23 +1,23 @@
 /**
- * Berempah Bros — conversion tracking.
+ * Berempah Bros conversion tracking.
  *
- * Business events (what the brand actually cares about):
- *   order_click      → someone left for the Oddle ordering store
- *   directions_click → someone asked for directions to a stall
- *   call_click       → someone tapped a phone number
- *   promo_click      → someone acted on the promo code
- *   catering_start   → someone opened/began a catering enquiry
- *   catering_submit  → catering enquiry sent
- *   contact_submit   → general contact form sent
- *   signup_submit    → Crunch Club signup sent
- *   menu_builder_use → someone configured a plate in the order builder
+ * Business events (the ones the brand cares about):
+ *   order_click:      someone left for the Oddle ordering store
+ *   directions_click: someone asked for directions to a stall
+ *   call_click:       someone tapped a phone number
+ *   promo_click:      someone used the promo code
+ *   catering_start:   someone opened or started a catering enquiry
+ *   catering_submit:  catering enquiry sent
+ *   contact_submit:   general contact form sent
+ *   signup_submit:    Crunch Club signup sent
+ *   menu_builder_use: someone set up a plate in the order builder
  *
- * Markup contract: add data-track="<event>" to any element.
- * Optional context: data-outlet, data-promo, data-item.
+ * In the markup, add data-track="<event>" to any element you want tracked.
+ * Extra context if you want it: data-outlet, data-promo, data-item.
  *
- * GA4 loads only when data/site.json has an ga4MeasurementId (build.mjs writes
- * assets/analytics-config.js). Without an ID the events still fire into
- * window.dataLayer, so nothing breaks and events can be replayed later.
+ * GA4 only loads if data/site.json has a ga4MeasurementId (build.mjs writes it
+ * to assets/analytics-config.js). With no ID the events still get pushed to
+ * window.dataLayer, so nothing breaks and the events can be replayed later.
  */
 (function () {
   'use strict';
@@ -34,7 +34,7 @@
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_ID);
     document.head.appendChild(s);
     gtag('js', new Date());
-    // No cross-site ads signals; IPs anonymised by GA4 default in EU/SG contexts.
+    // Google signals (cross-site ads) off. GA4 anonymises IPs by default in EU/SG anyway.
     gtag('config', GA_ID, { anonymize_ip: true, allow_google_signals: false });
   }
 
@@ -54,7 +54,7 @@
     catering_start: 'catering_start',
   };
 
-  // One delegated listener for every tagged control.
+  // One delegated click listener handles every tagged element.
   document.addEventListener('click', function (e) {
     var el = e.target && e.target.closest ? e.target.closest('[data-track]') : null;
     if (!el) return;
@@ -68,10 +68,10 @@
     });
   }, { passive: true });
 
-  // Form submissions worth counting.
+  // Count the form submits we care about.
   document.addEventListener('submit', function (e) {
-    // The page's own validation may cancel this; a rejected attempt is not a
-    // conversion, so don't count it.
+    // The page's own validation might cancel the submit. A rejected attempt
+    // isn't a conversion, so skip it.
     if (e.defaultPrevented) return;
     var f = e.target;
     if (!f || !f.id) return;
@@ -80,7 +80,7 @@
     else if (f.id === 'clubForm') track('signup_submit', {});
   }, { passive: true });
 
-  // Order builder: fire once per page view, not on every toggle.
+  // Order builder: only fire once per page view, however many options get toggled.
   var builderFired = false;
   document.addEventListener('change', function (e) {
     if (builderFired) return;
@@ -90,9 +90,9 @@
     track('menu_builder_use', {});
   }, { passive: true });
 
-  // Thank-you states after the form provider redirects back. Strip the flag
-  // from the URL once counted, so a refresh or a shared/bookmarked link does
-  // not record the same conversion again.
+  // Thank-you states, after the form provider redirects back here. Once it's
+  // counted, remove the flag from the URL so a refresh or a shared or
+  // bookmarked link doesn't count the same conversion again.
   var q = new URLSearchParams(location.search);
   var confirmed = { sent: 'contact_submit_confirmed', joined: 'signup_confirmed', catering: 'catering_submit_confirmed' };
   var counted = false;

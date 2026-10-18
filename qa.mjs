@@ -19,7 +19,7 @@ for (const s of shots) {
   page.on('console', m => { if (m.type() === 'error') errors.push(`[${s.name}] ${m.text()}`); });
   page.on('pageerror', e => errors.push(`[${s.name}] pageerror: ${e.message}`));
   await page.goto(url, { waitUntil: 'networkidle' });
-  // force all reveals visible for full-page capture
+  // make every .reveal element visible so the full-page screenshot shows it
   await page.evaluate(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
   await page.waitForTimeout(600);
   const overflow = await page.evaluate(() =>

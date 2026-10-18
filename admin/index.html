@@ -22,12 +22,12 @@
   header{background:var(--ink);color:var(--paper);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
   header h1{font-size:clamp(1.05rem,2vw + .55rem,1.4rem);letter-spacing:.01em;line-height:1.2}
   header .sub{font-size:.82rem;color:#CDB995}
-  /* pills sit on the dark header here — restate them for that surface */
+  /* the pills sit on the dark header here, so restyle them for that background */
   header .pill{background:rgba(245,235,216,.08);color:#CDB995;border-color:#8A7360}
   header .pill.live{background:rgba(46,107,63,.35);color:#A5DCB1;border-color:#5E9C6D}
   header button{background:var(--paper);color:var(--ink)}
   .wrap{max-width:1080px;margin:0 auto;padding:24px}
-  /* one scrollable row on small screens, wrapping row on wide ones */
+  /* single scrolling row on small screens, wraps onto more rows on wide ones */
   .tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:20px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
   .tabs::-webkit-scrollbar{height:6px}
   .tabs::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
@@ -41,7 +41,7 @@
   .muted{color:var(--ink-70);font-size:.82rem}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
   label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-70);margin-bottom:4px}
-  /* 16px inputs: below that, iPhones zoom the whole page on focus */
+  /* inputs are 16px because iPhones zoom the whole page on focus if the font is smaller */
   input,select,textarea{width:100%;font-family:inherit;font-size:16px;padding:9px 11px;border:2px solid var(--line);border-radius:4px;background:var(--white);color:var(--ink);min-height:42px;caret-color:var(--orange)}
   input:focus,select:focus,textarea:focus{outline:2px solid var(--orange);outline-offset:1px;border-color:var(--ink)}
   input[aria-invalid="true"]{border-color:var(--bad);background:#FDECEA}
@@ -67,7 +67,7 @@
   details.help li{margin-left:18px}
   code{background:var(--paper-2);padding:1px 5px;border-radius:3px;font-size:.85em}
   .dim{opacity:.55}
-  /* collapsible cards keep the page short when there is a lot of content */
+  /* cards collapse so the page stays short when there's a lot of content */
   details.card > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:1.15rem;font-weight:700}
   details.card > summary::-webkit-details-marker{display:none}
   details.card > summary::before{content:"▸";color:var(--orange);font-size:.9em;transition:transform .15s}
@@ -82,10 +82,10 @@
   .addbtn{margin-top:2px}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
   .count{font-size:.8rem;color:var(--ink-70)}
-  /* summary rows: name first, pills wrap as one unit */
+  /* summary rows: name goes first, and the pills wrap together as one group */
   details.card > summary .sum-name{flex:1 1 auto;min-width:0}
   details.card > summary .sum-pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-  /* status feedback colours on the dark bar */
+  /* colours for the status messages on the dark bar */
   .bar .status[data-kind="warn"]{color:var(--orange-light)}
   .bar .status[data-kind="ok"]{color:#A5DCB1}
   .bar .status[data-kind="bad"]{color:#F4A69E}
@@ -251,21 +251,21 @@
 const REPO = { owner: 'effortxd', name: 'berempah-bro', branch: 'main', path: 'data/site.json' };
 const LS_TOKEN = 'bb_admin_token';
 let data = null, dirty = false, loadedSha = null, saving = false, editSeq = 0;
-// With no token connected, the page runs as a plain preview: the GitHub
-// controls stay hidden so a shared link shows a clean dashboard. Opening
-// /admin/?connect brings the Connect button back to set a device up.
+// If no token is connected the page is just a preview. The GitHub controls
+// are hidden, so anyone opening a shared link sees a clean dashboard.
+// Open /admin/?connect to get the Connect button back and set up a device.
 const canConnect = new URLSearchParams(location.search).has('connect');
 
 const $ = (id) => document.getElementById(id);
-// Storage access can throw (browser set to block site data) — treat as "no token".
+// Reading storage can throw if the browser blocks site data. Treat that as "no token".
 const getToken = () => { try { return localStorage.getItem(LS_TOKEN); } catch (e) { return null; } };
 const setToken = (t) => {
   try { if (t === null) localStorage.removeItem(LS_TOKEN); else localStorage.setItem(LS_TOKEN, t); return true; }
   catch (e) { alert('This browser is blocking site data, so the token cannot be remembered here.'); return false; }
 };
 const setStatus = (msg, kind) => { const el = $('status'); el.textContent = msg; if (kind) el.dataset.kind = kind; else delete el.dataset.kind; };
-// Keep a rolling draft in this browser: phones evict background tabs without
-// firing the leave-warning, and the draft is what survives that.
+// Keep a rolling draft in this browser. Phones kill background tabs without
+// showing the leave warning, and the draft is the only thing that survives.
 const LS_DRAFT = 'bb_admin_draft';
 let draftTimer = null;
 const saveDraft = () => {
@@ -300,9 +300,9 @@ async function load() {
   setStatus('Loading…');
   try {
     if (tok) {
-      // Read the file actually being edited (branch main via the API), not the
-      // possibly older copy the live site serves — and remember its sha so a
-      // save is refused instead of overwriting someone else's newer version.
+      // Read the real file on branch main through the API, because the live site
+      // may still be serving an older copy. Keep its sha too: if someone else
+      // saved a newer version, our save gets refused rather than overwriting it.
       const r = await fetch(`https://api.github.com/repos/${REPO.owner}/${REPO.name}/contents/${REPO.path}?ref=${REPO.branch}`,
         { headers: { Authorization: `Bearer ${tok}`, Accept: 'application/vnd.github+json' }, cache: 'no-store' });
       if (!r.ok) throw new Error(r.status === 401 ? 'the token was rejected' : `GitHub error ${r.status}`);
@@ -314,8 +314,8 @@ async function load() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       data = await res.json();
     }
-    // Offer to restore a draft this browser was holding when it was last
-    // closed or evicted mid-edit.
+    // If this browser still has a draft from a tab that was closed or killed
+    // mid-edit, offer to bring it back.
     let restored = false;
     try {
       const raw = localStorage.getItem(LS_DRAFT);
@@ -347,7 +347,7 @@ async function load() {
   }
 }
 
-/* ---------------- validation (mirrors test.mjs) ---------------- */
+/* ---------------- validation (same checks as test.mjs) ---------------- */
 function validate() {
   const errs = [];
   const seen = new Set();
@@ -401,8 +401,8 @@ function validate() {
 }
 
 /* ---------------- render ---------------- */
-// Anything from site.json is untrusted text here: a stray "<" in an outlet
-// name would otherwise be parsed as markup when injected via innerHTML.
+// Treat everything from site.json as untrusted text. Without escaping, a stray
+// "<" in an outlet name would get parsed as markup when it goes into innerHTML.
 function h(v) {
   return String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -418,8 +418,8 @@ function field(label, value, oninput, opts = {}) {
   const input = el.querySelector('input,textarea');
   input.value = value ?? '';
   input.addEventListener('input', () => { oninput(input.value); markDirty(); validate(); });
-  // Normalise near-miss input when the field loses focus ("9.5" → "9.50",
-  // "$9" → "9.00", "9:30" → "09:30") instead of rejecting it at save time.
+  // Tidy up almost-right input when the field loses focus, e.g. "9.5" becomes
+  // "9.50", "$9" becomes "9.00", "9:30" becomes "09:30". Better than rejecting it on save.
   if (opts.norm || opts.afterBlur) {
     input.addEventListener('blur', () => {
       if (opts.norm) {
@@ -448,7 +448,7 @@ const ampm = (t) => {
   return (((p[0] + 11) % 12) + 1) + (p[1] ? ':' + String(p[1]).padStart(2, '0') : '') + s;
 };
 
-// Move-up / move-down / delete controls for any array-backed list.
+// Up, down and delete buttons for any list that's backed by an array.
 function listControls(arr, idx, after, opts = {}) {
   const box = document.createElement('div');
   box.className = 'item-tools';
@@ -478,8 +478,8 @@ function listControls(arr, idx, after, opts = {}) {
 }
 const rerender = () => { render(); validate(); };
 
-// Stable identity for collapse-state across re-renders: keyed by the object
-// itself, so editing a slug or reordering doesn't snap the card shut.
+// Track open/closed state across re-renders using the object itself as the key.
+// That way editing a slug or reordering the list doesn't close the card.
 const cardKeys = new WeakMap();
 let cardKeySeq = 0;
 const keyOf = (obj) => {
@@ -488,10 +488,10 @@ const keyOf = (obj) => {
   return k;
 };
 
-// The customer-facing hours line and the 24h fields describe the same fact.
-// When the times are set and the display text has no times in it (e.g. the
-// "to be confirmed" default), write a sensible line so staff aren't asked to
-// type the same hours twice.
+// The hours line customers see and the 24h fields are the same information.
+// If the times are filled in and the display text has no times in it (like the
+// default "to be confirmed"), fill in a reasonable line so staff don't have to
+// type the hours twice.
 function fillHoursDisplay(o) {
   const hrs = o.hours || {};
   if (hrs.open && hrs.close && !/\d/.test(String(hrs.display || ''))) {
@@ -501,30 +501,30 @@ function fillHoursDisplay(o) {
   }
 }
 
-// Accepts "1.3049" — or a pasted "1.3049, 103.8318" pair straight from Google
-// Maps, which fills both fields instead of silently keeping only the first.
+// Takes "1.3049", or a "1.3049, 103.8318" pair pasted from Google Maps. A pair
+// fills both fields, otherwise only the first number would be kept.
 function setGeo(geo, which, v) {
   const pair = String(v).split(',').map((s) => parseFloat(s));
   if (pair.length === 2 && pair.every(Number.isFinite)) { geo.lat = pair[0]; geo.lng = pair[1]; rerender(); return; }
   const n = parseFloat(v);
-  geo[which] = Number.isFinite(n) ? n : null; // never store NaN in the data file
+  geo[which] = Number.isFinite(n) ? n : null; // don't let NaN get into the data file
 }
 
 function render() {
-  /* outlets — each is collapsible so the page stays short */
+  /* outlets: each one collapses so the page stays short */
   const wrap = $('outletList');
-  // Remember which cards the editor had open, so a re-render (add / delete /
-  // publish toggle) doesn't snap everything shut and lose their place.
+  // Remember which cards were open. Otherwise a re-render (add, delete,
+  // publish toggle) closes them all and the editor loses their place.
   const openOutlets = new Set([...wrap.querySelectorAll('details[data-key]')].filter((d) => d.open).map((d) => d.dataset.key));
   wrap.innerHTML = '';
   $('outletCount').textContent = `${data.outlets.filter((o) => o.published).length} on the site · ${data.outlets.length} total`;
   data.outlets.forEach((o, idx) => {
-    // A hand-edited data file may lack the hours object the fields below expect.
+    // A data file edited by hand might be missing the hours object used below.
     o.hours = o.hours || { display: '', open: null, close: null };
     const card = document.createElement('details');
     card.dataset.key = keyOf(o);
     card.className = 'card' + (o.published ? '' : ' dim');
-    if (!o.slug || !o.name) card.open = true; // new/incomplete outlets start open
+    if (!o.slug || !o.name) card.open = true; // new or incomplete outlets start open
     else if (openOutlets.has(card.dataset.key)) card.open = true;
     const sum = document.createElement('summary');
     sum.innerHTML = `<span class="sum-name">${h(o.name || 'New outlet')}</span>
@@ -591,8 +591,8 @@ function render() {
     };
     row.append(toggle, geo, del);
     card.append(row);
-    // Locations-page order is this list's order — let staff reorder outlets,
-    // and start a new stall from a copy instead of fourteen blank fields.
+    // The locations page uses this list's order, so staff can reorder outlets here.
+    // They can also start a new stall from a copy instead of fourteen empty fields.
     card.append(listControls(data.outlets, idx, rerender, {
       noDelete: true,
       dup: (c) => ({ ...c, slug: '', name: (c.name || 'Outlet') + ' copy', published: false }),
@@ -600,7 +600,7 @@ function render() {
     wrap.append(card);
   });
 
-  /* menu — sections are collapsible; items can be added, reordered, deleted */
+  /* menu: sections collapse, and items can be added, reordered and deleted */
   const ml = $('menuList');
   const hadSections = ml.children.length > 0;
   const openSections = new Set([...ml.querySelectorAll('details[data-key]')].filter((d) => d.open).map((d) => d.dataset.key));
@@ -632,8 +632,8 @@ function render() {
       d2.style.marginTop = '10px'; box.append(d2);
       box.append(listControls(sec.items, ii, rerender, {
         confirm: `Delete "${it.name || 'this item'}"?`,
-        // The photo falls back to the slug, so keep it explicit on the copy —
-        // clearing the slug would otherwise leave the copy with no image.
+        // The photo defaults to the slug, so set it explicitly on the copy.
+        // If we didn't, clearing the slug would leave the copy without an image.
         dup: (c) => ({ ...c, image: c.image || c.slug, slug: '', name: (c.name || 'Item') + ' copy' }),
       }));
       card.append(box);
@@ -694,8 +694,8 @@ function render() {
   $('pmCta').value = data.promo.cta || '';
   $('pmDesc').value = data.promo.desc || '';
   $('pmUrl').value = data.promo.url || '';
-  // endsISO is stored as UTC; the datetime-local field shows local wall-clock
-  // time. Convert on load so an open→save round-trip doesn't shift the time.
+  // endsISO is stored in UTC but the datetime-local field shows local time.
+  // Convert on load so opening and saving again doesn't shift the time.
   $('pmEnds').value = data.promo.endsISO
     ? (() => { const d = new Date(data.promo.endsISO); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); })()
     : '';
@@ -711,7 +711,7 @@ function render() {
   $('stFb').value = data.site.facebook || '';
 }
 
-/* simple inputs bind directly */
+/* simple inputs are bound directly */
 const bind = (id, apply) => $(id).addEventListener('input', (e) => { if (!data) return; apply(e.target.value); markDirty(); validate(); });
 bind('pmKicker', (v) => data.promo.kicker = v);
 bind('pmTitle', (v) => data.promo.title = v);
@@ -720,8 +720,8 @@ bind('pmCta', (v) => data.promo.cta = v);
 bind('pmDesc', (v) => data.promo.desc = v);
 bind('pmUrl', (v) => data.promo.url = v);
 bind('pmEnds', (v) => {
-  // Some browsers fall back to a plain text input for datetime-local; ignore
-  // half-typed values instead of throwing on every keystroke.
+  // Some browsers show datetime-local as a plain text box. Skip half-typed
+  // values here, otherwise it throws on every keystroke.
   if (!v) { data.promo.endsISO = null; return; }
   const d = new Date(v);
   if (!isNaN(d.getTime())) data.promo.endsISO = d.toISOString();
@@ -744,7 +744,7 @@ bind('stFb', (v) => data.site.facebook = v.trim() || null);
 bind('stCatHead', (v) => { data.catering = data.catering || {}; data.catering.headline = v; });
 bind('stCatOffer', (v) => { data.catering = data.catering || {}; data.catering.offer = v; });
 
-/* tabs — full ARIA tabs contract: roving tabindex + arrow keys */
+/* tabs: follows the ARIA tabs pattern (roving tabindex and arrow keys) */
 const tabs = [...document.querySelectorAll('.tab')];
 tabs.forEach((t) => {
   t.id = 'tab-' + t.dataset.panel;
@@ -786,7 +786,7 @@ $('btnAddOutlet').addEventListener('click', () => {
   window.scrollTo(0, document.body.scrollHeight);
 });
 
-/* add side / add-on / coming-soon */
+/* add a side, add-on or coming-soon item */
 $('btnAddSide').addEventListener('click', () => { if (!data) return; data.menu.sides.push({ name: '', price: '' }); markDirty(); rerender(); });
 $('btnAddAddon').addEventListener('click', () => { if (!data) return; data.menu.setAddOns.push({ name: '', price: '' }); markDirty(); rerender(); });
 $('btnAddComing').addEventListener('click', () => {
@@ -796,11 +796,11 @@ $('btnAddComing').addEventListener('click', () => {
   markDirty(); rerender();
 });
 
-/* expand / collapse all outlet cards */
+/* expand or collapse all outlet cards */
 $('btnExpandOutlets').addEventListener('click', () => $('outletList').querySelectorAll('details').forEach((d) => d.open = true));
 $('btnCollapseOutlets').addEventListener('click', () => $('outletList').querySelectorAll('details').forEach((d) => d.open = false));
 
-/* discard unsaved edits and reload the saved version */
+/* throw away unsaved edits and load the saved version again */
 $('btnDiscard').addEventListener('click', () => {
   if (!confirm('Throw away your unsaved edits and reload the saved version?')) return;
   clearDraft();
@@ -810,7 +810,7 @@ $('btnDiscard').addEventListener('click', () => {
   load();
 });
 
-/* connect / disconnect */
+/* connect and disconnect */
 $('btnConnect').addEventListener('click', () => {
   if (getToken()) {
     if (!confirm('Disconnect GitHub from this browser?')) return;
@@ -819,8 +819,8 @@ $('btnConnect').addEventListener('click', () => {
     $('connState').classList.remove('live');
     $('btnConnect').textContent = 'Connect GitHub';
     $('btnSave').disabled = true;
-    // Edits stay in this tab (and the draft) — say so instead of leaving a
-    // stale "Unsaved changes" line that implies Save still works.
+    // The edits are still in this tab and in the draft. Say that, rather than
+    // leave an old "Unsaved changes" message that makes it look like Save still works.
     if (dirty) setStatus('Disconnected. Your edits are kept in this browser; connect again to save them.', 'warn');
     else setStatus('Disconnected.');
     return;
@@ -835,13 +835,13 @@ $('btnConnect').addEventListener('click', () => {
     $('btnSave').disabled = false;
     setStatus('Connected. Save & Publish is ready.');
   } else {
-    // Nothing typed yet — refresh from the latest saved version and capture
-    // its sha, so this session gets proper conflict protection.
+    // Nothing edited yet, so reload from the latest saved version and grab its
+    // sha. Then this session is protected against conflicting saves.
     load();
   }
 });
 
-/* save via GitHub Contents API */
+/* save through the GitHub Contents API */
 $('btnSave').addEventListener('click', async () => {
   if (!data || saving) return;
   if (validate().length) {
@@ -850,9 +850,9 @@ $('btnSave').addEventListener('click', async () => {
   }
   const token = getToken();
   if (!token) return alert('Connect GitHub first (top right).');
-  // Photo files live in assets/ and are added by the developer. Warn (not
-  // block) when an item names one that isn't on the site yet, so a typo
-  // doesn't quietly ship a broken image.
+  // Photo files are in assets/ and the developer adds them. If an item points
+  // to one that isn't on the site yet, show a warning (but still allow the save)
+  // so a typo doesn't go live as a broken image.
   try {
     const names = [...new Set(data.menu.sections.flatMap((s) => s.items).map((i) => i.image || i.slug).filter(Boolean))];
     const missing = (await Promise.all(names.map((n) =>
@@ -862,16 +862,16 @@ $('btnSave').addEventListener('click', async () => {
       setStatus('Not saved.', 'bad');
       return;
     }
-  } catch (e) { /* network hiccup: don't block saving on a warning */ }
+  } catch (e) { /* network glitch, a warning shouldn't stop the save */ }
   saving = true;
   $('btnSave').disabled = true;
   setStatus('Saving…');
   const api = `https://api.github.com/repos/${REPO.owner}/${REPO.name}/contents/${REPO.path}`;
   const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' };
   try {
-    // The sha captured at load time is the version these edits started from.
-    // Saving with it makes GitHub refuse the write if someone else saved since,
-    // instead of silently overwriting their change.
+    // The sha from load time is the version these edits are based on. Sending it
+    // means GitHub rejects the write if someone else has saved in the meantime,
+    // so their change doesn't get overwritten without anyone noticing.
     let sha = loadedSha;
     if (!sha) {
       const cur = await fetch(`${api}?ref=${REPO.branch}`, { headers, cache: 'no-store' });
@@ -879,8 +879,8 @@ $('btnSave').addEventListener('click', async () => {
       sha = (await cur.json()).sha;
     }
     const seqAtSend = editSeq;
-    // The sitemap's lastmod comes from contentUpdated; stamp today's Singapore
-    // date so search engines see that dashboard edits changed the content.
+    // The sitemap's lastmod is taken from contentUpdated. Set it to today's date
+    // in Singapore so search engines can tell the dashboard edits changed the content.
     data.site.contentUpdated = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Singapore' }).format(new Date());
     const body = {
       message: 'update site content from the dashboard',

@@ -10,9 +10,9 @@ const issues = [];
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const consoleErrs = [];
-// Failures fetching third-party resources (fonts, analytics) are network
-// conditions, not defects in this site — counting them makes CI flaky. Local
-// failures and any script error still fail the audit.
+// Third-party resources (fonts, analytics) failing to load is a network issue,
+// not a bug in this site, and counting them makes CI flaky. Local failures and
+// any script error still fail the audit.
 const isThirdPartyNetworkNoise = (text) =>
   /Failed to load resource/i.test(text) &&
   !/file:\/\/|localhost|127\.0\.0\.1/i.test(text);
@@ -25,9 +25,9 @@ page.on('console', m => {
     console.log(`  (ignored third-party network error: ${url})`);
     return;
   }
-  // Font preloads carry crossorigin (required to match how @font-face
-  // fetches), which cannot succeed from the file:// origin this audit uses.
-  // The font itself still loads via @font-face; only the preload fails here.
+  // Font preloads have crossorigin set (needed to match how @font-face
+  // fetches), and that can't work from the file:// origin this audit runs on.
+  // The font still loads through @font-face, only the preload fails here.
   if (/\.woff2/i.test(url + ' ' + text) && /Failed to load resource|blocked by CORS policy/i.test(text)) {
     console.log('  (ignored file:// font-preload CORS failure)');
     return;
@@ -37,7 +37,7 @@ page.on('console', m => {
 page.on('pageerror', e => consoleErrs.push('pageerror: ' + e.message));
 await page.goto(url, { waitUntil: 'load' });
 
-// full scroll to trigger lazy loads + observers, then wait for every image to settle
+// scroll the whole page to trigger lazy loads and observers, then wait for all images to finish
 await page.evaluate(async () => {
   for (let y = 0; y < document.body.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 150)); }
 });
@@ -94,7 +94,7 @@ for (const a of anchors) {
   }
 }
 
-// 3. duplicate ids + aria-labelledby integrity + JSON-LD
+// 3. duplicate ids, broken aria-labelledby refs, and JSON-LD
 const domChecks = await page.evaluate(() => {
   const out = [];
   const ids = [...document.querySelectorAll('[id]')].map(e => e.id);
@@ -115,7 +115,7 @@ issues.push(...domChecks);
 // 4. interactions
 async function expect(cond, label) { if (!(await cond)) issues.push('INTERACTION FAIL: ' + label); }
 
-// interaction checks — each feature guarded by its own presence
+// interaction checks, each one only runs if its feature is on the page
 const hasBuilder = await page.evaluate(() => !!document.getElementById('builderForm'));
 if (hasBuilder) {
   await page.locator('#menu').scrollIntoViewIfNeeded();
@@ -133,8 +133,8 @@ if (hasBuilder) {
   await expect(page.evaluate(() => document.getElementById('builderDesc').textContent.includes('Ayam Berempah (Thigh)')), 'builder: desc shows ayam with cut');
 }
 
-// Promo assertions read the data file rather than hardcoding a code, so
-// retiring or changing a promo in site.json does not fail the audit.
+// The promo checks read the code from the data file instead of hardcoding it,
+// so changing or ending a promo in site.json won't break the audit.
 if (await page.evaluate(() => !!document.querySelector('.lto-chit'))) {
   const { readFileSync } = await import('fs');
   const { promo } = JSON.parse(readFileSync(path.join(here, 'data', 'site.json'), 'utf8'));
@@ -175,7 +175,7 @@ if (await page.evaluate(() => !!document.getElementById('clubForm'))) {
   }), 'club: real signup endpoint with honeypot + captcha + subject');
 }
 
-// mobile nav + overflow at 3 widths
+// mobile nav, and overflow at 3 widths
 for (const w of [1280, 768, 375]) {
   await page.setViewportSize({ width: w, height: 900 });
   await page.waitForTimeout(300);

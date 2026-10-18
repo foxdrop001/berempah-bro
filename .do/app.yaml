@@ -1,6 +1,6 @@
 # DigitalOcean App Platform spec for the Berempah Bros site.
-# Static site built from this repo; App Platform rebuilds and deploys on every
-# push to main (including dashboard saves), so no separate CI is needed there.
+# Static site built from this repo. App Platform rebuilds and deploys on every
+# push to main (dashboard saves included), so we don't need separate CI for it.
 # Docs: docs/migrate-digitalocean.md
 name: berempah-bros
 region: sgp

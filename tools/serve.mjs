@@ -1,4 +1,4 @@
-/** Minimal static server for local preview and tests. `npm run dev` */
+/** Small static file server for local preview and tests. Run with `npm run dev` */
 import { createServer } from 'http';
 import { readFile, stat } from 'fs/promises';
 import path from 'path';
@@ -18,11 +18,11 @@ createServer(async (req, res) => {
   try {
     let rel = decodeURIComponent(req.url.split('?')[0]);
     let file = path.join(ROOT, rel);
-    // Compare against ROOT plus a separator: a bare prefix check would let
-    // "/../Berempah Bros-old/x" through, since that sibling shares the prefix.
+    // Check against ROOT plus a path separator. A plain prefix check would let
+    // "/../Berempah Bros-old/x" through, because that sibling folder starts the same way.
     if (file !== ROOT && !file.startsWith(ROOT + path.sep)) { res.writeHead(403).end('forbidden'); return; }
     try { if ((await stat(file)).isDirectory()) file = path.join(file, 'index.html'); }
-    catch { /* fall through to 404 */ }
+    catch { /* not there, readFile below throws and we send a 404 */ }
     const body = await readFile(file);
     res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' });
     res.end(body);

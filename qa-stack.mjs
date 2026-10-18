@@ -10,11 +10,11 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 await page.goto(url, { waitUntil: 'networkidle' });
 await page.evaluate(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
 await page.locator('#stack').scrollIntoViewIfNeeded();
-await page.waitForTimeout(3500); // let auto-build finish
+await page.waitForTimeout(3500); // give the auto-build time to finish
 
 await page.locator('#stack').screenshot({ path: path.join(here, 'qa', 'stacker.png') });
 
-// mobile with sticky bar
+// mobile view, with the sticky bar
 const m = await browser.newPage({ viewport: { width: 375, height: 812 } });
 await m.goto(url, { waitUntil: 'networkidle' });
 await m.evaluate(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));

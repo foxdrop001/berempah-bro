@@ -1,9 +1,10 @@
 /**
- * Open-now chips: appends an open/closed chip to every card with a
- * data-hours="HH:MM-HH:MM" attribute (written by the build from site.json).
+ * Open-now chips: adds an open/closed chip to every card that has a
+ * data-hours="HH:MM-HH:MM" attribute (the build writes it from site.json).
  *
- * The times are Singapore times, so the comparison uses the Singapore clock —
- * an overseas visitor sees the stall's real status, not their local time's.
+ * The hours are in Singapore time, so we compare against the Singapore clock.
+ * Someone browsing from overseas still sees whether the stall is open right
+ * now, instead of a result based on their own local time.
  */
 (function () {
   'use strict';
@@ -11,7 +12,7 @@
     var parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Singapore', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
     var hm = parts.split(':').map(Number);
     var now = hm[0] * 60 + hm[1];
-    // "10:30" → "10:30am", "13:00" → "1pm"
+    // e.g. "10:30" becomes "10:30am", "13:00" becomes "1pm"
     function fmt(t) {
       var p = t.split(':').map(Number);
       var suffix = p[0] < 12 ? 'am' : 'pm';
@@ -28,5 +29,5 @@
       chip.textContent = open ? '● Open now' : '● Closed — opens ' + fmt(oc[0]);
       card.appendChild(chip);
     });
-  } catch (e) { /* clock unavailable — skip chips */ }
+  } catch (e) { /* no clock available, skip the chips */ }
 })();

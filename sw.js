@@ -1,4 +1,4 @@
-/* cleanup worker: unregisters itself and clears caches for any client that installed the earlier version */
+/* cleanup worker: for any client that installed the old version, it clears the caches and unregisters itself */
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => {
   e.waitUntil(

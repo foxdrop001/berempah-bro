@@ -3,9 +3,9 @@
  *
  * Regions in the HTML are marked with:
  *   <!-- BUILD:name -->   ...generated...   <!-- /BUILD:name -->
- * Everything outside those markers is hand-authored and never touched.
+ * Anything outside the markers is written by hand and the build leaves it alone.
  *
- * Outlet detail pages under locations/<slug>/ are generated wholesale.
+ * The outlet pages under locations/<slug>/ are generated in full.
  *
  * Usage: npm run build
  */
@@ -23,9 +23,9 @@ let touched = 0;
 
 const esc = (s) => String(s).replace(/&(?![a-z#0-9]+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-// A slug becomes a directory name and a URL path. Anything outside this shape
-// could write files outside the project (e.g. "../../elsewhere") or produce a
-// broken URL, so refuse to build rather than trust the data file.
+// The slug is used as a folder name and in the URL. A slug that doesn't match
+// this pattern could write files outside the project (e.g. "../../elsewhere")
+// or give a broken URL, so stop the build instead of trusting the data file.
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 for (const o of data.outlets) {
   if (!SLUG_RE.test(String(o.slug ?? ''))) {
@@ -37,13 +37,14 @@ for (const o of data.outlets) {
 const dupes = data.outlets.map((o) => o.slug).filter((s, i, a) => a.indexOf(s) !== i);
 if (dupes.length) throw new Error(`Duplicate outlet slug(s): ${[...new Set(dupes)].join(', ')}`);
 const mapsUrl = (o) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.mapsQuery)}`;
-// Full name for structured data: "Brand — Location", but don't repeat the
-// brand when the outlet name already leads with it (e.g. Gepuk Guys' outlet).
+// Full name for structured data is brand and location joined with an em dash.
+// If the outlet name already starts with the brand (e.g. the Gepuk Guys
+// outlet), use the name as is so the brand isn't repeated.
 const fullName = (o) => (o.brand && o.name.startsWith(o.brand)) ? o.name : [o.brand, o.name].filter(Boolean).join(' — ');
 
-/** Replace a marked region inside a file. Pages are edited in memory and
- *  flushed once each — not re-read and re-written per region. */
-const pages = new Map(); // file → { orig, cur }
+/** Replaces a marked region in a file. Pages are kept in memory and written
+ *  once at the end, instead of reading and writing the file for every region. */
+const pages = new Map(); // file path: { orig, cur }
 function region(file, name, html) {
   let page = pages.get(file);
   if (!page) {
@@ -53,8 +54,8 @@ function region(file, name, html) {
   }
   const re = new RegExp(`(<!-- BUILD:${name} -->)[\\s\\S]*?(<!-- /BUILD:${name} -->)`);
   if (!re.test(page.cur)) throw new Error(`Missing BUILD:${name} markers in ${file}`);
-  // Replacer must be a function: generated content contains prices like "$1.80",
-  // and in a string replacement `$1` would expand to a capture group.
+  // Use a function as the replacer. Generated content has prices like "$1.80",
+  // and in a replacement string `$1` gets read as a capture group.
   page.cur = page.cur.replace(re, (_match, open, close) => `${open}\n${html.trimEnd()}\n${close}`);
 }
 function flushPages() {
@@ -66,8 +67,8 @@ function flushPages() {
   }
 }
 
-// JSON-LD is embedded inside <script> tags: escape "<" so no data value can
-// close the tag early ("</script>") and smuggle markup into the page.
+// JSON-LD goes inside a <script> tag, so escape "<". Otherwise a data value
+// containing "</script>" could close the tag early and inject markup.
 const jsonLd = (obj) => JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
 
 /* ------------------------------------------------------------------ *
@@ -82,7 +83,7 @@ const icon = {
 };
 
 /* ------------------------------------------------------------------ *
- * 1. Locations index — outlet cards
+ * 1. Locations index: outlet cards
  * ------------------------------------------------------------------ */
 const locCards = outlets.map((o, i) => {
   const num = String(i + 1).padStart(2, '0');
@@ -114,12 +115,12 @@ const comingCards = comingSoon.map((c, i) => {
 region('locations/index.html', 'outlets', [locCards, comingCards].filter(Boolean).join('\n'));
 
 /* ------------------------------------------------------------------ *
- * 2. Menu page — cards, sides, builder, note
+ * 2. Menu page: cards, sides, builder, note
  * ------------------------------------------------------------------ */
 const mains = menu.sections.flatMap((s) => s.items).filter((i) => i.slug !== 'feast2');
-// Optional fields default sanely so an item edited through the dashboard
-// (which does not surface image/tags) still builds; image falls back to the
-// slug, and an item with neither fails loudly rather than emitting a broken img.
+// Optional fields get defaults so an item edited in the dashboard (which
+// doesn't show image or tags) still builds. Image falls back to the slug.
+// If an item has neither, throw instead of writing out a broken img.
 const menuCards = mains.map((it) => {
   const image = it.image || it.slug;
   if (!image) throw new Error(`menu item ${it.name || '(unnamed)'}: needs an image or a slug`);
@@ -158,9 +159,9 @@ region('menu/index.html', 'menu-note', `      <p class="menu-note">${menu.note}<
 /* ------------------------------------------------------------------ *
  * 3. Promo block (menu page)
  * ------------------------------------------------------------------ */
-// data-ends carries the only promo fact the browser still needs: when to stop
-// showing it. Everything visible is rendered here, so the page has no second
-// copy of the promo to drift out of sync.
+// data-ends is the one promo detail the browser still needs, i.e. when to stop
+// showing it. Everything visible is rendered here, so there's no second copy
+// of the promo in the page that could get out of sync.
 const promoHtml = promo.active ? `      <div class="lto-chit reveal" data-ends="${esc(promo.endsISO ?? '')}">
         <span class="lto-stamp" aria-hidden="true">Promo Code</span>
         <div class="lto-main">
@@ -186,10 +187,10 @@ const promoHtml = promo.active ? `      <div class="lto-chit reveal" data-ends="
 region('menu/index.html', 'promo', promoHtml);
 
 
-/* Catering offer line — single source is data.catering. The offer is stored
-   as plain text and escaped here like every other data value. The tel: link is
-   derived from the displayed number, so editing the phone in the dashboard
-   updates what the link dials too. */
+/* Catering offer line. It only comes from data.catering. The offer is stored
+   as plain text and escaped here like any other data value. The tel: link is
+   built from the displayed number, so changing the phone in the dashboard
+   also changes the number the link dials. */
 const cateringTel = (() => {
   const digits = String(site.cateringPhone || '').replace(/[^\d+]/g, '');
   return digits.startsWith('+') ? digits : '+65' + digits;
@@ -202,8 +203,9 @@ region('contact/index.html', 'catering-outlets',
   ['                <option>No preference</option>',
     ...outlets.map((o) => `                <option value="${esc(o.name)}">${esc(o.name)}</option>`)].join('\n'));
 
-/* FormSubmit return URLs. Rendered from baseUrl so a domain move cannot leave
-   the thank-you redirect (and its confirmation event) pointing at the old host. */
+/* FormSubmit return URLs. Built from baseUrl, so if the domain changes the
+   thank-you redirect (and its confirmation event) won't keep pointing at the
+   old host. */
 region('contact/index.html', 'next-contact',
   `          <input type="hidden" name="_next" value="${esc(base)}/contact/?sent=1">`);
 region('contact/index.html', 'next-catering',
@@ -211,9 +213,9 @@ region('contact/index.html', 'next-catering',
 region('contact/index.html', 'next-club',
   `            <input type="hidden" name="_next" value="${esc(base)}/contact/?joined=1">`);
 
-/* Enquiry email — every mailto link and form action renders from site.email,
-   so changing the inbox is one field in the data file. (The new inbox must
-   click FormSubmit's activation email once before the forms deliver.) */
+/* Enquiry email. All the mailto links and form actions use site.email, so
+   changing the inbox means editing one field in the data file. (A new inbox
+   has to click FormSubmit's activation email once before the forms deliver.) */
 const mail = esc(site.email);
 region('contact/index.html', 'mail-general',
   `          <a class="btn btn-chili" href="mailto:${mail}?subject=General%20Enquiry">Email Us</a>`);
@@ -230,16 +232,16 @@ region('contact/index.html', 'form-club',
 region('careers/index.html', 'mail-careers',
   `          <a class="btn btn-chili" href="mailto:${mail}?subject=Job%20Application">Apply Now</a>`);
 
-/* Catering section headline on the menu page — editable in the dashboard */
+/* Catering section headline on the menu page (editable in the dashboard) */
 region('menu/index.html', 'catering-headline',
   `        <h2 id="catering-title">${esc(catering.headline || 'Feed The Whole Kampung')}</h2>`);
 
 /* ------------------------------------------------------------------ *
- * 4. Home — stats + JSON-LD
+ * 4. Home: stats and JSON-LD
  * ------------------------------------------------------------------ */
 const totalStalls = outlets.length + comingSoon.length;
-// The hero advertises this price as the signature ayam set — never silently
-// substitute another item's price if the slug goes missing.
+// The hero shows this price as the signature ayam set. If the slug goes
+// missing, fail here instead of quietly using some other item's price.
 const ayam = mains.find((m) => m.slug === 'ayam');
 if (!ayam) throw new Error('hero stats: no menu item with slug "ayam" — the signature-set price comes from it');
 const brandCount = new Set(outlets.map((o) => o.brand)).size;
@@ -298,7 +300,7 @@ const menuLd = {
 };
 region('menu/index.html', 'jsonld', `<script type="application/ld+json">\n${jsonLd(menuLd)}\n</script>`);
 
-// Every marked region is rendered — write each touched page once.
+// All marked regions are rendered now. Write each changed page once.
 flushPages();
 
 /* ------------------------------------------------------------------ *
@@ -306,9 +308,10 @@ flushPages();
  * ------------------------------------------------------------------ */
 const shell = readFileSync(path.join(ROOT, 'templates', 'outlet.html'), 'utf8');
 const outletsDir = path.join(ROOT, 'locations');
-// Clear previously generated dirs. The marker names the slug it belongs to,
-// and we only delete a folder whose marker matches its own name — so a folder
-// hand-copied from a generated one (carrying a stale marker) is never removed.
+// Clear out dirs from the last build. The .generated marker holds the slug it
+// was written for, and we only delete a folder when the marker matches the
+// folder name. That way a folder copied by hand from a generated one (with a
+// stale marker inside) doesn't get deleted.
 for (const d of readdirSync(outletsDir, { withFileTypes: true }).filter((d) => d.isDirectory())) {
   const marker = path.join(outletsDir, d.name, '.generated');
   if (existsSync(marker) && readFileSync(marker, 'utf8').trim() === d.name) {
@@ -373,9 +376,9 @@ for (const o of outlets) {
     OTHERS: others,
     HOURS_ATTR: o.hours.open && o.hours.close ? ` data-hours="${o.hours.open}-${o.hours.close}"` : '',
   };
-  // Substituted values are literal text, so the replacement must be a function:
-  // as a string, "$$" would collapse to "$" and "$&" would re-insert the match.
-  // priceRange "$$" in the structured data is a live example.
+  // Token values are literal text, so use a function for the replacement. In a
+  // replacement string "$$" turns into "$" and "$&" puts the match back in.
+  // The priceRange "$$" in the structured data is a real case of this.
   const html = shell.replace(/\{\{([A-Z_]+)\}\}/g, (match, key) =>
     Object.prototype.hasOwnProperty.call(tokens, key) ? tokens[key] : match);
   const leftover = html.match(/\{\{[A-Z_]+\}\}/g);
@@ -388,10 +391,10 @@ for (const o of outlets) {
 /* ------------------------------------------------------------------ *
  * 7. Sitemap
  * ------------------------------------------------------------------ */
-// lastmod must NOT be "today": the build would then produce a different
-// sitemap on every calendar day, so a rebuild of unchanged content would look
-// like a change and fail CI's drift check. It reflects when the content was
-// last edited, which is what search engines actually want.
+// Don't set lastmod to today's date. The sitemap would then change every day,
+// so rebuilding unchanged content would show up as a diff and fail the drift
+// check in CI. It's the date the content was last edited, which is also what
+// search engines want.
 const lastmod = process.env.BUILD_DATE || data.site.contentUpdated;
 if (!/^\d{4}-\d{2}-\d{2}$/.test(String(lastmod))) {
   throw new Error('site.contentUpdated must be an ISO date (YYYY-MM-DD) in data/site.json');
@@ -405,11 +408,12 @@ writeFileSync(path.join(ROOT, 'sitemap.xml'),
 console.log(`  sitemap.xml (${urls.length} urls)`);
 
 /* ------------------------------------------------------------------ *
- * 8. Absolute URLs — canonical/OG tags, redirect stubs, robots, 404
+ * 8. Absolute URLs: canonical/OG tags, redirect stubs, robots, 404
  * ------------------------------------------------------------------ */
-// Hand-authored heads carry absolute URLs. Refresh them from baseUrl so a
-// domain move (GitHub Pages → DigitalOcean → custom domain) is one field in
-// data/site.json plus a rebuild, not a hunt through every page.
+// The hand-written <head> sections have absolute URLs. Rewrite them from
+// baseUrl so moving domains (GitHub Pages, then DigitalOcean, then a custom
+// domain) only needs one field in data/site.json and a rebuild, instead of
+// going through every page by hand.
 const setAttrUrl = (src, re, url) => src.replace(re, (_m, pre, post) => `${pre}${url}${post}`);
 let urlTouched = 0;
 for (const u of urls) {
@@ -423,14 +427,14 @@ for (const u of urls) {
   out = setAttrUrl(out, /(<meta property="og:url" content=")[^"]*(")/, pageUrl);
   out = setAttrUrl(out, /(<meta property="og:image" content=")[^"]*(")/, ogImg);
   out = setAttrUrl(out, /(<meta name="twitter:image" content=")[^"]*(")/, ogImg);
-  // Hand-authored breadcrumb JSON-LD on the top-level pages: first item is
-  // home, the rest point at the page itself. Outlet pages are regenerated
-  // from the template every build, so they are left alone here.
+  // Top-level pages have hand-written breadcrumb JSON-LD. The first item is
+  // home and the rest point at the page itself. Outlet pages get regenerated
+  // from the template on every build, so skip them here.
   if (u.split('/').filter(Boolean).length <= 1) {
     let itemIdx = 0;
     out = out.replace(/("item": ")[^"]*(")/g, (_m, pre, post) => `${pre}${itemIdx++ === 0 ? `${base}/` : pageUrl}${post}`);
-    // Self-referencing JSON-LD urls with #fragments (the news page's blog
-    // posts) point at the page itself; keep the fragment, swap the origin.
+    // JSON-LD urls with a #fragment (the blog posts on the news page) point
+    // back at the same page. Keep the fragment and replace the origin.
     out = out.replace(/("url": ")[^"#]*(#[^"]*")/g, (_m, pre, frag) => `${pre}${pageUrl}${frag}`);
   }
   if (out !== src) { writeFileSync(p, out); urlTouched++; }
@@ -450,10 +454,10 @@ for (const stub of ['story', 'menu', 'locations', 'careers', 'contact', 'news'])
 }
 if (urlTouched) console.log(`  refreshed absolute urls in ${urlTouched} files`);
 
-// 404 page: served for any missing path (GitHub Pages and DigitalOcean both
-// use a root 404.html). Links must be absolute because the page can render
-// at any depth, so it is generated here from baseUrl. Styles are inline: a
-// 404 should not depend on an asset that might itself be the missing file.
+// 404 page, served for any missing path (GitHub Pages and DigitalOcean both
+// look for 404.html at the root). It can show up at any depth, so the links
+// have to be absolute, which is why it's generated here from baseUrl. Styles
+// are inline because a 404 shouldn't rely on an asset that may be the missing file.
 writeFileSync(path.join(ROOT, '404.html'), `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -489,8 +493,8 @@ console.log('  404.html');
 /* ------------------------------------------------------------------ *
  * 9. Analytics config (shared by every page)
  * ------------------------------------------------------------------ */
-// The ID lands inside a quoted JS literal — refuse anything that isn't a
-// plain GA4 id rather than emit a syntax error that kills every page's script.
+// The ID gets written into a quoted JS string. If it isn't a plain GA4 id,
+// throw here, otherwise we'd write a syntax error that breaks every page's script.
 const ga4Id = site.analytics.ga4MeasurementId;
 if (ga4Id && !/^G-[A-Z0-9]+$/i.test(ga4Id)) {
   throw new Error(`site.analytics.ga4MeasurementId ${JSON.stringify(ga4Id)} does not look like a GA4 id (G-XXXXXXXXXX)`);

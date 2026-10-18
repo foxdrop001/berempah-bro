@@ -698,7 +698,7 @@
   }
   @media (min-width:901px){.pillars-2{grid-template-columns:repeat(2,1fr)}}
 
-  /* form controls must never exceed their column on small screens */
+  /* stop form controls overflowing their column on small screens */
   .cform-field input,.cform-field select,.cform-field textarea{width:100%;max-width:100%;min-width:0}
   .cform-row{min-width:0}
   .cform-row > *{min-width:0}

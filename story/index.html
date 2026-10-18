@@ -351,8 +351,8 @@
   var grid=root.querySelector('.igwall-grid');
   var tiles=grid?Array.prototype.slice.call(grid.querySelectorAll('.ig-tile')):[];
   if('IntersectionObserver' in window){
-    // Fallback reveal: covers the case where this fragment was injected after the
-    // site's global .reveal observer already ran. Duplicate .in adds are harmless.
+    // Fallback reveal, for when this fragment gets injected after the site's
+    // global .reveal observer has already run. Adding .in twice does no harm.
     var reveals=Array.prototype.slice.call(root.querySelectorAll('.reveal:not(.in)'));
     if(reveals.length){
       var rio=new IntersectionObserver(function(entries){
@@ -362,7 +362,7 @@
       },{threshold:.12});
       reveals.forEach(function(el){rio.observe(el);});
     }
-    // Staggered tile entrance — opted into via class so tiles stay visible if JS fails.
+    // Staggered tile entrance. Only on when the class is added, so tiles still show if JS fails.
     if(grid&&tiles.length&&!reduce){
       root.classList.add('igwall-js');
       tiles.forEach(function(t,i){t.style.transitionDelay=(i*70)+'ms';});
@@ -375,7 +375,7 @@
         });
       },{threshold:.15});
       tio.observe(grid);
-      // Clear stagger delay once each tile has entered, so later transitions aren't lagged.
+      // Clear the stagger delay once each tile is in, otherwise later transitions lag.
       tiles.forEach(function(t){
         t.addEventListener('transitionend',function done(e){
           if(e.target!==t)return;

@@ -428,7 +428,7 @@
 <!-- /BUILD:builder-cuts -->
             </div>
           </fieldset>
-          <!-- add-on chips use in-set modifier prices (verified on Oddle) — intentionally cheaper than a-la-carte Sides -->
+          <!-- add-on chips use the in-set modifier prices (checked on Oddle). They are cheaper than the a-la-carte Sides on purpose -->
           <fieldset class="b-group">
             <legend>Add-Ons</legend>
             <div class="chip-row">
@@ -472,7 +472,7 @@
     </div>
 
     <div class="tray-grid">
-      <!-- PLACEHOLDER: edit before launch — tray name, contents and serving size are a concept; confirm with the kitchen -->
+      <!-- PLACEHOLDER: edit before launch. Tray name, contents and serving size are just a concept, check with the kitchen -->
       <article class="tray reveal">
         <span class="tray-ribbon">Tray 01</span>
         <h3>Office Makan Day</h3>
@@ -498,7 +498,7 @@
         <p class="tray-foot">pantry hero status: unlocked</p>
       </article>
 
-      <!-- PLACEHOLDER: edit before launch — tray name, contents and serving size are a concept; confirm with the kitchen -->
+      <!-- PLACEHOLDER: edit before launch. Tray name, contents and serving size are just a concept, check with the kitchen -->
       <article class="tray reveal">
         <span class="tray-ribbon">Tray 02</span>
         <h3>Birthday Ayam Tower</h3>
@@ -524,7 +524,7 @@
         <p class="tray-foot">better than cake. we said it.</p>
       </article>
 
-      <!-- PLACEHOLDER: edit before launch — tray name, contents and serving size are a concept; confirm with the kitchen -->
+      <!-- PLACEHOLDER: edit before launch. Tray name, contents and serving size are just a concept, check with the kitchen -->
       <article class="tray reveal">
         <span class="tray-ribbon">Tray 03</span>
         <h3>Kampung Feast</h3>
@@ -709,8 +709,8 @@
   })();
 
   // ===== LTO promo =====
-  // The promo copy is rendered by the build from data/site.json. This only
-  // does the one job the server cannot: hide the promo once it has expired.
+  // The build renders the promo copy from data/site.json. All this script does
+  // is hide the promo after it expires, which a static build can't do.
   (function(){
     var root=document.querySelector('.lto');
     if(!root){return;}
@@ -728,7 +728,7 @@
       var countEl=root.querySelector('.lto-count');
       if(ends===null){
         if(countEl){countEl.style.display='none';}
-        return;                              // evergreen — no countdown
+        return;                              // evergreen, no countdown
       }
 
       var endsEl=root.querySelector('[data-lto="ends"]');
@@ -768,7 +768,7 @@
   if(!section)return;
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduce)return;
-  // Stagger the tray-card reveals slightly, then clear the delay so hover transitions stay snappy
+  // Stagger the tray-card reveals a little, then clear the delay so hover transitions stay quick
   var cards=section.querySelectorAll('.tray.reveal');
   Array.prototype.forEach.call(cards,function(card,i){
     card.style.transitionDelay=(i*90)+'ms';
