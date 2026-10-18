@@ -537,43 +537,6 @@
 @media (max-width:480px){
   .catering .cta-row .btn{width:100%}
 }
-  /* ================= IG WALL ================= */
-.igwall{position:relative}
-.igwall .igwall-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s5)}
-.igwall .igwall-head h2{font-size:clamp(2rem,4.2vw,3.3rem);margin-top:var(--s2)}
-.igwall .igwall-note{font-size:1.45rem;color:var(--ink-70);transform:rotate(-2deg);max-width:17rem;line-height:1.2}
-.igwall .igwall-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:235px;gap:var(--s2)}
-.igwall .ig-tile{position:relative;display:block;height:100%;border:2px solid var(--ink);background:#2A1708;overflow:hidden;text-decoration:none;--tilt:0deg;transform:rotate(var(--tilt))}
-.igwall .ig-tile.ig-wide{grid-column:span 2}
-.igwall .ig-tile img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
-.igwall .ig-tile:not(.pol):hover img,.igwall .ig-tile:not(.pol):focus-visible img{transform:scale(1.06)}
-.igwall .ig-tile.pol{background:#fff;padding:10px 10px 40px;z-index:2;box-shadow:6px 6px 0 var(--turmeric)}
-.igwall .ig-tile.tilt-l{--tilt:-2deg}
-.igwall .ig-tile.tilt-r{--tilt:2.4deg;box-shadow:6px 6px 0 var(--chili)}
-.igwall .ig-cap{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-family:var(--font-hand);font-weight:600;font-size:1.2rem;color:var(--ink-70)}
-.igwall .ig-ov{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px;background:rgba(40,20,20,.82);color:var(--paper);opacity:0;transition:opacity .25s ease}
-.igwall .ig-tile.pol .ig-ov{top:10px;left:10px;right:10px;bottom:40px}
-.igwall .ig-tile:hover .ig-ov,.igwall .ig-tile:focus .ig-ov,.igwall .ig-tile:focus-visible .ig-ov{opacity:1}
-.igwall .ig-tag{font-family:var(--font-display);font-size:1.05rem;letter-spacing:.06em;text-align:center;text-transform:none}
-.igwall .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-.igwall .igwall-cta{display:flex;justify-content:center;margin-top:var(--s5)}
-.igwall.igwall-js .ig-tile{opacity:0;transform:translateY(22px) rotate(var(--tilt));transition:opacity .5s ease,transform .5s ease}
-.igwall.igwall-js .ig-tile.tin{opacity:1;transform:rotate(var(--tilt))}
-@media (prefers-reduced-motion:reduce){
-  .igwall.igwall-js .ig-tile{opacity:1;transform:rotate(var(--tilt))}
-}
-@media (max-width:720px){
-  .igwall .igwall-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:200px}
-}
-@media (max-width:480px){
-  .igwall .igwall-grid{gap:10px;grid-auto-rows:160px}
-  .igwall .ig-tile.pol{padding:6px 6px 30px;box-shadow:4px 4px 0 var(--turmeric)}
-  .igwall .ig-tile.tilt-l{--tilt:-1.2deg}
-  .igwall .ig-tile.tilt-r{--tilt:1.2deg;box-shadow:4px 4px 0 var(--chili)}
-  .igwall .ig-tile.pol .ig-ov{top:6px;left:6px;right:6px;bottom:30px}
-  .igwall .ig-cap{font-size:1.05rem;bottom:5px}
-  .igwall .igwall-note{font-size:1.25rem}
-}
   /* ================= CRUNCH CLUB ================= */
 .club{background:var(--paper-2);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
 .club [hidden]{display:none!important}

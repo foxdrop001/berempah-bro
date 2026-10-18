@@ -91,7 +91,7 @@ const locCards = outlets.map((o, i) => {
   const brandStyle = o.brand !== 'Berempah Bros' ? ' style="border-color:var(--pandan)"' : '';
   const numStyle = o.brand !== 'Berempah Bros' ? ' style="background:var(--pandan);color:#fff"' : '';
   return `        <article class="loc-card reveal"${hoursAttr}${brandStyle}>
-          <span class="loc-num"${numStyle}>NO. ${num} — ${esc(String(o.badge).toUpperCase())}</span>
+          <span class="loc-num"${numStyle}>NO. ${num} · ${esc(String(o.badge).toUpperCase())}</span>
           <h3><a href="${o.slug}/" style="text-decoration:none">${esc(o.name)}</a></h3>
           <p class="loc-line">${icon.pin} ${esc(o.address)}, S(${o.postal})</p>
           <p class="loc-line">${icon.clock} ${esc(o.hours.display)}</p>
@@ -106,7 +106,7 @@ const locCards = outlets.map((o, i) => {
 const comingCards = comingSoon.map((c, i) => {
   const num = String(outlets.length + i + 1).padStart(2, '0');
   return `        <article class="loc-card reveal" style="border-style:dashed">
-          <span class="loc-num" style="background:var(--turmeric);color:var(--ink)">NO. ${num} — ${esc(String(c.badge || 'Coming Soon').toUpperCase())}</span>
+          <span class="loc-num" style="background:var(--turmeric);color:var(--ink)">NO. ${num} · ${esc(String(c.badge || 'Coming Soon').toUpperCase())}</span>
           <h3>${esc(c.name || 'Coming Soon')}</h3>
           ${c.note ? `<p class="loc-line">${icon.spice} ${esc(c.note)}</p>` : ''}
           <span class="loc-chip"><a href="${esc(site.instagram)}" target="_blank" rel="noopener" style="text-decoration:none">Watch on Instagram ↗</a></span>
@@ -174,7 +174,7 @@ const promoHtml = promo.active ? `      <div class="lto-chit reveal" data-ends="
           <span class="kicker">${esc(promo.kicker)}</span>
           <h2 id="lto-title" class="lto-title">${esc(promo.title)}</h2>
           <p class="lto-desc">${esc(promo.desc)}</p>
-          <p class="lto-ends"><span data-lto="ends">First order only</span> <span class="hand">— use it lah</span></p>
+          <p class="lto-ends"><span data-lto="ends">First order only</span></p>
         </div>
         <div class="lto-stub">
           <div class="lto-count" aria-hidden="true">
@@ -254,7 +254,7 @@ const brandCount = new Set(outlets.map((o) => o.brand)).size;
 region('index.html', 'hero-stats', `        <div><b>16</b>spices in the rempah</div>
         <div><b>${outlets.length}</b>stalls · ${brandCount} brands</div>
         <div><b>$${ayam.price.replace('.00', '')}</b>signature ayam set</div>
-        <div><b>#1</b>MasterChef SG S2</div>`);
+        <div><b>2021</b>MasterChef SG champion</div>`);
 
 const restaurantLd = {
   '@context': 'https://schema.org',

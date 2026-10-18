@@ -60,7 +60,7 @@
             "tags": [
               "Spicy"
             ],
-            "desc": "Flaky fish in a light rempah crust — all the fire and crunch, lighter on its feet.",
+            "desc": "Flaky fish in a light rempah crust: all the fire and crunch, lighter on its feet.",
             "menuDesc": "Signature fried fish topped with typhoon shelter crumbs, served with fragrant coconut rice, housemade achar &amp; very power sambal belachan"
           },
           {
@@ -71,7 +71,7 @@
             "tags": [
               "Premium"
             ],
-            "desc": "The premium plate — briny, buttery unagi meets bold berempah spices.",
+            "desc": "The premium plate. Briny, buttery unagi meets bold berempah spices.",
             "menuDesc": "Melt-in-the-mouth tender Japanese unagi fried to a crisp perfection with our rempah batter, topped with typhoon shelter crumbs"
           }
         ]
@@ -137,13 +137,13 @@
       "Thigh",
       "Breast"
     ],
-    "note": "Prices from our <a href=\"https://berempahbros.oddle.me/\" target=\"_blank\" rel=\"noopener\">delivery menu</a> · stall counter prices may differ · Islandwide delivery $6.80 · Menu includes pork — not halal-certified"
+    "note": "Prices from our <a href=\"https://berempahbros.oddle.me/\" target=\"_blank\" rel=\"noopener\">delivery menu</a> · stall counter prices may differ · Islandwide delivery $6.80 · Menu includes pork, not halal-certified"
   },
   "promo": {
     "active": true,
     "kicker": "First-Timer Deal",
     "title": "$6 Off Your First Order",
-    "desc": "New to the Bros? Code BEREMPAH6 takes $6 off (min. $60 spend) your first delivery order — islandwide at a flat $6.80.",
+    "desc": "New to the Bros? Code BEREMPAH6 takes $6 off (min. $60 spend) your first delivery order, islandwide at a flat $6.80.",
     "code": "BEREMPAH6",
     "endsISO": null,
     "cta": "Order with BEREMPAH6",
@@ -264,7 +264,7 @@
       },
       "mapsQuery": "Jofa Coffeeshop 531 Bedok North Street 3",
       "opened": "2026-07",
-      "note": "Indonesian-style gepuk — no pork, no lard. Ayam $9.90 · Squid $10.90 · Duck Confit $16.50",
+      "note": "Indonesian-style gepuk. No pork, no lard. Ayam $9.90 · Squid $10.90 · Duck Confit $16.50",
       "instagram": "https://www.instagram.com/gepukguys.sg/",
       "published": true
     }
@@ -273,7 +273,7 @@
     {
       "badge": "Just Dropped",
       "name": "Our Sixth Stall",
-      "note": "The next Berempah Bros counter is on the way — location announced first on Instagram."
+      "note": "The next Berempah Bros counter is on the way. Location announced first on Instagram."
     }
   ],
   "_unpublishedOutletExample": {
@@ -315,7 +315,7 @@
           "style": ""
         }
       ],
-      "body": "The next Berempah Bros counter is confirmed and coming to a hawker centre near you. Location, opening date and (maybe) an opening special drop first on Instagram — eyes on the 'gram, bro.",
+      "body": "The next Berempah Bros counter is confirmed and coming to a hawker centre near you. Location, opening date and (maybe) an opening special drop first on Instagram, so keep an eye on @berempahbros.",
       "buttons": [
         {
           "text": "Watch @berempahbros",
@@ -340,7 +340,7 @@
       ],
       "image": "sm/unagi",
       "imageAlt": "A glazed, crumb-topped berempah plate on a rattan tray",
-      "body": "The Bros went French, then dragged it straight back to the kopitiam: **Duck Confit Berempah** — slow-cooked duck leg, crisped up and hit with the signature rempah treatment. On the menu at **Gepuk Guys, Bedok** at $16.50, as covered by [Eatbook](https://eatbook.sg/gepuk-guys/).",
+      "body": "The Bros went French, then dragged it straight back to the kopitiam: **Duck Confit Berempah**: slow-cooked duck leg, crisped up and hit with the signature rempah treatment. On the menu at **Gepuk Guys, Bedok** at $16.50, as covered by [Eatbook](https://eatbook.sg/gepuk-guys/).",
       "buttons": [
         {
           "text": "Order Delivery",
@@ -367,7 +367,7 @@
       ],
       "image": "sm/feast",
       "imageAlt": "A loaded rattan tray of gepuk-style dishes with rice, sambal and sides",
-      "body": "Our sister stall is live. **Gepuk Guys** serves Indonesian-inspired gepuk — turmeric-marinated fried chicken, lightly smashed, with cashew-nut sambal — from Stall 3, Jofa Coffeeshop, **531 Bedok North Street 3**, daily 10:30am–10:30pm.\n\nMains from $9.90 (Ayam Berempah Gepuk), with grilled squid, unagi and duck confit on the roster. **No pork, no lard** at this one. Full story on [Eatbook](https://eatbook.sg/gepuk-guys/).",
+      "body": "Our sister stall is live. **Gepuk Guys** serves Indonesian-inspired gepuk (turmeric-marinated fried chicken, lightly smashed, with cashew-nut sambal) from Stall 3, Jofa Coffeeshop, **531 Bedok North Street 3**, daily 10:30am–10:30pm.\n\nMains from $9.90 (Ayam Berempah Gepuk), with grilled squid, unagi and duck confit on the roster. **No pork, no lard** at this one. Full story on [Eatbook](https://eatbook.sg/gepuk-guys/).",
       "buttons": [
         {
           "text": "Watch The Grand Opening",
@@ -396,7 +396,7 @@
           "style": ""
         }
       ],
-      "body": "The fourth Berempah Bros counter opened at **Woodleigh Village Hawker Centre** — 202C Bidadari Park Drive, right by Woodleigh MRT (NE11). Same overnight rempah, same crunch, now for the Bidadari side of town.",
+      "body": "The fourth Berempah Bros counter opened at **Woodleigh Village Hawker Centre**, 202C Bidadari Park Drive, right by Woodleigh MRT (NE11). Same overnight rempah, same crunch, now for the Bidadari side of town.",
       "buttons": [
         {
           "text": "All Locations",
@@ -420,7 +420,7 @@
           "style": ""
         }
       ],
-      "body": "Stall No. 3 landed at **Happy Hawkers, 267 Compassvale Link** — right next to Ranggung LRT. The opening ran a Pork Berempah special that had the queue snaking past the drinks stall, and northeast-siders have kept it moving since.",
+      "body": "Stall No. 3 landed at **Happy Hawkers, 267 Compassvale Link**, right next to Ranggung LRT. The opening ran a Pork Berempah special that had the queue snaking past the drinks stall, and northeast-siders have kept it moving since.",
       "buttons": [
         {
           "text": "Find The Stall",
@@ -446,7 +446,7 @@
       ],
       "image": "sm/stall",
       "imageAlt": "Two plates of ayam berempah on the hawker table at the stall",
-      "body": "MasterChef Singapore champion **Derek Cheong** opened the first Berempah Bros at **Beauty World Food Centre #04-51** — one dish, done properly: 16-spice ayam goreng berempah under a shower of garlic, breadcrumb, kerisik and sakura ebi crunch.\n\nThe food blogs came fast — [DanielFoodDiary](https://danielfooddiary.com/2026/01/19/berempahbros/) compared the crumbs to \"a lovechild between prawn cereal and HK-style typhoon shelter crab toppings,\" and the queues haven't really stopped.",
+      "body": "MasterChef Singapore champion **Derek Cheong** opened the first Berempah Bros at **Beauty World Food Centre #04-51** with one dish, done properly: 16-spice ayam goreng berempah under a shower of garlic, breadcrumb, kerisik and sakura ebi crunch.\n\nThe food blogs came fast. [DanielFoodDiary](https://danielfooddiary.com/2026/01/19/berempahbros/) compared the crumbs to \"a lovechild between prawn cereal and HK-style typhoon shelter crab toppings,\" and the queues haven't really stopped.",
       "buttons": [
         {
           "text": "Read The Full Story",
@@ -458,14 +458,14 @@
   ],
   "pages": {
     "home": {
-      "tag": "wah, die die must try lah!",
+      "tag": "by MasterChef Singapore champion Derek Cheong",
       "titleLine1": "Spice. Crunch.",
       "titleLine2": "Shiok.",
-      "intro": "Born in Singapore. Inspired by the flavours we grew up with. Made for people who just want damn good food."
+      "intro": "Ayam goreng berempah, marinated overnight in sixteen spices, fried to order and finished with fried garlic, kerisik and sakura ebi. On coconut rice, at hawker centres across Singapore."
     },
     "story": {
       "heading": "Born In Singapore.\nBuilt On Rempah.",
-      "body": "Berempah Bros started from our love for the food we grew up eating.\n\nThe flavours of Singapore and Southeast Asia are loud, diverse and unapologetic — sambal, coconut, spices, smoke, char and plenty of rempah. We wanted to build something around that.\n\nOur starting point was the humble plate of nasi lemak. We took everything we loved about it and made it our own: fragrant coconut rice, punchy sambal, refreshing achar and, at the centre of it all, our signature **Ayam Berempah**.\n\nWhat began with one plate has grown into different proteins, grilled dishes, new creations and Berempah Bros outlets across Singapore.\n\nBut the idea hasn't changed.\n\n**Take familiar flavours. Put our spin on them. And make food we'd happily eat ourselves.**"
+      "body": "Berempah Bros started from our love for the food we grew up eating.\n\nThe flavours of Singapore and Southeast Asia are loud, diverse and unapologetic: sambal, coconut, spices, smoke, char and plenty of rempah. We wanted to build something around that.\n\nOur starting point was the humble plate of nasi lemak. We took everything we loved about it and made it our own: fragrant coconut rice, punchy sambal, refreshing achar and, at the centre of it all, our signature **Ayam Berempah**.\n\nWhat began with one plate has grown into different proteins, grilled dishes, new creations and Berempah Bros outlets across Singapore.\n\nBut the idea hasn't changed.\n\n**Take familiar flavours. Put our spin on them. And make food we'd happily eat ourselves.**"
     },
     "careers": {
       "heading": "Join The Bros.",
