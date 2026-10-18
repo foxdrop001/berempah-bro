@@ -14,11 +14,14 @@
  * admin/index.html. Local editing still works through `npm run admin`.
  */
 import ADMIN_HTML from './admin/page.mjs';
+import NOT_FOUND_HTML from './lib/not-found.mjs';
 import { validEndpoint, pushConfigured, addSubscriber, removeSubscriber, countSubscribers, latestMessage, sendToAll } from './lib/push.mjs';
 
-const notFound = () => new Response('Not found', {
+// Same branded "lost lah" page as any other missing address, so /admin looks
+// like nothing special is there.
+const notFound = () => new Response(NOT_FOUND_HTML, {
   status: 404,
-  headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
+  headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
 });
 const json = (obj, status = 200) => new Response(JSON.stringify(obj), {
   status,

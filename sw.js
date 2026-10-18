@@ -5,13 +5,14 @@
  * - Pages: network first. The live page always wins when there is signal; the
  *   last copy seen is only used offline, and if a page was never opened the
  *   offline page shows instead.
- * - /assets/ (photos, css, fonts, scripts): served from cache for speed and
- *   refreshed in the background, so a changed file shows on the next visit.
+ * - /assets/ photos and fonts: served from cache for speed and
+ *   refreshed in the background. Scripts and styles are network first, so
+ *   updates show straight away.
  * - Everything else (data/site.json, the dashboard, other sites) is left alone.
  *
  * Bump VERSION when this file changes in a way that needs old caches cleared.
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const PAGES = `bb-pages-${VERSION}`;
 const ASSETS = `bb-assets-${VERSION}`;
 const SCOPE = new URL(self.registration.scope).pathname; // "/" on Vercel
@@ -61,6 +62,21 @@ self.addEventListener('fetch', (e) => {
   if (rel.startsWith('api/')) return; // live data, never cached
 
   if (rel.startsWith('assets/')) {
+    // Scripts and styles: network first, like pages. Serving a cached copy
+    // first meant a new feature (e.g. the Get notified button) only showed on
+    // the second visit after an update. The cache is the offline fallback.
+    if (/\.(js|css)$/.test(rel)) {
+      e.respondWith(
+        fetch(req)
+          .then((res) => {
+            if (res.ok && res.type === 'basic') { const copy = res.clone(); e.waitUntil(caches.open(ASSETS).then((c) => c.put(req, copy))); }
+            return res;
+          })
+          .catch(() => caches.match(req))
+      );
+      return;
+    }
+    // Photos and fonts: cached copy first for speed, refreshed in the background.
     e.respondWith(
       caches.open(ASSETS).then((c) => c.match(req).then((hit) => {
         const fresh = fetch(req).then((res) => {
