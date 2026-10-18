@@ -82,6 +82,17 @@
   .addbtn{margin-top:2px}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
   .count{font-size:.8rem;color:var(--ink-70)}
+  /* notify tab: the preview sits on a dark "lock screen" strip so the white
+     card reads like a real phone notification */
+  .notif-stage{margin-top:14px;background:linear-gradient(160deg,#3A2A24,#1E1412);border-radius:10px;padding:14px 14px 16px;max-width:440px}
+  .notif-label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#CDB995;margin-bottom:10px}
+  .notif{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.94);border-radius:16px;padding:12px 14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .notif img{border-radius:9px;flex:none}
+  .notif-text{min-width:0;display:flex;flex-direction:column;gap:1px;font-size:.9rem;line-height:1.35}
+  .notif-app{font-size:.74rem;color:#6B5B53}
+  .notif-app span{color:#8A7B73}
+  .notif-text b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .notif-text #nPrevBody{color:#3B2E29;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   label.check{display:inline-flex;align-items:center;gap:8px;margin:0 16px 0 0;font-size:.85rem;letter-spacing:0;text-transform:none;color:var(--ink);cursor:pointer;min-height:36px}
   label.check input{width:20px;height:20px;min-height:0;accent-color:var(--orange)}
   /* summary rows: name goes first, and the pills wrap together as one group */
@@ -212,11 +223,15 @@
           </select></div>
       </div>
       <div style="margin-top:12px"><label for="nBody">Message (max 240)</label><textarea id="nBody" maxlength="240" placeholder="Woodleigh Village Hawker Centre, open daily 10am to 9pm. Come try lah."></textarea></div>
-      <div class="item" style="margin-top:14px;max-width:420px" aria-label="Preview">
-        <span class="muted">Preview</span>
-        <div style="display:flex;gap:10px;align-items:flex-start;margin-top:6px">
-          <img src="../assets/icon-192.png" alt="" width="40" height="40" style="border-radius:8px">
-          <div><b id="nPrevTitle">Title</b><br><span id="nPrevBody" class="muted"></span></div>
+      <div class="notif-stage" aria-label="Preview of the notification on a phone">
+        <span class="notif-label">How it shows on a phone</span>
+        <div class="notif">
+          <img src="../assets/icon-192.png" alt="" width="38" height="38">
+          <div class="notif-text">
+            <div class="notif-app">Berempah Bros <span>· now</span></div>
+            <b id="nPrevTitle">Title</b>
+            <span id="nPrevBody"></span>
+          </div>
         </div>
       </div>
       <div class="row" style="margin-top:14px">
