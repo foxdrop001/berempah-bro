@@ -35,6 +35,31 @@ is named here.
 
 ## 2. Vercel project
 
+### Easiest: transfer the existing project (no downtime)
+
+Vercel can move the whole project to another team. The new owner creates a
+Vercel team (Pro plan, with a payment method) and invites the current owner
+as a member. The current owner then opens the project → **Settings → General
+→ Transfer Project** and picks that team.
+
+What moves with it: deployments, all the environment variables in the table
+below (dashboard address and login, VAPID keys), the domains, the GitHub
+link and build settings. The site stays up the whole time.
+
+What does **not** move: the Upstash database (it's a Marketplace
+integration). Either transfer the integration installation as well
+(Vercel docs: "Transferring an Integration"), or create a new Upstash database
+on the new team as in step 3 and copy the subscribers across. Because the
+VAPID keys move with the project, the copied subscribers keep working.
+
+If the project is transferred, skip the rest of this step and the "Domain"
+step, do step 3, then check everything in step 4.
+
+The current owner can stay a member of the new team to keep looking after
+hosting.
+
+### Or: set up a fresh project
+
 On the new owner's Vercel account: **Add New → Project → Import** the GitHub
 repository. Leave the framework as "Other"; `vercel.json` already sets the build.
 
