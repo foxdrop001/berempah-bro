@@ -28,6 +28,27 @@
 
   var GA_ID = window.BB_GA4_ID || null;
 
+  // First-party counter for the dashboard's Insights tab (/api/track on this
+  // site). It sends only the event name, the page and the outlet, never
+  // anything about the visitor, and is skipped when the browser asks not to
+  // be tracked.
+  var me = document.currentScript && document.currentScript.src;
+  var TRACK_URL = me ? new URL('../api/track', me).href : null;
+  var optedOut = navigator.doNotTrack === '1' || window.doNotTrack === '1' || navigator.globalPrivacyControl === true;
+  function count(e, outlet) {
+    if (!TRACK_URL || optedOut) return;
+    var body = JSON.stringify({ e: e, p: pagePath(), o: outlet || undefined });
+    try {
+      if (navigator.sendBeacon && navigator.sendBeacon(TRACK_URL, new Blob([body], { type: 'text/plain' }))) return;
+      fetch(TRACK_URL, { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(function () {});
+    } catch (err) { /* counting must never break the page */ }
+  }
+  // "/menu/index.html" and "/menu" both count as "/menu/".
+  function pagePath() {
+    var p = location.pathname.replace(/index\.html$/, '');
+    return /\/$/.test(p) ? p : p + '/';
+  }
+
   if (GA_ID) {
     var s = document.createElement('script');
     s.async = true;
@@ -40,6 +61,7 @@
 
   function track(event, params) {
     var payload = params || {};
+    count(event, payload.outlet);
     payload.page_path = location.pathname;
     if (GA_ID) gtag('event', event, payload);
     else window.dataLayer.push(Object.assign({ event: event }, payload));
@@ -103,4 +125,5 @@
     var qs = q.toString();
     history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
   }
+  count('pageview');
 })();

@@ -16,6 +16,7 @@
 import ADMIN_HTML from './admin/page.mjs';
 import NOT_FOUND_HTML from './lib/not-found.mjs';
 import { validEndpoint, pushConfigured, addSubscriber, removeSubscriber, countSubscribers, latestMessage, sendToAll } from './lib/push.mjs';
+import { track, summary, insightsConfigured } from './lib/insights.mjs';
 
 // Same branded "lost lah" page as any other missing address, so /admin looks
 // like nothing special is there.
@@ -111,6 +112,18 @@ export default async function middleware(request) {
   // server-side code folder.
   if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname.startsWith('/lib/')) return notFound();
 
+  // Visit and click counter for the Insights tab. Only calls from the site's
+  // own pages are counted (checked with the Origin header browsers send).
+  if (pathname === '/api/track') {
+    if (request.method !== 'POST') return notFound();
+    const origin = request.headers.get('origin');
+    let sameSite = false;
+    try { sameSite = !!origin && new URL(origin).host === new URL(request.url).host; } catch {}
+    if (!sameSite || !insightsConfigured()) return new Response(null, { status: 204 });
+    try { await track(request, await readJson(request, 512)); } catch {}
+    return new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } });
+  }
+
   if (pathname.startsWith('/api/push/')) {
     try { return await publicPush(request, pathname); }
     catch (e) { return json({ error: 'server error' }, 500); }
@@ -127,7 +140,7 @@ export default async function middleware(request) {
   }
   if (!pathname.startsWith(`/${slug}/`)) return;
   const action = pathname.slice(slug.length + 2);
-  if (action !== '' && action !== 'index.html' && action !== 'push-stats' && action !== 'push-send') return;
+  if (action !== '' && action !== 'index.html' && action !== 'push-stats' && action !== 'push-send' && action !== 'insights') return;
 
   if (!authorised(request, user, pass)) {
     return new Response('Login required', {
@@ -138,6 +151,14 @@ export default async function middleware(request) {
         'Cache-Control': 'no-store',
       },
     });
+  }
+  if (action === 'insights') {
+    if (!insightsConfigured()) return json({ configured: false });
+    try {
+      const days = new URL(request.url).searchParams.get('days');
+      const [data, subscribers] = await Promise.all([summary(days), pushConfigured() ? countSubscribers() : 0]);
+      return json({ configured: true, subscribers, ...data });
+    } catch (e) { return json({ error: `Could not load insights: ${e.message}` }, 500); }
   }
   if (action === 'push-stats' || action === 'push-send') {
     try { return await adminPush(request, action); }

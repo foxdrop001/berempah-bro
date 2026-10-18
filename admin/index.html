@@ -93,6 +93,30 @@
   .notif-app span{color:#8A7B73}
   .notif-text b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .notif-text #nPrevBody{color:#3B2E29;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  /* insights tab */
+  .ins-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .ins-range{display:flex;gap:6px}
+  .ins-range button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+  .ins-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+  .ins-tile{background:var(--white);border:2px solid var(--ink);border-radius:6px;padding:14px 16px}
+  .ins-tile b{display:block;font-size:2rem;line-height:1.05;font-variant-numeric:tabular-nums}
+  .ins-tile span{font-size:.8rem;color:var(--ink-70);font-weight:600}
+  .ins-chart{position:relative;margin-top:12px}
+  .ins-plot{position:relative;height:180px;display:flex;align-items:flex-end;gap:2px;border-bottom:1.5px solid var(--line);padding-top:18px}
+  .ins-plot .gridline{position:absolute;left:0;right:0;top:18px;border-top:1px dashed var(--line);pointer-events:none}
+  .ins-plot .gridlabel{position:absolute;right:0;top:0;font-size:.72rem;color:var(--ink-70)}
+  .ins-col{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:flex-end;background:none;border:0;padding:0;min-height:0;cursor:default;border-radius:0}
+  .ins-col:hover,.ins-col:focus-visible{background:rgba(200,90,18,.08)}
+  .ins-col i{display:block;width:100%;background:#C85A12;border-radius:4px 4px 0 0;min-height:0}
+  .ins-axis{display:flex;justify-content:space-between;font-size:.72rem;color:var(--ink-70);margin-top:6px}
+  .ins-tip{position:absolute;z-index:5;pointer-events:none;background:var(--ink);color:var(--paper);font-size:.8rem;line-height:1.4;padding:6px 10px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-100%)}
+  .ins-tip[hidden]{display:none}
+  .ins-list{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:8px}
+  .ins-list th,.ins-list td{text-align:left;padding:7px 4px;border-bottom:1px solid var(--line)}
+  .ins-list th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-70)}
+  .ins-list td.n,.ins-list th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .ins-table{margin-top:12px}
+  .ins-table summary{cursor:pointer;font-weight:700;font-size:.85rem}
   label.check{display:inline-flex;align-items:center;gap:8px;margin:0 16px 0 0;font-size:.85rem;letter-spacing:0;text-transform:none;color:var(--ink);cursor:pointer;min-height:36px}
   label.check input{width:20px;height:20px;min-height:0;accent-color:var(--orange)}
   /* summary rows: name goes first, and the pills wrap together as one group */
@@ -163,6 +187,7 @@
     <button class="tab" role="tab" aria-selected="false" data-panel="pPages">Page Text</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="pNews">News</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="pNotify">Notify</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="pInsights">Insights</button>
     <button class="tab" role="tab" aria-selected="false" data-panel="pSettings">Settings</button>
   </div>
 
@@ -204,6 +229,37 @@
     </details>
     <button class="ghost addbtn" id="btnAddPost" type="button" style="margin-bottom:12px">+ New post</button>
     <div id="newsList"></div>
+  </section>
+
+  <section class="panel" id="pInsights" role="tabpanel" hidden>
+    <div class="ins-bar">
+      <div class="ins-range" role="group" aria-label="Date range">
+        <button type="button" class="ghost btn-sm" data-days="7" aria-pressed="false">7 days</button>
+        <button type="button" class="ghost btn-sm" data-days="30" aria-pressed="true">30 days</button>
+        <button type="button" class="ghost btn-sm" data-days="90" aria-pressed="false">90 days</button>
+      </div>
+      <span class="muted" id="insRange" role="status"></span>
+    </div>
+    <p class="muted" id="insNote" hidden></p>
+    <div class="ins-tiles" id="insTiles"></div>
+    <div class="card">
+      <h3>Visits per day</h3>
+      <p class="muted">Hover or tap a bar for that day's visits and order clicks.</p>
+      <div class="ins-chart" id="insChart"></div>
+      <details class="ins-table"><summary>Show as a table</summary><div id="insDaily"></div></details>
+    </div>
+    <div class="grid" style="gap:16px">
+      <div class="card"><h3>Most viewed pages</h3><div id="insPages"></div></div>
+      <div class="card"><h3>By stall</h3><p class="muted">Taps on each stall's buttons.</p><div id="insOutlets"></div></div>
+    </div>
+    <details class="help">
+      <summary>What's counted, and what isn't</summary>
+      <ul>
+        <li>Each page visit and each tap on Order, Directions, Call, the promo button, the forms and notifications adds 1 to that day's count.</li>
+        <li>Nothing about the visitor is stored: no IP address, cookies or device details, so no consent banner is needed. Bots and browsers set to "do not track" aren't counted.</li>
+        <li>"Order clicks" are taps through to Oddle. Actual orders and sales are in your Oddle dashboard.</li>
+      </ul>
+    </details>
   </section>
 
   <section class="panel" id="pNotify" role="tabpanel" hidden>
@@ -1369,6 +1425,100 @@ $('btnSendPush').addEventListener('click', async () => {
   }
 });
 loadPushStats();
+
+/* insights tab: daily visit and click counts from /api/track (see
+   lib/insights.mjs). Loaded the first time the tab opens; like the notify
+   routes, "insights" sits next to this page so the login covers it. */
+const insState = { days: 30, loaded: false };
+const fmtNum = (n) => Number(n || 0).toLocaleString('en-SG');
+const fmtDay = (iso, opts) => new Date(iso + 'T00:00:00+08:00').toLocaleDateString('en-SG', { timeZone: 'Asia/Singapore', ...opts });
+function pageName(p) {
+  const fixed = { '/': 'Home', '/story/': 'Our Story', '/menu/': 'Menu', '/locations/': 'Locations', '/careers/': 'Careers', '/contact/': 'Contact', '/news/': 'News', '/privacy/': 'Privacy' };
+  if (fixed[p]) return fixed[p];
+  const m = p.match(/^\/locations\/([a-z0-9-]+)\/$/);
+  const o = m && data && data.outlets.find((x) => x.slug === m[1]);
+  return o ? `Stall: ${o.name}` : p;
+}
+async function loadInsights(days) {
+  insState.days = days;
+  document.querySelectorAll('.ins-range button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.days === days)));
+  $('insRange').textContent = 'Loading…';
+  let j;
+  try {
+    const r = await fetch(`insights?days=${days}`, { cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status);
+    j = await r.json();
+  } catch (e) {
+    $('insRange').textContent = '';
+    $('insNote').hidden = false;
+    $('insNote').textContent = 'Insights only work on the live site (open the dashboard at your secret address).';
+    return;
+  }
+  insState.loaded = true;
+  if (!j.configured) {
+    $('insRange').textContent = '';
+    $('insNote').hidden = false;
+    $('insNote').textContent = 'Insights need the Upstash Redis store connected in Vercel (the same one notifications use).';
+    return;
+  }
+  $('insNote').hidden = true;
+  $('insRange').textContent = `${fmtDay(j.from, { day: 'numeric', month: 'short' })} to ${fmtDay(j.to, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+  const t = j.totals || {};
+  const forms = (t.contact_submit_confirmed || 0) + (t.catering_submit_confirmed || 0) + (t.signup_confirmed || 0);
+  const tiles = [
+    ['Visits', t.pageview], ['Order clicks', t.order_click], ['Directions taps', t.directions_click],
+    ['Call taps', t.call_click], ['Promo clicks', t.promo_click], ['Forms sent', forms],
+    ['Notification taps', t.notif_open], ['Subscribers now', j.subscribers],
+  ];
+  $('insTiles').innerHTML = tiles.map(([label, v]) => `<div class="ins-tile"><b>${fmtNum(v)}</b><span>${h(label)}</span></div>`).join('');
+  renderInsChart(j.daily);
+  const pages = Object.entries(j.pages || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  $('insPages').innerHTML = pages.length
+    ? `<table class="ins-list"><thead><tr><th>Page</th><th class="n">Visits</th></tr></thead><tbody>${pages.map(([p, n]) => `<tr><td>${h(pageName(p))}</td><td class="n">${fmtNum(n)}</td></tr>`).join('')}</tbody></table>`
+    : '<p class="muted">No visits counted yet.</p>';
+  const outs = Object.entries(j.outlets || {});
+  const nameOf = (slug) => { const o = data && data.outlets.find((x) => x.slug === slug); return o ? o.name : slug; };
+  $('insOutlets').innerHTML = outs.length
+    ? `<table class="ins-list"><thead><tr><th>Stall</th><th class="n">Directions</th><th class="n">Calls</th><th class="n">Orders</th></tr></thead><tbody>${outs
+      .sort((a, b) => (b[1].directions_click || 0) - (a[1].directions_click || 0))
+      .map(([s, v]) => `<tr><td>${h(nameOf(s))}</td><td class="n">${fmtNum(v.directions_click)}</td><td class="n">${fmtNum(v.call_click)}</td><td class="n">${fmtNum(v.order_click)}</td></tr>`).join('')}</tbody></table>`
+    : '<p class="muted">No stall taps counted yet.</p>';
+}
+function renderInsChart(daily) {
+  const box = $('insChart');
+  const max = Math.max(1, ...daily.map((d) => d.pageview));
+  box.innerHTML = `<div class="ins-plot"><span class="gridline"></span><span class="gridlabel">${fmtNum(max)}</span>${daily.map((d, i) =>
+    `<button type="button" class="ins-col" data-i="${i}" aria-label="${h(fmtDay(d.date, { weekday: 'short', day: 'numeric', month: 'short' }))}: ${d.pageview} visits, ${d.order_click} order clicks"><i style="height:${d.pageview ? Math.max(2, d.pageview / max * 100) : 0}%"></i></button>`).join('')}</div>
+    <div class="ins-axis"><span>${h(fmtDay(daily[0].date, { day: 'numeric', month: 'short' }))}</span><span>${h(fmtDay(daily[daily.length - 1].date, { day: 'numeric', month: 'short' }))}</span></div>
+    <div class="ins-tip" hidden></div>`;
+  const tip = box.querySelector('.ins-tip');
+  const show = (col) => {
+    const d = daily[+col.dataset.i];
+    tip.innerHTML = `<b>${h(fmtDay(d.date, { weekday: 'short', day: 'numeric', month: 'short' }))}</b><br>${fmtNum(d.pageview)} visits · ${fmtNum(d.order_click)} order clicks`;
+    const r = col.getBoundingClientRect(), b = box.getBoundingClientRect();
+    const x = Math.min(Math.max(r.left - b.left + r.width / 2, 80), b.width - 80);
+    tip.style.left = `${x}px`; tip.style.top = `${r.top - b.top + 10}px`;
+    tip.hidden = false;
+  };
+  box.querySelectorAll('.ins-col').forEach((c) => {
+    c.addEventListener('mouseenter', () => show(c));
+    c.addEventListener('focus', () => show(c));
+    c.addEventListener('click', () => show(c));
+    c.addEventListener('mouseleave', () => { tip.hidden = true; });
+    c.addEventListener('blur', () => { tip.hidden = true; });
+  });
+  $('insDaily').innerHTML = `<table class="ins-list"><thead><tr><th>Day</th><th class="n">Visits</th><th class="n">Order clicks</th></tr></thead><tbody>${daily.slice().reverse()
+    .map((d) => `<tr><td>${h(fmtDay(d.date, { weekday: 'short', day: 'numeric', month: 'short' }))}</td><td class="n">${fmtNum(d.pageview)}</td><td class="n">${fmtNum(d.order_click)}</td></tr>`).join('')}</tbody></table>`;
+}
+document.querySelectorAll('.ins-range button').forEach((b) => b.addEventListener('click', () => loadInsights(+b.dataset.days)));
+// A tooltip left open while the window resizes (e.g. rotating a phone) would
+// sit at its old position and push the page sideways, so close it.
+['resize', 'scroll'].forEach((ev) => addEventListener(ev, () => { const tip = document.querySelector('.ins-tip'); if (tip) tip.hidden = true; }, { passive: true }));
+// Load the numbers the first time the Insights tab is opened (by click or keyboard).
+{
+  const baseSelectTab = selectTab;
+  selectTab = (t) => { baseSelectTab(t); if (t.dataset.panel === 'pInsights' && !insState.loaded) loadInsights(insState.days); };
+}
 
 addEventListener('beforeunload', (e) => { if (dirty && (getToken() || canConnect)) { e.preventDefault(); e.returnValue = ''; } });
 load();

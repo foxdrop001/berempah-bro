@@ -114,11 +114,14 @@ self.addEventListener('push', (e) => {
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
   const target = new URL((e.notification.data && e.notification.data.url) || SCOPE, location.origin).href;
-  e.waitUntil(
+  // Count the tap for the dashboard's Insights tab (no visitor details sent).
+  const counted = fetch(`${SCOPE}api/track`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ e: 'notif_open' }) }).catch(() => {});
+  e.waitUntil(Promise.all([
+    counted,
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
       const same = wins.find((w) => w.url === target);
       if (same) return same.focus();
       return self.clients.openWindow(target);
-    })
-  );
+    }),
+  ]));
 });
