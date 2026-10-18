@@ -1,0 +1,5 @@
+{
+  "installCommand": "echo build needs no packages",
+  "buildCommand": "node build.mjs",
+  "outputDirectory": "."
+}
