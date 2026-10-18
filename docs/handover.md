@@ -18,6 +18,36 @@ never goes down.
 
 ---
 
+## Current setup (October 2026)
+
+The code is owned by the client at **foxdrop001/berempah-bro**. Hosting is
+still run by the developer, so Vercel deploys from a private copy:
+
+| Repo | Role |
+|---|---|
+| `foxdrop001/berempah-bro` | The client's repository (the official copy) |
+| `effortxd/berempah-bros-site` | Private mirror that Vercel deploys from; the dashboard saves here |
+
+The developer's local checkout pushes to both with one `git push origin main`
+(two push URLs on `origin`). Dashboard saves land in the mirror only, so to
+bring the client's repo up to date run:
+
+```bash
+git sync
+```
+
+(a repo-local alias: pull from the mirror and the client repo, then push to
+both). The old `foxdrop001.github.io/berempah-bro/` address is a redirect to
+www.berempahbros.com; the previous GitHub Pages copy is kept in the local
+branch `backup/gh-pages-2026-10-18`.
+
+**When the client takes over hosting**, drop the mirror: have foxdrop001 allow
+the Vercel GitHub app on `berempah-bro`, connect the Vercel project to it
+(Settings → Git), set `site.github` in `data/site.json` back to
+`foxdrop001/berempah-bro`, rebuild and push. Then the steps below apply.
+
+---
+
 ## 1. GitHub repository
 
 Either **transfer** it (GitHub repo → Settings → General → Danger Zone →
