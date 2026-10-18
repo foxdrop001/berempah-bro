@@ -1,4 +1,2 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
-Sitemap: https://effortxd.github.io/berempah-bro/sitemap.xml
