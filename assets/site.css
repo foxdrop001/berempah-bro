@@ -415,6 +415,10 @@
     .seen-strip{gap:8px 18px;font-size:.72rem}
     .build-photos img{height:180px}
     .polaroid.small{display:none}
+    /* three columns of chips get squeezed to ~100px on phones and spill off
+       the screen on 320px ones, so stack the groups instead */
+    .builder-grid{grid-template-columns:1fr}
+    .b-group{min-width:0}
   }
   @media (max-width:480px){
     .hero-ctas .btn{width:100%}
