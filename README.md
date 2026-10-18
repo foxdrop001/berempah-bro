@@ -2,7 +2,7 @@
 
 Brand website for [Berempah Bros](https://www.instagram.com/berempahbros/): signature ayam berempah by MasterChef Singapore Season 2 winner Derek Cheong, across Berempah Bros and sister brand Gepuk Guys.
 
-**Live:** https://effortxd.github.io/berempah-bro/
+**Live:** https://berempah-bro.vercel.app/
 
 Static site, no framework, no runtime dependencies. Content lives in one JSON file; a small Node build renders it into the pages.
 
