@@ -117,7 +117,11 @@ region('locations/index.html', 'outlets', [locCards, comingCards].filter(Boolean
 /* ------------------------------------------------------------------ *
  * 2. Menu page: cards, sides, builder, note
  * ------------------------------------------------------------------ */
-const mains = menu.sections.flatMap((s) => s.items).filter((i) => i.slug !== 'feast2');
+// hidden items are left off the site entirely (kept in the data so they can
+// come back). soldOut items still show, marked sold out, and can't be picked
+// in the order builder.
+const visible = (i) => !i.hidden;
+const mains = menu.sections.flatMap((s) => s.items).filter((i) => i.slug !== 'feast2' && visible(i));
 // Optional fields get defaults so an item edited in the dashboard (which
 // doesn't show image or tags) still builds. Image falls back to the slug.
 // If an item has neither, throw instead of writing out a broken img.
@@ -125,10 +129,10 @@ const menuCards = mains.map((it) => {
   const image = it.image || it.slug;
   if (!image) throw new Error(`menu item ${it.name || '(unnamed)'}: needs an image or a slug`);
   const tags = Array.isArray(it.tags) ? it.tags : [];
-  return `        <article class="chit reveal">
+  return `        <article class="chit reveal${it.soldOut ? ' sold-out' : ''}">
           <div class="chit-photo">
             <img src="../assets/${image}.webp" srcset="../assets/sm/${image}.webp 800w, ../assets/${image}.webp 1149w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="${esc(it.name)} — ${esc(it.desc)}" loading="lazy">
-            <span class="chit-price">$${it.price}</span>
+            <span class="chit-price">${it.soldOut ? 'Sold out' : `$${it.price}`}</span>
           </div>
           <div class="chit-body">
             <h3>${esc(it.name)}</h3>
@@ -139,19 +143,21 @@ const menuCards = mains.map((it) => {
 }).join('\n');
 region('menu/index.html', 'menu-cards', menuCards);
 
-const sidesRow = `        <h3>Sides</h3>\n` + menu.sides.map((s) => `        <span class="addon">${esc(s.name)} <b>$${s.price}</b></span>`).join('\n');
+const sidesRow = `        <h3>Sides</h3>\n` + menu.sides.filter(visible).map((s) => `        <span class="addon${s.soldOut ? ' sold-out' : ''}">${esc(s.name)} <b>${s.soldOut ? 'sold out' : `$${s.price}`}</b></span>`).join('\n');
 region('menu/index.html', 'sides', sidesRow);
 
-const builderProteins = menu.sections.flatMap((s) => s.items).filter((i) => i.slug !== 'feast2')
-  .map((it, i) => `              <label class="chip"><input type="radio" name="protein" value="${it.price}" data-slug="${it.slug || ''}" data-name="${esc(it.name)}"${i === 0 ? ' checked' : ''}><span>${esc(it.name.replace(' Berempah', ''))} $${it.price}</span></label>`).join('\n');
+// The first item that isn't sold out starts selected.
+const firstAvailable = mains.findIndex((it) => !it.soldOut);
+const builderProteins = mains
+  .map((it, i) => `              <label class="chip"><input type="radio" name="protein" value="${it.price}" data-slug="${it.slug || ''}" data-name="${esc(it.name)}"${i === firstAvailable ? ' checked' : ''}${it.soldOut ? ' disabled' : ''}><span>${esc(it.name.replace(' Berempah', ''))} ${it.soldOut ? '(sold out)' : `$${it.price}`}</span></label>`).join('\n');
 region('menu/index.html', 'builder-proteins', builderProteins);
 
 const builderCuts = menu.chickenParts.map((c, i) =>
   `              <label class="chip"><input type="radio" name="cut" value="${c}"${i === 0 ? ' checked' : ''}><span>${c}</span></label>`).join('\n');
 region('menu/index.html', 'builder-cuts', builderCuts);
 
-const builderAddons = menu.setAddOns.map((a) =>
-  `              <label class="chip"><input type="checkbox" name="addon" value="${a.price}" data-name="${esc(a.name)}"><span>${esc(a.name.replace(' Berempah', ''))} +$${a.price}</span></label>`).join('\n');
+const builderAddons = menu.setAddOns.filter(visible).map((a) =>
+  `              <label class="chip"><input type="checkbox" name="addon" value="${a.price}" data-name="${esc(a.name)}"${a.soldOut ? ' disabled' : ''}><span>${esc(a.name.replace(' Berempah', ''))} ${a.soldOut ? '(sold out)' : `+$${a.price}`}</span></label>`).join('\n');
 region('menu/index.html', 'builder-addons', builderAddons);
 
 region('menu/index.html', 'menu-note', `      <p class="menu-note">${menu.note}</p>`);
@@ -289,16 +295,115 @@ const menuLd = {
       { '@type': 'ListItem', position: 2, name: 'Menu', item: `${base}/menu/` }] },
     { '@type': 'Menu', name: `${site.name} Delivery Menu`, inLanguage: 'en-SG',
       hasMenuSection: [
-        ...menu.sections.map((s) => ({ '@type': 'MenuSection', name: s.name,
-          hasMenuItem: s.items.map((i) => ({ '@type': 'MenuItem', name: i.name,
+        ...menu.sections.filter((s) => s.items.some(visible)).map((s) => ({ '@type': 'MenuSection', name: s.name,
+          hasMenuItem: s.items.filter(visible).map((i) => ({ '@type': 'MenuItem', name: i.name,
             ...(i.menuDesc ? { description: i.menuDesc.replace(/&amp;/g, '&') } : {}),
             offers: { '@type': 'Offer', price: i.price, priceCurrency: 'SGD' } })) })),
-        { '@type': 'MenuSection', name: 'Sides', hasMenuItem: menu.sides.map((s) => ({
+        { '@type': 'MenuSection', name: 'Sides', hasMenuItem: menu.sides.filter(visible).map((s) => ({
           '@type': 'MenuItem', name: s.name, offers: { '@type': 'Offer', price: s.price, priceCurrency: 'SGD' } })) },
       ] },
   ],
 };
 region('menu/index.html', 'jsonld', `<script type="application/ld+json">\n${jsonLd(menuLd)}\n</script>`);
+
+/* ------------------------------------------------------------------ *
+ * 5b. News page: posts + blog structured data, from data.news
+ * ------------------------------------------------------------------ */
+// Post text uses a tiny markup the dashboard can explain in one line:
+// **bold**, [link text](https://...), and a blank line between paragraphs.
+// Everything is escaped first, so no raw HTML gets through from the data.
+const safeHref = (u) => /^(https?:\/\/|mailto:|tel:|\/|\.\.\/|#)/i.test(u) ? u : null;
+const isExternal = (u) => /^https?:\/\//i.test(u);
+const inline = (text) => esc(text)
+  .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+  .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, label, url) => {
+    const href = safeHref(url.replace(/&amp;/g, '&'));
+    if (!href) return label;
+    return `<a href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>${label}</a>`;
+  });
+const IMG_RE = /^[a-z0-9][a-z0-9/_-]*$/i;
+const news = (Array.isArray(data.news) ? data.news : []).filter((p) => !p.hidden);
+for (const p of news) {
+  if (!SLUG_RE.test(String(p.id || ''))) throw new Error(`news post "${p.title}": id must be lowercase-kebab, e.g. stall-six`);
+  if (p.image && !IMG_RE.test(p.image)) throw new Error(`news post "${p.title}": bad image name ${JSON.stringify(p.image)}`);
+}
+const newsPosts = news.map((p) => {
+  const tags = (p.tags || []).map((t) => `<span class="tag${t.style === 'best' || t.style === 'hot' ? ' ' + t.style : ''}">${esc(t.text)}</span>`).join('');
+  const paras = String(p.body || '').split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean)
+    .map((x) => `        <p>${inline(x).replace(/\n/g, '<br>')}</p>`);
+  const btns = (p.buttons || []).filter((b) => b.text && safeHref(b.url)).map((b) =>
+    `<a class="btn btn-${b.style === 'chili' ? 'chili' : 'paper'}" href="${esc(b.url)}"${isExternal(b.url) ? ' target="_blank" rel="noopener"' : ''}${b.track ? ` data-track="${esc(b.track)}"` : ''}>${esc(b.text)}</a>`);
+  return [
+    `    <article class="post${p.pinned ? ' pinned' : ''} reveal" id="${p.id}">`,
+    `      <span class="post-date">${esc(p.date || '')}</span>`,
+    `      <div class="post-head">`,
+    `        <div class="post-tags">${tags}</div>`,
+    `        <h2>${esc(p.title)}</h2>`,
+    `      </div>`,
+    p.image ? `      <div class="post-photo"><img src="../assets/${p.image}.webp" alt="${esc(p.imageAlt || p.title)}" loading="lazy"></div>` : null,
+    `      <div class="post-body">`,
+    ...paras,
+    btns.length ? `        <p class="post-cta">${btns.join(' ')}</p>` : null,
+    `      </div>`,
+    `    </article>`,
+  ].filter((l) => l !== null).join('\n');
+}).join('\n\n');
+region('news/index.html', 'news-posts', newsPosts);
+
+const newsLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${base}/` },
+      { '@type': 'ListItem', position: 2, name: 'News', item: `${base}/news/` }] },
+    { '@type': 'Blog', name: 'The Berempah Bulletin', inLanguage: 'en-SG',
+      blogPost: news.filter((p) => p.dateISO).map((p) => ({
+        '@type': 'BlogPosting', headline: p.title, datePublished: p.dateISO, url: `${base}/news/#${p.id}` })) },
+  ],
+};
+region('news/index.html', 'jsonld', `<script type="application/ld+json">\n${jsonLd(newsLd)}\n</script>`);
+
+/* ------------------------------------------------------------------ *
+ * 5c. Page copy edited in the dashboard: home hero, story, careers
+ * ------------------------------------------------------------------ */
+// Same **bold** / [link](url) markup as the news. Body paragraphs keep the
+// look they had when hand-written: muted text with dark bold words, and a
+// closing line that is all bold printed in full ink.
+const pg = data.pages || {};
+const copyParas = (text, indent) => {
+  const ps = String(text || '').split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
+  return ps.map((x, i) => {
+    const last = i === ps.length - 1;
+    if (last && /^\*\*[^*]+\*\*$/.test(x)) return `${indent}<p style="color:var(--ink)">${inline(x)}</p>`;
+    return `${indent}<p style="color:var(--ink-70)${last ? '' : ';margin-bottom:14px'}">${inline(x).replace(/<b>/g, '<b style="color:var(--ink)">').replace(/\n/g, '<br>')}</p>`;
+  }).join('\n');
+};
+const lines = (t) => String(t || '').split('\n').map((x) => esc(x.trim())).filter(Boolean).join('<br>');
+
+if (pg.home) {
+  region('index.html', 'hero-copy', [
+    `      <span class="hand hero-tag">${esc(pg.home.tag || '')}</span>`,
+    `      <p style="font-family:var(--font-display);font-size:clamp(1.1rem,2.5vw,1.6rem);letter-spacing:.14em;color:#F0E2C4;text-transform:uppercase">Berempah Bros</p>`,
+    `      <h1 id="hero-title">${esc(pg.home.titleLine1 || '')}<span class="line2">${esc(pg.home.titleLine2 || '')}</span></h1>`,
+    `      <p style="max-width:38rem;font-size:1.15rem;color:#F0E2C4;margin:18px 0 28px">${esc(pg.home.intro || '')}</p>`,
+  ].join('\n'));
+}
+if (pg.story) {
+  region('story/index.html', 'story-copy',
+    `        <h2 id="story-full" style="font-size:clamp(2.2rem,5vw,3.6rem);margin:var(--s2) 0 var(--s3)">${lines(pg.story.heading)}</h2>\n` +
+    copyParas(pg.story.body, '        '));
+}
+if (pg.careers) {
+  region('careers/index.html', 'careers-intro',
+    `        <h2 id="careers-title" style="font-size:clamp(2.2rem,5vw,3.6rem);margin:var(--s2) 0 var(--s3)">${lines(pg.careers.heading)}</h2>\n` +
+    copyParas(pg.careers.intro, '        '));
+  region('careers/index.html', 'careers-roles', [
+    `        <ul class="roles-list">`,
+    ...(pg.careers.roles || []).filter(Boolean).map((r) => `          <li>${esc(r)}</li>`),
+    `        </ul>`,
+    pg.careers.note ? `        <p class="hand" style="font-size:1.5rem;color:var(--chili-deep);margin-top:var(--s3);display:inline-block;transform:rotate(-1.5deg)">${esc(pg.careers.note)}</p>` : null,
+  ].filter((l) => l !== null).join('\n'));
+}
 
 // All marked regions are rendered now. Write each changed page once.
 flushPages();

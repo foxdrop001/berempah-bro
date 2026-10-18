@@ -363,39 +363,6 @@
           </div>
         </article>
 <!-- /BUILD:menu-cards -->
-        <article class="chit reveal">
-          <div class="chit-photo">
-            <img src="../assets/pork.webp" srcset="../assets/sm/pork.webp 800w, ../assets/pork.webp 1089w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Pork Berempah — crispy spiced pork on coconut rice" loading="lazy">
-            <span class="chit-price">$10.20</span>
-          </div>
-          <div class="chit-body">
-            <h3>Pork Berempah</h3>
-            <p>Juicy spiced pork with deep rempah flavour and serious crackle — a gepuk-inspired twist.</p>
-            <div class="tag-row"><span class="tag hot">Spicy</span></div>
-          </div>
-        </article>
-        <article class="chit reveal">
-          <div class="chit-photo">
-            <img src="../assets/fish.webp" srcset="../assets/sm/fish.webp 800w, ../assets/fish.webp 1089w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Fish Berempah — golden fried fish on coconut rice" loading="lazy">
-            <span class="chit-price">$10.20</span>
-          </div>
-          <div class="chit-body">
-            <h3>Fish Berempah</h3>
-            <p>Flaky fish in a light rempah crust — all the fire and crunch, lighter on its feet.</p>
-            <div class="tag-row"><span class="tag hot">Spicy</span></div>
-          </div>
-        </article>
-        <article class="chit reveal">
-          <div class="chit-photo">
-            <img src="../assets/unagi.webp" srcset="../assets/sm/unagi.webp 800w, ../assets/unagi.webp 1089w" sizes="(max-width: 720px) 92vw, (max-width: 1024px) 46vw, 420px" alt="Unagi Berempah — glazed eel with spiced crust on coconut rice" loading="lazy">
-            <span class="chit-price">$14.40</span>
-          </div>
-          <div class="chit-body">
-            <h3>Unagi Berempah</h3>
-            <p>The premium plate — briny, buttery unagi meets bold berempah spices.</p>
-            <div class="tag-row"><span class="tag best">Premium</span><span class="tag hot">Spicy</span></div>
-          </div>
-        </article>
       </div>
       <div class="addons reveal">
 <!-- BUILD:sides -->
@@ -623,6 +590,8 @@
           </span>
         </a>
         <p>Born in Singapore. Inspired by the flavours we grew up with. Made for people who just want damn good food.</p>
+        <button type="button" class="push-optin" data-push-optin hidden>Get notified: new stalls &amp; promos</button>
+        <p class="push-hint" data-push-hint hidden></p>
       </div>
       <div class="foot-col">
         <h4>Explore</h4>
@@ -695,6 +664,7 @@
     if(!form||!sum||!desc||!cutGroup)return;
     function update(){
       const p=form.querySelector('input[name="protein"]:checked');
+      if(!p)return; // everything sold out, nothing to total
       const isAyam=p.dataset.slug==='ayam';
       cutGroup.style.opacity=isAyam?'1':'.35';
       cutGroup.querySelectorAll('input').forEach(i=>i.disabled=!isAyam);

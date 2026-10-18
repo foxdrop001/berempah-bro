@@ -293,5 +293,186 @@
     "mapsQuery": "Search text for Google Maps",
     "opened": "2026-01",
     "published": false
+  },
+  "news": [
+    {
+      "id": "stall-six",
+      "date": "Coming Soon",
+      "pinned": true,
+      "title": "Stall No. 6 Is Fresh Out The Fryer",
+      "tags": [
+        {
+          "text": "New Stall",
+          "style": "best"
+        },
+        {
+          "text": "Announcement",
+          "style": ""
+        }
+      ],
+      "body": "The next Berempah Bros counter is confirmed and coming to a hawker centre near you. Location, opening date and (maybe) an opening special drop first on Instagram — eyes on the 'gram, bro.",
+      "buttons": [
+        {
+          "text": "Watch @berempahbros",
+          "url": "https://www.instagram.com/berempahbros/",
+          "style": "paper"
+        }
+      ]
+    },
+    {
+      "id": "duck-confit",
+      "date": "New on the Menu",
+      "title": "Introducing Our New Duck Confit Berempah",
+      "tags": [
+        {
+          "text": "New Dish",
+          "style": "hot"
+        },
+        {
+          "text": "Gepuk Guys",
+          "style": ""
+        }
+      ],
+      "image": "sm/unagi",
+      "imageAlt": "A glazed, crumb-topped berempah plate on a rattan tray",
+      "body": "The Bros went French, then dragged it straight back to the kopitiam: **Duck Confit Berempah** — slow-cooked duck leg, crisped up and hit with the signature rempah treatment. On the menu at **Gepuk Guys, Bedok** at $16.50, as covered by [Eatbook](https://eatbook.sg/gepuk-guys/).",
+      "buttons": [
+        {
+          "text": "Order Delivery",
+          "url": "https://berempahbros.oddle.me/",
+          "style": "chili",
+          "track": "order"
+        }
+      ]
+    },
+    {
+      "id": "gepuk-guys",
+      "date": "July 2026",
+      "dateISO": "2026-07",
+      "title": "Say Hello To Gepuk Guys",
+      "tags": [
+        {
+          "text": "New Brand",
+          "style": "best"
+        },
+        {
+          "text": "Bedok",
+          "style": ""
+        }
+      ],
+      "image": "sm/feast",
+      "imageAlt": "A loaded rattan tray of gepuk-style dishes with rice, sambal and sides",
+      "body": "Our sister stall is live. **Gepuk Guys** serves Indonesian-inspired gepuk — turmeric-marinated fried chicken, lightly smashed, with cashew-nut sambal — from Stall 3, Jofa Coffeeshop, **531 Bedok North Street 3**, daily 10:30am–10:30pm.\n\nMains from $9.90 (Ayam Berempah Gepuk), with grilled squid, unagi and duck confit on the roster. **No pork, no lard** at this one. Full story on [Eatbook](https://eatbook.sg/gepuk-guys/).",
+      "buttons": [
+        {
+          "text": "Watch The Grand Opening",
+          "url": "https://www.instagram.com/reel/DamvcrBy9om/",
+          "style": "chili"
+        },
+        {
+          "text": "Follow @gepukguys.sg",
+          "url": "https://www.instagram.com/gepukguys.sg/",
+          "style": "paper"
+        }
+      ]
+    },
+    {
+      "id": "woodleigh",
+      "date": "June 2026",
+      "dateISO": "2026-06",
+      "title": "Stall No. 4: Woodleigh Village",
+      "tags": [
+        {
+          "text": "New Stall",
+          "style": "best"
+        },
+        {
+          "text": "Woodleigh",
+          "style": ""
+        }
+      ],
+      "body": "The fourth Berempah Bros counter opened at **Woodleigh Village Hawker Centre** — 202C Bidadari Park Drive, right by Woodleigh MRT (NE11). Same overnight rempah, same crunch, now for the Bidadari side of town.",
+      "buttons": [
+        {
+          "text": "All Locations",
+          "url": "../locations/",
+          "style": "paper"
+        }
+      ]
+    },
+    {
+      "id": "sengkang",
+      "date": "April 2026",
+      "dateISO": "2026-04",
+      "title": "Sengkang, We're In: Happy Hawkers",
+      "tags": [
+        {
+          "text": "New Stall",
+          "style": "best"
+        },
+        {
+          "text": "Sengkang",
+          "style": ""
+        }
+      ],
+      "body": "Stall No. 3 landed at **Happy Hawkers, 267 Compassvale Link** — right next to Ranggung LRT. The opening ran a Pork Berempah special that had the queue snaking past the drinks stall, and northeast-siders have kept it moving since.",
+      "buttons": [
+        {
+          "text": "Find The Stall",
+          "url": "../locations/",
+          "style": "paper"
+        }
+      ]
+    },
+    {
+      "id": "beauty-world",
+      "date": "January 2026",
+      "dateISO": "2026-01",
+      "title": "Where It Started: Beauty World",
+      "tags": [
+        {
+          "text": "The Original",
+          "style": "best"
+        },
+        {
+          "text": "Press",
+          "style": ""
+        }
+      ],
+      "image": "sm/stall",
+      "imageAlt": "Two plates of ayam berempah on the hawker table at the stall",
+      "body": "MasterChef Singapore champion **Derek Cheong** opened the first Berempah Bros at **Beauty World Food Centre #04-51** — one dish, done properly: 16-spice ayam goreng berempah under a shower of garlic, breadcrumb, kerisik and sakura ebi crunch.\n\nThe food blogs came fast — [DanielFoodDiary](https://danielfooddiary.com/2026/01/19/berempahbros/) compared the crumbs to \"a lovechild between prawn cereal and HK-style typhoon shelter crab toppings,\" and the queues haven't really stopped.",
+      "buttons": [
+        {
+          "text": "Read The Full Story",
+          "url": "../story/",
+          "style": "paper"
+        }
+      ]
+    }
+  ],
+  "pages": {
+    "home": {
+      "tag": "wah, die die must try lah!",
+      "titleLine1": "Spice. Crunch.",
+      "titleLine2": "Shiok.",
+      "intro": "Born in Singapore. Inspired by the flavours we grew up with. Made for people who just want damn good food."
+    },
+    "story": {
+      "heading": "Born In Singapore.\nBuilt On Rempah.",
+      "body": "Berempah Bros started from our love for the food we grew up eating.\n\nThe flavours of Singapore and Southeast Asia are loud, diverse and unapologetic — sambal, coconut, spices, smoke, char and plenty of rempah. We wanted to build something around that.\n\nOur starting point was the humble plate of nasi lemak. We took everything we loved about it and made it our own: fragrant coconut rice, punchy sambal, refreshing achar and, at the centre of it all, our signature **Ayam Berempah**.\n\nWhat began with one plate has grown into different proteins, grilled dishes, new creations and Berempah Bros outlets across Singapore.\n\nBut the idea hasn't changed.\n\n**Take familiar flavours. Put our spin on them. And make food we'd happily eat ourselves.**"
+    },
+    "careers": {
+      "heading": "Join The Bros.",
+      "intro": "**Good food doesn't happen without good people.**\n\nWe're growing, and we're always looking for people who want to grow with us.\n\nWhether you're looking to start your journey in F&B or already have years of experience, we're looking for people with the right attitude, energy and willingness to learn.",
+      "roles": [
+        "Kitchen Crew",
+        "Service Crew",
+        "Outlet Supervisors",
+        "Outlet Managers",
+        "Operations & Management"
+      ],
+      "note": "experience is great. attitude matters more."
+    }
   }
 }

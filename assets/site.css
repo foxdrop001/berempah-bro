@@ -706,3 +706,18 @@
   .cform-field input,.cform-field select,.cform-field textarea{width:100%;max-width:100%;min-width:0}
   .cform-row{min-width:0}
   .cform-row > *{min-width:0}
+
+/* "Get notified" push button in the footer (shown by assets/pwa.js only when
+   push works on this browser and is set up on the site) */
+.push-optin{margin-top:var(--s3);font:inherit;font-weight:700;font-size:.9rem;color:#F5EBD8;background:transparent;border:2px solid #F2701D;border-radius:999px;padding:10px 18px;min-height:44px;cursor:pointer;transition:background .15s ease}
+.push-optin:hover{background:rgba(242,112,29,.18)}
+.push-optin[aria-pressed="true"]{border-color:#5E9C6D;color:#A5DCB1}
+.push-optin:disabled{opacity:.6;cursor:wait}
+.push-optin[hidden],.push-hint[hidden]{display:none}
+.push-hint{margin-top:8px;font-size:.85rem;color:#CDB995;max-width:28rem}
+
+/* sold-out menu items (set in the dashboard): still listed, clearly unavailable */
+.chit.sold-out .chit-photo img{filter:grayscale(1) opacity(.7)}
+.chit.sold-out .chit-price{background:var(--ink);color:#F5EBD8}
+.addon.sold-out{opacity:.55;text-decoration:line-through}
+.chip input:disabled + span{opacity:.45;text-decoration:line-through;cursor:not-allowed}

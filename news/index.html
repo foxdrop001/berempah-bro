@@ -27,9 +27,63 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,600;0,700;1,400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<!-- BUILD:jsonld -->
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@graph": [{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://berempah-bro.vercel.app/"}, {"@type": "ListItem", "position": 2, "name": "News", "item": "https://berempah-bro.vercel.app/news/"}]}, {"@type": "Blog", "name": "The Berempah Bulletin", "inLanguage": "en-SG", "blogPost": [{"@type": "BlogPosting", "headline": "Say Hello To Gepuk Guys", "datePublished": "2026-07", "url": "https://berempah-bro.vercel.app/news/#gepuk-guys"}, {"@type": "BlogPosting", "headline": "Stall No. 4: Woodleigh Village", "datePublished": "2026-06", "url": "https://berempah-bro.vercel.app/news/#woodleigh"}, {"@type": "BlogPosting", "headline": "Sengkang, We're In: Happy Hawkers", "datePublished": "2026-04", "url": "https://berempah-bro.vercel.app/news/#sengkang"}, {"@type": "BlogPosting", "headline": "Where It Started: Beauty World", "datePublished": "2026-01", "url": "https://berempah-bro.vercel.app/news/#beauty-world"}]}]}
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://berempah-bro.vercel.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "News",
+          "item": "https://berempah-bro.vercel.app/news/"
+        }
+      ]
+    },
+    {
+      "@type": "Blog",
+      "name": "The Berempah Bulletin",
+      "inLanguage": "en-SG",
+      "blogPost": [
+        {
+          "@type": "BlogPosting",
+          "headline": "Say Hello To Gepuk Guys",
+          "datePublished": "2026-07",
+          "url": "https://berempah-bro.vercel.app/news/#gepuk-guys"
+        },
+        {
+          "@type": "BlogPosting",
+          "headline": "Stall No. 4: Woodleigh Village",
+          "datePublished": "2026-06",
+          "url": "https://berempah-bro.vercel.app/news/#woodleigh"
+        },
+        {
+          "@type": "BlogPosting",
+          "headline": "Sengkang, We're In: Happy Hawkers",
+          "datePublished": "2026-04",
+          "url": "https://berempah-bro.vercel.app/news/#sengkang"
+        },
+        {
+          "@type": "BlogPosting",
+          "headline": "Where It Started: Beauty World",
+          "datePublished": "2026-01",
+          "url": "https://berempah-bro.vercel.app/news/#beauty-world"
+        }
+      ]
+    }
+  ]
+}
 </script>
+<!-- /BUILD:jsonld -->
 <link rel="preload" href="../assets/MeatyBliss.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/site.css">
 <style>
@@ -120,7 +174,7 @@
 
   <div class="news-wrap">
 
-    <!-- PLACEHOLDER: publish this post properly once the 6th stall's location is announced -->
+<!-- BUILD:news-posts -->
     <article class="post pinned reveal" id="stall-six">
       <span class="post-date">Coming Soon</span>
       <div class="post-head">
@@ -128,7 +182,7 @@
         <h2>Stall No. 6 Is Fresh Out The Fryer</h2>
       </div>
       <div class="post-body">
-        <p>The next Berempah Bros counter is confirmed and coming to a hawker centre near you. Location, opening date and (maybe) an opening special drop first on Instagram — eyes on the 'gram, bro.</p>
+        <p>The next Berempah Bros counter is confirmed and coming to a hawker centre near you. Location, opening date and (maybe) an opening special drop first on Instagram — eyes on the &#39;gram, bro.</p>
         <p class="post-cta"><a class="btn btn-paper" href="https://www.instagram.com/berempahbros/" target="_blank" rel="noopener">Watch @berempahbros</a></p>
       </div>
     </article>
@@ -176,7 +230,7 @@
       <span class="post-date">April 2026</span>
       <div class="post-head">
         <div class="post-tags"><span class="tag best">New Stall</span><span class="tag">Sengkang</span></div>
-        <h2>Sengkang, We're In: Happy Hawkers</h2>
+        <h2>Sengkang, We&#39;re In: Happy Hawkers</h2>
       </div>
       <div class="post-body">
         <p>Stall No. 3 landed at <b>Happy Hawkers, 267 Compassvale Link</b> — right next to Ranggung LRT. The opening ran a Pork Berempah special that had the queue snaking past the drinks stall, and northeast-siders have kept it moving since.</p>
@@ -193,10 +247,11 @@
       <div class="post-photo"><img src="../assets/sm/stall.webp" alt="Two plates of ayam berempah on the hawker table at the stall" loading="lazy"></div>
       <div class="post-body">
         <p>MasterChef Singapore champion <b>Derek Cheong</b> opened the first Berempah Bros at <b>Beauty World Food Centre #04-51</b> — one dish, done properly: 16-spice ayam goreng berempah under a shower of garlic, breadcrumb, kerisik and sakura ebi crunch.</p>
-        <p>The food blogs came fast — <a href="https://danielfooddiary.com/2026/01/19/berempahbros/" target="_blank" rel="noopener">DanielFoodDiary</a> compared the crumbs to "a lovechild between prawn cereal and HK-style typhoon shelter crab toppings," and the queues haven't really stopped.</p>
+        <p>The food blogs came fast — <a href="https://danielfooddiary.com/2026/01/19/berempahbros/" target="_blank" rel="noopener">DanielFoodDiary</a> compared the crumbs to &quot;a lovechild between prawn cereal and HK-style typhoon shelter crab toppings,&quot; and the queues haven&#39;t really stopped.</p>
         <p class="post-cta"><a class="btn btn-paper" href="../story/">Read The Full Story</a></p>
       </div>
     </article>
+<!-- /BUILD:news-posts -->
 
     <p class="news-foot hand" style="font-size:1.3rem">that's all the news for now — go makan lah</p>
   </div>
@@ -219,6 +274,8 @@
           </span>
         </a>
         <p>Born in Singapore. Inspired by the flavours we grew up with. Made for people who just want damn good food.</p>
+        <button type="button" class="push-optin" data-push-optin hidden>Get notified: new stalls &amp; promos</button>
+        <p class="push-hint" data-push-hint hidden></p>
       </div>
       <div class="foot-col">
         <h4>Explore</h4>

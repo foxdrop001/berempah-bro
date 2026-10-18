@@ -11,7 +11,7 @@
  *
  * Bump VERSION when this file changes in a way that needs old caches cleared.
  */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const PAGES = `bb-pages-${VERSION}`;
 const ASSETS = `bb-assets-${VERSION}`;
 const SCOPE = new URL(self.registration.scope).pathname; // "/" on Vercel
@@ -58,6 +58,8 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
+  if (rel.startsWith('api/')) return; // live data, never cached
+
   if (rel.startsWith('assets/')) {
     e.respondWith(
       caches.open(ASSETS).then((c) => c.match(req).then((hit) => {
@@ -70,4 +72,37 @@ self.addEventListener('fetch', (e) => {
       }))
     );
   }
+});
+
+/* Push notifications. Pushes arrive empty (see lib/push.mjs), so fetch the
+   latest message from the site and show that. Browsers require a visible
+   notification for every push, so fall back to a generic one if the fetch fails. */
+self.addEventListener('push', (e) => {
+  e.waitUntil(
+    fetch(`${SCOPE}api/push/latest`, { cache: 'no-store' })
+      .then((r) => r.json())
+      .catch(() => null)
+      .then((m) => {
+        const msg = m && m.title ? m : { title: 'Berempah Bros', body: 'Something new is cooking. Tap to see.', url: SCOPE };
+        return self.registration.showNotification(msg.title, {
+          body: msg.body || '',
+          icon: `${SCOPE}assets/icon-192.png`,
+          tag: 'bb-news',
+          renotify: true,
+          data: { url: msg.url || SCOPE },
+        });
+      })
+  );
+});
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const target = new URL((e.notification.data && e.notification.data.url) || SCOPE, location.origin).href;
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      const same = wins.find((w) => w.url === target);
+      if (same) return same.focus();
+      return self.clients.openWindow(target);
+    })
+  );
 });
