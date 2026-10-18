@@ -6,3 +6,6 @@ PROJECT-NOTES.md
 # (needs a token with "workflow" scope). Enable it once via the GitHub UI —
 # see README. Source of truth: docs/ci-workflow.yml
 .github/
+
+# local vercel cli link
+.vercel
