@@ -1,5 +1,7 @@
 # Deployment
 
+> **Retired.** The site now runs on Vercel. GitHub Pages and DigitalOcean are no longer used; see [handover.md](handover.md) for the current setup.
+
 ## Today
 
 Push to `main` → CI builds and audits → GitHub Pages serves it.

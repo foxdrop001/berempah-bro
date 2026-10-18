@@ -66,7 +66,8 @@ Detailed step-by-step guides live in [`docs/`](docs/):
 | Change menu items or prices | [docs/update-menu.md](docs/update-menu.md) |
 | Start / stop / change a promotion | [docs/update-promo.md](docs/update-promo.md) |
 | Run the checks | [docs/testing.md](docs/testing.md) |
-| Deploy, and move to a custom domain | [docs/deploy.md](docs/deploy.md) |
+| Old GitHub Pages / DigitalOcean notes (retired) | [docs/deploy.md](docs/deploy.md) |
+| **Hand the site to a new owner** (GitHub, Vercel, push, domain) | [docs/handover.md](docs/handover.md) |
 
 ---
 

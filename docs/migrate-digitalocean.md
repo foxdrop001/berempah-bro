@@ -1,5 +1,7 @@
 # Moving the site to DigitalOcean
 
+> **Retired.** The site now runs on Vercel. GitHub Pages and DigitalOcean are no longer used; see [handover.md](handover.md) for the current setup.
+
 The site is built so a hosting move is one data-file edit plus DNS. Everything
 that carries an absolute URL (canonical tags, social-share tags, sitemap,
 robots.txt, form return addresses, the 404 page, the old .html redirect stubs)

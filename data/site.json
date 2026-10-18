@@ -4,6 +4,11 @@
     "name": "Berempah Bros",
     "tagline": "Spice. Crunch. Shiok.",
     "baseUrl": "https://berempah-bro.vercel.app",
+    "github": {
+      "owner": "effortxd",
+      "repo": "berempah-bro",
+      "branch": "main"
+    },
     "contentUpdated": "2026-08-12",
     "email": "berempahbros.general@gmail.com",
     "orderUrl": "https://berempahbros.oddle.me/",
